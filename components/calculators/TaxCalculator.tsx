@@ -69,11 +69,11 @@ const TaxCalculator: React.FC = () => {
           </div>
         )}
       </div>
-      <div className="bg-gray-900 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-white flex flex-col justify-center min-h-[300px] lg:min-h-[400px] overflow-hidden">
+      <div className="bg-gray-900 rounded-[2rem] md:rounded-[2.5rem] px-4 py-8 md:p-10 text-white flex flex-col justify-center min-h-[300px] lg:min-h-[400px] overflow-hidden">
         {results ? (
           <div className="animate-fadeIn w-full text-center lg:text-left">
             <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2">Lucro Líquido Mensal</p>
-            <h4 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-10 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
+            <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-10 break-words leading-tight">
               {results.netIncome.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </h4>
             <div className="space-y-4 pt-6 border-t border-white/10">

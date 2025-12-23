@@ -34,12 +34,12 @@ const VacationCalculator: React.FC = () => {
           <input type="text" value={salary} onChange={(e) => handleCurrencyInput(e.target.value, setSalary)} className="w-full p-4 md:p-6 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-lg md:text-2xl font-black" placeholder="R$ 0,00" />
         </div>
       </div>
-      <div className="bg-green-900 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-white flex flex-col justify-center shadow-2xl shadow-green-100 min-h-[300px] lg:min-h-[400px] overflow-hidden">
+      <div className="bg-green-900 rounded-[2rem] md:rounded-[2.5rem] px-4 py-8 md:p-10 text-white flex flex-col justify-center shadow-2xl shadow-green-100 min-h-[300px] lg:min-h-[400px] overflow-hidden">
         {results ? (
           <div className="space-y-8 animate-fadeIn w-full">
             <div className="text-center">
               <p className="text-[9px] font-black text-green-300 uppercase mb-2 tracking-widest">Valor Líquido Estimado</p>
-              <h4 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
+              <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black break-words leading-tight">
                 {results.liquido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </h4>
             </div>
