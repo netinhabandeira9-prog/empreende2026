@@ -7,6 +7,7 @@ interface CalculationResult {
   unitCost: number;
   taxAmount: number;
   totalProfit: number;
+  unitProfit: number;
   marginApplied: number;
   markup: number;
   error?: string;
@@ -52,7 +53,7 @@ const PricingCalculator: React.FC = () => {
     if (denominator <= 0) {
       return { 
         error: "Margem inviável: a soma da margem e impostos atinge 100% do preço. Reduza a margem desejada.",
-        totalSalePrice: 0, unitSalePrice: 0, unitCost: 0, taxAmount: 0, totalProfit: 0, marginApplied: 0, markup: 0
+        totalSalePrice: 0, unitSalePrice: 0, unitCost: 0, taxAmount: 0, totalProfit: 0, unitProfit: 0, marginApplied: 0, markup: 0
       };
     }
 
@@ -61,6 +62,7 @@ const PricingCalculator: React.FC = () => {
     const unitCost = cost / q;
     const taxAmount = totalSalePrice * effectiveTax;
     const totalProfit = totalSalePrice - cost - taxAmount;
+    const unitProfit = totalProfit / q;
     const markup = totalSalePrice / cost;
 
     return {
@@ -69,6 +71,7 @@ const PricingCalculator: React.FC = () => {
       unitCost,
       taxAmount,
       totalProfit,
+      unitProfit,
       marginApplied: mPercent * 100,
       markup
     };
@@ -106,7 +109,7 @@ const PricingCalculator: React.FC = () => {
         <div className="space-y-4">
           <div className="relative">
             <label className="block text-[10px] font-black uppercase text-gray-400 mb-1.5 ml-1">
-              {calcMode === 'UNIT' ? 'Custo da Unidade' : 'Custo Total do Fardo'}
+              {calcMode === 'UNIT' ? 'Custo de Compra (Unidade)' : 'Custo Total do Fardo'}
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-gray-400">R$</span>
@@ -121,7 +124,7 @@ const PricingCalculator: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {calcMode === 'BATCH' ? (
+            {calcMode === 'BATCH' && (
               <div>
                 <label className="block text-[10px] font-black uppercase text-gray-400 mb-1.5 ml-1">Qtd no Fardo</label>
                 <input 
@@ -132,7 +135,7 @@ const PricingCalculator: React.FC = () => {
                   className="w-full p-4 rounded-2xl bg-gray-50 ring-1 ring-gray-200 outline-none text-xl font-black focus:ring-2 focus:ring-purple-600 transition-all" 
                 />
               </div>
-            ) : null}
+            )}
             <div className={calcMode === 'UNIT' ? 'col-span-2' : ''}>
               <label className="block text-[10px] font-black uppercase text-gray-400 mb-1.5 ml-1">Margem de Lucro (%)</label>
               <div className="relative">
@@ -153,8 +156,8 @@ const PricingCalculator: React.FC = () => {
             className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all group ${includeTax ? 'border-purple-600 bg-purple-50 text-purple-700' : 'border-gray-100 text-gray-400'}`}
           >
             <div className="text-left">
-              <p className="text-[10px] font-black uppercase">Considerar Impostos (CBS/IBS 2026)</p>
-              <p className="text-[9px] font-bold opacity-60">Provisionar 26,5% para o fisco</p>
+              <p className="text-[10px] font-black uppercase text-left">Impostos Reforma 2026 (CBS/IBS)</p>
+              <p className="text-[9px] font-bold opacity-60 text-left">Provisionar ~26,5% para o governo</p>
             </div>
             <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${includeTax ? 'bg-purple-600 text-white shadow-lg' : 'bg-gray-200 text-transparent'}`}>
               <i className="fas fa-check text-[10px]"></i>
@@ -163,67 +166,75 @@ const PricingCalculator: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-purple-900 rounded-[2.5rem] p-6 md:p-8 text-white flex flex-col justify-center shadow-2xl shadow-purple-200 min-h-[450px]">
+      <div className="bg-purple-900 rounded-[2.5rem] p-6 md:p-8 text-white flex flex-col justify-center shadow-2xl shadow-purple-200 min-h-[480px] overflow-hidden">
         {results && !results.error ? (
-          <div className="animate-fadeIn w-full space-y-8">
-            <div className="text-center relative">
+          <div className="animate-fadeIn w-full space-y-6">
+            <div className="text-center">
               <p className="text-[10px] font-black text-purple-300 uppercase mb-3 tracking-widest opacity-80">
                 Preço de Venda {calcMode === 'BATCH' ? 'do Fardo' : 'Sugerido'}
               </p>
-              <div className="inline-block bg-white/5 px-6 py-4 rounded-3xl border border-white/10 shadow-inner">
-                <h4 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white whitespace-nowrap leading-none">
+              <div className="inline-block bg-white/5 px-6 py-4 rounded-3xl border border-white/10">
+                <h4 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight break-all">
                   {results.totalSalePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </h4>
               </div>
             </div>
 
             {calcMode === 'BATCH' && (
-              <div className="bg-green-500/10 rounded-2xl p-5 text-center border border-green-500/20 shadow-xl">
-                <p className="text-[10px] font-black text-green-400 uppercase mb-2 tracking-widest">Preço Sugerido por Unidade</p>
-                <p className="text-3xl sm:text-4xl font-black text-white whitespace-nowrap">
-                  {results.unitSalePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/5">
+                  <p className="text-[9px] font-black text-green-400 uppercase mb-1">Venda / Unidade</p>
+                  <p className="text-lg sm:text-xl font-black text-white break-all leading-tight">
+                    {results.unitSalePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </p>
+                </div>
+                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/5">
+                  <p className="text-[9px] font-black text-blue-400 uppercase mb-1">Lucro / Unidade</p>
+                  <p className="text-lg sm:text-xl font-black text-white break-all leading-tight">
+                    {results.unitProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </p>
+                </div>
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div className="bg-black/20 p-4 rounded-2xl border border-white/5 group hover:bg-black/30 transition-all">
-                <p className="text-[8px] uppercase font-black text-purple-300 mb-1.5 opacity-60">Lucro Líquido</p>
-                <p className="font-black text-lg text-green-400 whitespace-nowrap">
+                <p className="text-[8px] uppercase font-black text-purple-300 mb-1.5 opacity-60">Lucro Total</p>
+                <p className="font-black text-sm sm:text-base md:text-lg text-green-400 break-all leading-tight">
                   {results.totalProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
               </div>
               <div className="bg-black/20 p-4 rounded-2xl border border-white/5 group hover:bg-black/30 transition-all">
-                <p className="text-[8px] uppercase font-black text-purple-300 mb-1.5 opacity-60">Reserva p/ Imposto</p>
-                <p className="font-black text-lg text-red-400 whitespace-nowrap">
+                <p className="text-[8px] uppercase font-black text-purple-300 mb-1.5 opacity-60">Imposto 2026</p>
+                <p className="font-black text-sm sm:text-base md:text-lg text-red-400 break-all leading-tight">
                   {results.taxAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-white/10">
+            <div className="pt-4 border-t border-white/10">
               <div className="flex justify-between items-center text-[10px] font-bold text-purple-200">
                 <span className="uppercase tracking-widest">Markup Sugerido:</span>
                 <span className="bg-white/10 px-3 py-1 rounded-lg text-white font-black">{results.markup.toFixed(2)}x</span>
               </div>
-              <p className="text-[10px] text-center text-purple-200/60 italic mt-4 leading-relaxed">
-                Este cálculo garante que, após pagar todos os impostos de 2026, sobrará exatamente {margin}% de lucro limpo sobre o valor de venda.
+              <p className="text-[9px] text-center text-purple-200/60 italic mt-4 leading-relaxed">
+                Preço calculado para margem de {margin}% real sobre o faturamento, já descontando a reforma tributária.
               </p>
             </div>
           </div>
         ) : results?.error ? (
           <div className="text-center p-8 bg-red-500/10 rounded-[2.5rem] border border-red-500/30 animate-pulse">
-            <div className="bg-red-500 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
-              <i className="fas fa-exclamation-triangle text-xl"></i>
+            <div className="bg-red-500 w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
+              <i className="fas fa-exclamation-triangle text-lg"></i>
             </div>
-            <p className="text-sm font-black leading-relaxed">{results.error}</p>
+            <p className="text-xs font-black leading-relaxed text-red-100">{results.error}</p>
           </div>
         ) : (
           <div className="text-center opacity-30 py-10 space-y-4">
             <i className="fas fa-cash-register text-5xl mb-2"></i>
             <p className="text-[11px] font-black uppercase tracking-[0.2em] leading-relaxed">
               Pronto para Precificar<br/>
-              <span className="text-[9px] font-bold opacity-60 italic">Informe o custo e a margem</span>
+              <span className="text-[9px] font-bold opacity-60 italic tracking-normal">Informe custo e margem para ver o lucro</span>
             </p>
           </div>
         )}
