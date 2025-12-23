@@ -87,7 +87,7 @@ const TerminationCalculator: React.FC = () => {
         {results ? (
           <div className="animate-fadeIn w-full text-center lg:text-left">
             <p className="text-[9px] font-black text-red-300 uppercase mb-2 tracking-widest">Total Líquido Estimado</p>
-            <h4 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-8 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
+            <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-8 leading-tight break-words">
               {results.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </h4>
             <p className="text-[9px] text-red-200 italic mb-4">Período: {results.totalDays} dias</p>
