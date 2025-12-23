@@ -50,9 +50,9 @@ const TaxCalculator: React.FC = () => {
   }, [revenue, activeTab, employeeCount]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
       <div className="space-y-6">
-        <h3 className="text-2xl font-black text-gray-900">Configurações Fiscais</h3>
+        <h3 className="text-xl md:text-2xl font-black text-gray-900">Configurações Fiscais</h3>
         <div className="flex p-1 bg-gray-100 rounded-xl mb-6 overflow-x-auto no-scrollbar">
           <button onClick={() => setActiveTab(CalculatorTab.MEI)} className={`flex-1 min-w-[80px] py-4 text-[10px] font-black rounded-lg transition-all ${activeTab === CalculatorTab.MEI ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}>MEI</button>
           <button onClick={() => setActiveTab(CalculatorTab.ME)} className={`flex-1 min-w-[80px] py-4 text-[10px] font-black rounded-lg transition-all ${activeTab === CalculatorTab.ME ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}>ME (SIMPLES)</button>
@@ -60,25 +60,25 @@ const TaxCalculator: React.FC = () => {
         </div>
         <div>
           <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">Faturamento Mensal</label>
-          <input type="text" value={revenue} onChange={(e) => handleCurrencyInput(e.target.value, setRevenue)} className="w-full px-6 py-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none text-xl md:text-2xl font-black" placeholder="R$ 0,00" />
+          <input type="text" value={revenue} onChange={(e) => handleCurrencyInput(e.target.value, setRevenue)} className="w-full px-4 md:px-6 py-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none text-lg md:text-2xl font-black" placeholder="R$ 0,00" />
         </div>
         {activeTab === CalculatorTab.MEI && (
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button onClick={() => setEmployeeCount(0)} className={`flex-1 py-4 rounded-xl font-bold border-2 transition-all ${employeeCount === 0 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 text-gray-400'}`}>Sem Funcionário</button>
-            <button onClick={() => setEmployeeCount(1)} className={`flex-1 py-4 rounded-xl font-bold border-2 transition-all ${employeeCount === 1 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 text-gray-400'}`}>Com Funcionário</button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button onClick={() => setEmployeeCount(0)} className={`flex-1 py-3 rounded-xl text-xs font-bold border-2 transition-all ${employeeCount === 0 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 text-gray-400'}`}>Sem Funcionário</button>
+            <button onClick={() => setEmployeeCount(1)} className={`flex-1 py-3 rounded-xl text-xs font-bold border-2 transition-all ${employeeCount === 1 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 text-gray-400'}`}>Com Funcionário</button>
           </div>
         )}
       </div>
-      <div className="bg-gray-900 rounded-[2.5rem] p-6 md:p-10 text-white flex flex-col justify-center min-h-[350px] lg:min-h-[400px] overflow-hidden">
+      <div className="bg-gray-900 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-white flex flex-col justify-center min-h-[300px] lg:min-h-[400px] overflow-hidden">
         {results ? (
-          <div className="animate-fadeIn w-full">
-            <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Lucro Líquido Mensal</p>
-            <h4 className="text-3xl sm:text-4xl md:text-5xl font-black mb-10 break-words leading-tight">
+          <div className="animate-fadeIn w-full text-center lg:text-left">
+            <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2">Lucro Líquido Mensal</p>
+            <h4 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-10 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
               {results.netIncome.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </h4>
             <div className="space-y-4 pt-6 border-t border-white/10">
               {results.breakdown.map((item, i) => (
-                <div key={i} className="flex justify-between items-center gap-4 text-xs sm:text-sm">
+                <div key={i} className="flex justify-between items-center gap-2 text-[10px] sm:text-xs">
                   <span className="text-gray-400 font-bold truncate">{item.label}</span>
                   <span className="font-black text-red-400 whitespace-nowrap">-{item.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
                 </div>
@@ -87,8 +87,8 @@ const TaxCalculator: React.FC = () => {
           </div>
         ) : (
           <div className="text-center opacity-20 py-10">
-            <i className="fas fa-university text-6xl"></i>
-            <p className="mt-4 text-xs font-bold uppercase tracking-widest">Aguardando Faturamento</p>
+            <i className="fas fa-university text-5xl"></i>
+            <p className="mt-4 text-[10px] font-bold uppercase tracking-widest">Aguardando Faturamento</p>
           </div>
         )}
       </div>
