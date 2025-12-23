@@ -30,7 +30,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
 
   const handleAddAffiliate = () => {
     const newItem: Affiliate = {
-      id: `new-${Date.now()}`,
+      id: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: 'Novo Afiliado',
       link: '',
       banner_url: '',
@@ -74,8 +74,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           active: a.active,
           position: a.position || 'center'
         };
-        // CRÍTICO: Se for um novo item, NÃO enviamos o ID para o banco gerar sozinho
-        if (!a.id.toString().startsWith('new-')) {
+
+        // Se o ID for temporário (começa com new-), geramos um ID real no frontend
+        // Isso evita o erro de "id cannot be null" no Supabase
+        if (a.id.toString().startsWith('new-')) {
+          item.id = crypto.randomUUID ? crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        } else {
           item.id = a.id;
         }
         return item;
@@ -83,12 +87,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
 
       const { error: upsertError } = await supabase.from('affiliates').upsert(payload);
       
-      if (upsertError) {
-        if (upsertError.message.includes('id')) {
-          throw new Error("Erro de ID: Certifique-se de que a coluna ID no Supabase tem o 'Default Value' como gen_random_uuid().");
-        }
-        throw upsertError;
-      }
+      if (upsertError) throw upsertError;
       
       alert("Configurações salvas com sucesso!");
       onRefresh();
@@ -110,17 +109,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
             <p className="text-gray-400 text-sm mt-2">Área Administrativa Empreende2026</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase text-gray-400 ml-2 tracking-widest">Usuário</label>
-              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-5 bg-gray-50 rounded-2xl outline-none border border-gray-100 focus:ring-2 focus:ring-blue-600 transition" />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase text-gray-400 ml-2 tracking-widest">Senha</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-5 bg-gray-50 rounded-2xl outline-none border border-gray-100 focus:ring-2 focus:ring-blue-600 transition" />
-            </div>
+            <input type="text" placeholder="Usuário" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-5 bg-gray-50 rounded-2xl outline-none border border-gray-100 focus:ring-2 focus:ring-blue-600 transition" />
+            <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-5 bg-gray-50 rounded-2xl outline-none border border-gray-100 focus:ring-2 focus:ring-blue-600 transition" />
             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
-            <button type="submit" className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black shadow-xl hover:bg-blue-700 transition active:scale-95">Autenticar</button>
-            <button type="button" onClick={onClose} className="w-full py-2 text-gray-400 text-xs font-bold uppercase tracking-widest">Sair do Painel</button>
+            <button type="submit" className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black shadow-xl hover:bg-blue-700 transition">Autenticar</button>
+            <button type="button" onClick={onClose} className="w-full py-2 text-gray-400 text-xs font-bold uppercase">Sair</button>
           </form>
         </div>
       </div>
@@ -131,16 +124,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     <div className="fixed inset-0 z-[200] bg-gray-900/95 backdrop-blur-xl overflow-y-auto p-4 md:p-12">
       <div className="max-w-6xl mx-auto bg-white rounded-[3.5rem] p-8 md:p-16 shadow-2xl relative">
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
-          <div>
-            <h2 className="text-4xl font-black text-gray-900">Gestão de Publicidade</h2>
-            <p className="text-gray-500 mt-2 italic">Ajuste os banners para 2026</p>
-          </div>
+          <h2 className="text-4xl font-black text-gray-900">Gestão de Banners</h2>
           <div className="flex gap-4">
-            <button onClick={handleAddAffiliate} className="bg-green-500 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-lg shadow-green-500/20 flex items-center space-x-2 active:scale-95 transition">
-              <i className="fas fa-plus"></i>
-              <span>Novo Banner</span>
+            <button onClick={handleAddAffiliate} className="bg-green-500 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-lg flex items-center space-x-2">
+              <i className="fas fa-plus"></i> <span>Novo Banner</span>
             </button>
-            <button onClick={onClose} className="bg-gray-100 text-gray-400 w-14 h-14 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition shadow-sm active:scale-90">
+            <button onClick={onClose} className="bg-gray-100 text-gray-400 w-14 h-14 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition">
               <i className="fas fa-times text-xl"></i>
             </button>
           </div>
@@ -151,57 +140,45 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
             <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 <div className="lg:col-span-3">
-                  <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative shadow-inner group-hover:shadow-xl transition-all duration-500 border-2 border-white">
+                  <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative shadow-inner border-2 border-white">
                     {item.banner_url ? (
-                      <img src={item.banner_url} className="w-full h-full object-cover" alt="Banner Preview" />
+                      <img src={item.banner_url} className="w-full h-full object-cover" alt="Preview" />
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
                         <i className="fas fa-image text-2xl"></i>
-                        <span className="text-[10px] font-black uppercase tracking-widest">Sem Imagem</span>
+                        <span className="text-[10px] font-black uppercase">Sem Imagem</span>
                       </div>
                     )}
-                    <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center cursor-pointer backdrop-blur-sm">
+                    <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer backdrop-blur-sm">
                       <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0])} />
                       <div className="bg-white px-6 py-2 rounded-xl text-gray-900 text-[10px] font-black uppercase">
-                        {uploadingId === item.id ? 'Processando...' : 'Alterar Banner'}
+                        {uploadingId === item.id ? 'Subindo...' : 'Alterar Foto'}
                       </div>
                     </label>
                   </div>
                 </div>
 
                 <div className="lg:col-span-5 space-y-4">
-                  <div>
-                    <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Título/Identificação</label>
-                    <input type="text" value={item.name} onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, name: e.target.value } : a))} className="w-full bg-white px-4 py-3 rounded-xl font-bold border border-gray-100 outline-none focus:ring-2 focus:ring-blue-600 transition" placeholder="Nome do Afiliado" />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Link de Destino</label>
-                    <input type="text" value={item.link} onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, link: e.target.value } : a))} className="w-full bg-white px-4 py-3 rounded-xl text-xs text-blue-600 border border-gray-100 outline-none focus:ring-2 focus:ring-blue-600 transition" placeholder="https://..." />
-                  </div>
+                  <input type="text" value={item.name} onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, name: e.target.value } : a))} className="w-full bg-white px-4 py-3 rounded-xl font-bold border border-gray-100 outline-none focus:ring-2 focus:ring-blue-600 transition" placeholder="Nome" />
+                  <input type="text" value={item.link} onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, link: e.target.value } : a))} className="w-full bg-white px-4 py-3 rounded-xl text-xs text-blue-600 border border-gray-100 outline-none focus:ring-2 focus:ring-blue-600 transition" placeholder="Link do Afiliado" />
                 </div>
 
-                <div className="lg:col-span-4 flex flex-col md:flex-row lg:flex-col gap-6">
-                   <div className="flex-1">
-                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1 block mb-2">Exibição & Posicionamento</label>
-                      <select 
-                        value={item.position || 'center'} 
-                        onChange={(e: any) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, position: e.target.value } : a))}
-                        className="w-full bg-white border border-gray-100 rounded-xl p-4 text-sm font-black text-gray-700 outline-none focus:ring-2 focus:ring-blue-600 appearance-none shadow-sm"
-                      >
-                        <option value="center">📌 Centro (Fechável / Pop-up)</option>
-                        <option value="left">⬇️ Esquerda (Cai de cima)</option>
-                        <option value="right">⬆️ Direita (Sobe de baixo)</option>
-                      </select>
-                   </div>
-                   <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-100 flex-1">
+                <div className="lg:col-span-4 flex flex-col gap-4">
+                  <select 
+                    value={item.position || 'center'} 
+                    onChange={(e: any) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, position: e.target.value } : a))}
+                    className="w-full bg-white border border-gray-100 rounded-xl p-4 text-sm font-black text-gray-700 outline-none"
+                  >
+                    <option value="center">📌 Centro (Fechar)</option>
+                    <option value="left">⬇️ Esquerda (Cai)</option>
+                    <option value="right">⬆️ Direita (Sobe)</option>
+                  </select>
+                   <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-100">
                       <label className="flex items-center gap-3 cursor-pointer">
-                        <div className={`w-12 h-6 rounded-full transition-colors relative ${item.active ? 'bg-green-500' : 'bg-gray-300'}`}>
-                           <input type="checkbox" className="hidden" checked={item.active} onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, active: e.target.checked } : a))} />
-                           <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${item.active ? 'right-1' : 'left-1'}`}></div>
-                        </div>
-                        <span className="text-[10px] font-black uppercase text-gray-900">{item.active ? 'Visível' : 'Oculto'}</span>
+                        <input type="checkbox" checked={item.active} onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, active: e.target.checked } : a))} />
+                        <span className="text-[10px] font-black uppercase">{item.active ? 'Ativo' : 'Oculto'}</span>
                       </label>
-                      <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:text-red-700 transition">
+                      <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:text-red-700">
                         <i className="fas fa-trash-alt"></i>
                       </button>
                    </div>
@@ -211,15 +188,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           ))}
         </div>
 
-        <div className="mt-16 pt-10 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-gray-400 text-xs italic">Salve suas alterações para aplicar no site em tempo real.</p>
-          <button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto bg-blue-600 text-white px-16 py-5 rounded-[2rem] font-black text-xl shadow-2xl shadow-blue-500/20 disabled:opacity-50 hover:bg-blue-700 transition active:scale-95">
-            {isSaving ? (
-              <span className="flex items-center space-x-3">
-                <i className="fas fa-spinner animate-spin"></i>
-                <span>Gravando Dados...</span>
-              </span>
-            ) : 'Salvar Alterações'}
+        <div className="mt-16 pt-10 border-t border-gray-100 flex justify-end">
+          <button onClick={handleSave} disabled={isSaving} className="bg-blue-600 text-white px-16 py-5 rounded-[2rem] font-black text-xl shadow-2xl disabled:opacity-50 active:scale-95 transition">
+            {isSaving ? 'Gravando...' : 'Salvar Tudo'}
           </button>
         </div>
       </div>

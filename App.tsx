@@ -71,19 +71,19 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={navigateToTool} onSelectConsultant={() => setCurrentView('home')} />
             
-            {/* Banner Central Fechável */}
+            {/* Banner Central - Estética "Cinema" com Corte Automático */}
             {banners.center.length > 0 && (
-              <div className="max-w-4xl mx-auto px-4 mt-8 space-y-6">
+              <div className="max-w-4xl mx-auto px-4 mt-12 space-y-8">
                 {banners.center.map(b => (
                   <div key={b.id} className="relative group animate-fadeIn">
                     <button 
                       onClick={() => toggleBannerClosed(b.id)}
-                      className="absolute -top-3 -right-3 z-30 bg-white shadow-xl text-gray-900 w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90 active:scale-90"
+                      className="absolute -top-4 -right-4 z-30 bg-white shadow-2xl text-gray-900 w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90 active:scale-90"
                     >
-                      <i className="fas fa-times text-sm"></i>
+                      <i className="fas fa-times"></i>
                     </button>
-                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white hover:scale-[1.02] transition-transform duration-500 aspect-[21/9]">
-                      <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white hover:scale-[1.01] transition-all duration-500 aspect-[21/9] bg-gray-100">
+                      <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     </a>
                   </div>
                 ))}
@@ -143,11 +143,11 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda (Desktop) - Scroll para BAIXO */}
+        {/* Sidebar Esquerda - Corte Vertical Automático */}
         <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300 aspect-video">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
@@ -157,16 +157,13 @@ const App: React.FC = () => {
         <main className="flex-grow bg-white min-w-0">
           {renderContent()}
 
-          {/* Seção de Ofertas Mobile - Melhorado */}
-          <div className="xl:hidden bg-gray-50 py-12 border-t border-gray-100">
+          {/* Grid Mobile - Corte Harmônico das Imagens */}
+          <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100">
             <div className="max-w-7xl mx-auto px-6">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-xl font-black text-gray-900">Recomendações</h3>
-                <span className="bg-blue-600 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase">Parceiros</span>
-              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Ofertas para seu Negócio</h3>
               <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x">
                 {banners.allActive.map(b => (
-                  <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[280px] snap-center rounded-[2rem] overflow-hidden shadow-lg border-2 border-white bg-white aspect-video">
+                  <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[260px] snap-center rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white">
                     <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
                   </a>
                 ))}
@@ -175,11 +172,11 @@ const App: React.FC = () => {
           </div>
         </main>
 
-        {/* Sidebar Direita (Desktop) - Scroll para CIMA */}
+        {/* Sidebar Direita - Corte Vertical Automático */}
         <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300 aspect-video">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
