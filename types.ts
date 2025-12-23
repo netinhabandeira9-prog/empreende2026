@@ -37,6 +37,7 @@ export interface Affiliate {
   link: string;
   banner_url: string;
   active: boolean;
+  position: 'left' | 'right' | 'center';
 }
 
 export interface GroundingSource {

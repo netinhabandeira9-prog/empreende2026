@@ -27,52 +27,47 @@ const App: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
+  const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
   const [isLoadingAffiliates, setIsLoadingAffiliates] = useState(true);
 
   const fetchAffiliates = async () => {
     if (!isSupabaseConfigured) {
-      console.warn("Supabase não está configurado. Verifique as variáveis de ambiente.");
       setIsLoadingAffiliates(false);
       return;
     }
-
     try {
-      const { data, error } = await supabase
-        .from('affiliates')
-        .select('*');
-        
-      if (error) {
-        console.error("Erro na consulta do Supabase:", error);
-        throw error;
-      }
-
-      if (data) {
-        console.log("Afiliados carregados com sucesso:", data);
-        setAffiliates(data as Affiliate[]);
-      }
-    } catch (err) {
-      console.error("Erro ao carregar afiliados:", err);
-    } finally {
-      setIsLoadingAffiliates(false);
-    }
+      const { data, error } = await supabase.from('affiliates').select('*');
+      if (data) setAffiliates(data as Affiliate[]);
+    } catch (err) { console.error(err); }
+    finally { setIsLoadingAffiliates(false); }
   };
 
   useEffect(() => {
     fetchAffiliates();
   }, []);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [currentView, selectedTool]);
-
   const navigateToTool = (tool: CalculatorType) => {
     setSelectedTool(tool);
     setCurrentView('tool-detail');
   };
 
-  const activeBanners = useMemo(() => {
-    return affiliates.filter(a => a.active && a.banner_url && a.banner_url.startsWith('http'));
-  }, [affiliates]);
+  const banners = useMemo(() => {
+    const active = affiliates.filter(a => a.active && a.banner_url && a.banner_url.startsWith('http'));
+    return {
+      left: active.filter(a => a.position === 'left'),
+      right: active.filter(a => a.position === 'right'),
+      center: active.filter(a => a.position === 'center' && !closedBanners.has(a.id)),
+      allActive: active
+    };
+  }, [affiliates, closedBanners]);
+
+  const toggleBannerClosed = (id: string) => {
+    setClosedBanners(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  };
 
   const renderContent = () => {
     switch (currentView) {
@@ -80,6 +75,26 @@ const App: React.FC = () => {
         return (
           <>
             <Hero onSelectTool={navigateToTool} onSelectConsultant={() => setCurrentView('home')} />
+            
+            {/* Banner Central Fechável (Desktop & Mobile) */}
+            {banners.center.length > 0 && (
+              <div className="max-w-4xl mx-auto px-4 mt-8 space-y-4">
+                {banners.center.map(b => (
+                  <div key={b.id} className="relative group animate-fadeIn">
+                    <button 
+                      onClick={() => toggleBannerClosed(b.id)}
+                      className="absolute -top-3 -right-3 z-30 bg-white shadow-lg text-gray-900 w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition"
+                    >
+                      <i className="fas fa-times text-xs"></i>
+                    </button>
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-xl border-4 border-white hover:scale-[1.01] transition-transform">
+                      <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover max-h-48 md:max-h-64" />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button onClick={() => navigateToTool(CalculatorType.TAX)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
@@ -120,25 +135,15 @@ const App: React.FC = () => {
     return content.split('\n').map((paragraph, idx) => {
       const trimmed = paragraph.trim();
       if (!trimmed) return <br key={idx} />;
-      if (trimmed.startsWith('###')) {
-        return <h3 key={idx} className="text-2xl font-black text-gray-900 mt-8 mb-4">{trimmed.replace('###', '').trim()}</h3>;
-      }
-      if (trimmed.startsWith('*')) {
-        return <li key={idx} className="ml-6 mb-2 text-gray-700 list-disc">{trimmed.replace('*', '').trim()}</li>;
-      }
-      if (trimmed.startsWith('**Dica') || trimmed.startsWith('**Atenção')) {
-        return (
-          <div key={idx} className="bg-amber-50 border-l-4 border-amber-500 p-6 my-8 rounded-r-2xl">
-            <p className="text-amber-900 font-bold italic">{trimmed.replace(/\*\*/g, '')}</p>
-          </div>
-        );
-      }
+      if (trimmed.startsWith('###')) return <h3 key={idx} className="text-2xl font-black text-gray-900 mt-8 mb-4">{trimmed.replace('###', '').trim()}</h3>;
+      if (trimmed.startsWith('*')) return <li key={idx} className="ml-6 mb-2 text-gray-700 list-disc">{trimmed.replace('*', '').trim()}</li>;
+      if (trimmed.startsWith('**Dica') || trimmed.startsWith('**Atenção')) return <div key={idx} className="bg-amber-50 border-l-4 border-amber-500 p-6 my-8 rounded-r-2xl"><p className="text-amber-900 font-bold italic">{trimmed.replace(/\*\*/g, '')}</p></div>;
       return <p key={idx} className="mb-6 text-gray-700 leading-relaxed text-lg">{trimmed}</p>;
     });
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-['Inter'] selection:bg-blue-100">
+    <div className="min-h-screen flex flex-col font-['Inter'] selection:bg-blue-100 relative">
       <Header 
         onSelectTool={navigateToTool} 
         onSelectBlog={() => setCurrentView('blog')} 
@@ -149,44 +154,42 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda */}
-        <aside className="hidden xl:flex flex-col w-64 sticky top-20 h-[calc(100vh-80px)] p-6 space-y-6 border-r border-gray-50 bg-gray-50/20 overflow-y-auto no-scrollbar">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-2">Recomendados</p>
-          {activeBanners.filter((_, i) => i % 2 === 0).map((b) => (
-            <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 bg-white border border-gray-100">
-              <div className="aspect-video w-full overflow-hidden">
-                <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              </div>
-            </a>
-          ))}
-          {activeBanners.length === 0 && !isLoadingAffiliates && (
-             <div className="text-center py-10 opacity-30">
-                <i className="fas fa-ad text-2xl mb-2"></i>
-                <p className="text-[10px] font-bold uppercase tracking-widest">Espaço Publicitário</p>
-             </div>
-          )}
+        {/* Sidebar Esquerda - Desktop (Flutuante e Animada) */}
+        <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-40 z-40 overflow-hidden pointer-events-none">
+          <div className="flex flex-col gap-4 animate-scrollDown pointer-events-auto">
+            {banners.left.concat(banners.left).map((b, i) => (
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:scale-105 transition-transform">
+                <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
+              </a>
+            ))}
+          </div>
         </aside>
 
         <main className="flex-grow bg-white min-w-0">
           {renderContent()}
+
+          {/* Versão Mobile dos Banners Laterais (Antes do Footer) */}
+          <div className="xl:hidden max-w-7xl mx-auto px-4 py-12 border-t border-gray-50">
+             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-6">Ofertas Recomendadas</p>
+             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+               {banners.allActive.filter(b => b.position !== 'center').map(b => (
+                 <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+                    <img src={b.banner_url} alt={b.name} className="w-full h-32 object-cover" />
+                 </a>
+               ))}
+             </div>
+          </div>
         </main>
 
-        {/* Sidebar Direita */}
-        <aside className="hidden xl:flex flex-col w-64 sticky top-20 h-[calc(100vh-80px)] p-6 space-y-6 border-l border-gray-50 bg-gray-50/20 overflow-y-auto no-scrollbar">
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-2">Ofertas do Dia</p>
-          {activeBanners.filter((_, i) => i % 2 !== 0).map((b) => (
-            <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 bg-white border border-gray-100">
-              <div className="aspect-video w-full overflow-hidden">
-                <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              </div>
-            </a>
-          ))}
-          {activeBanners.length === 0 && !isLoadingAffiliates && (
-             <div className="text-center py-10 opacity-30">
-                <i className="fas fa-tag text-2xl mb-2"></i>
-                <p className="text-[10px] font-bold uppercase tracking-widest">Espaço Publicitário</p>
-             </div>
-          )}
+        {/* Sidebar Direita - Desktop (Flutuante e Animada) */}
+        <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-40 z-40 overflow-hidden pointer-events-none">
+          <div className="flex flex-col gap-4 animate-scrollUp pointer-events-auto">
+            {banners.right.concat(banners.right).map((b, i) => (
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:scale-105 transition-transform">
+                <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
+              </a>
+            ))}
+          </div>
         </aside>
       </div>
 
@@ -194,10 +197,7 @@ const App: React.FC = () => {
       
       {showAdmin && (
         <AdminPanel 
-          onClose={() => {
-            setShowAdmin(false);
-            fetchAffiliates();
-          }} 
+          onClose={() => { setShowAdmin(false); fetchAffiliates(); }} 
           initialAffiliates={affiliates} 
           onRefresh={fetchAffiliates} 
         />

@@ -12,6 +12,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
+            overflow-x: hidden;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -20,7 +21,25 @@
         .animate-fadeIn {
             animation: fadeIn 0.5s ease-out forwards;
         }
-        /* Custom scrollbar para as sidebars de afiliados */
+
+        /* Animação Esquerda (Top to Bottom) */
+        @keyframes scrollDown {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100vh); }
+        }
+        .animate-scrollDown {
+          animation: scrollDown 20s linear infinite;
+        }
+
+        /* Animação Direita (Bottom to Top) */
+        @keyframes scrollUp {
+          0% { transform: translateY(100vh); }
+          100% { transform: translateY(-100%); }
+        }
+        .animate-scrollUp {
+          animation: scrollUp 20s linear infinite;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
