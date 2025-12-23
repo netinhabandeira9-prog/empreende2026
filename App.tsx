@@ -143,24 +143,25 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda - Corte Vertical Automático */}
+        {/* Sidebar Esquerda - Banners Laterais que NÃO sobrepõem o texto */}
         <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-gray-100">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
           </div>
         </aside>
 
-        <main className="flex-grow bg-white min-w-0">
+        {/* ÁREA PRINCIPAL COM PADDING ESTRATÉGICO PARA OS BANNERS */}
+        <main className="flex-grow bg-white min-w-0 xl:px-60">
           {renderContent()}
 
-          {/* Grid Mobile - Corte Harmônico das Imagens */}
+          {/* Grid Mobile - Exibição Adaptada */}
           <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100">
             <div className="max-w-7xl mx-auto px-6">
-              <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Ofertas para seu Negócio</h3>
+              <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Parceiros em Destaque</h3>
               <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x">
                 {banners.allActive.map(b => (
                   <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[260px] snap-center rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white">
@@ -172,11 +173,11 @@ const App: React.FC = () => {
           </div>
         </main>
 
-        {/* Sidebar Direita - Corte Vertical Automático */}
+        {/* Sidebar Direita - Banners Laterais que NÃO sobrepõem o texto */}
         <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-gray-100">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
