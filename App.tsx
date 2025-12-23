@@ -37,8 +37,6 @@ const App: React.FC = () => {
     }
 
     try {
-      // Alterado para ordenar por 'id' ou remover ordenação se 'created_at' não existir
-      // Usando 'id' como fallback seguro já que vimos que ele existe
       const { data, error } = await supabase
         .from('affiliates')
         .select('*');
@@ -73,7 +71,6 @@ const App: React.FC = () => {
   };
 
   const activeBanners = useMemo(() => {
-    // Filtra apenas os que estão ativos e possuem uma URL de imagem válida
     return affiliates.filter(a => a.active && a.banner_url && a.banner_url.startsWith('http'));
   }, [affiliates]);
 
@@ -160,9 +157,6 @@ const App: React.FC = () => {
               <div className="aspect-video w-full overflow-hidden">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
-              <div className="p-3 text-center bg-white">
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">Ver {b.name || 'Oferta'}</span>
-              </div>
             </a>
           ))}
           {activeBanners.length === 0 && !isLoadingAffiliates && (
@@ -185,9 +179,6 @@ const App: React.FC = () => {
               <div className="aspect-video w-full overflow-hidden">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
-              <div className="p-3 text-center bg-white">
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">Comprar {b.name || 'Agora'}</span>
-              </div>
             </a>
           ))}
           {activeBanners.length === 0 && !isLoadingAffiliates && (
@@ -205,7 +196,7 @@ const App: React.FC = () => {
         <AdminPanel 
           onClose={() => {
             setShowAdmin(false);
-            fetchAffiliates(); // Atualiza a lista quando fechar o admin
+            fetchAffiliates();
           }} 
           initialAffiliates={affiliates} 
           onRefresh={fetchAffiliates} 
