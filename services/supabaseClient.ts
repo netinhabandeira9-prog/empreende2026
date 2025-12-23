@@ -14,21 +14,34 @@ export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
  * Faz o upload de uma imagem para o bucket 'banners'
  */
 export const uploadBanner = async (file: File): Promise<string | null> => {
-  if (!supabase) return null;
-
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${Math.random()}.${fileExt}`;
-  const filePath = `uploads/${fileName}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from('banners')
-    .upload(filePath, file);
-
-  if (uploadError) {
-    console.error("Erro no upload:", uploadError);
+  if (!supabase) {
+    console.error("Supabase não inicializado.");
     return null;
   }
 
-  const { data } = supabase.storage.from('banners').getPublicUrl(filePath);
-  return data.publicUrl;
+  try {
+    const fileExt = file.name.split('.').pop();
+    // Nome limpo sem caracteres especiais
+    const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
+    // Salvando na raiz do bucket para evitar problemas com permissões de pasta
+    const filePath = fileName;
+
+    const { error: uploadError, data } = await supabase.storage
+      .from('banners')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error("Erro detalhado do Supabase Storage:", uploadError);
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage.from('banners').getPublicUrl(filePath);
+    return urlData.publicUrl;
+  } catch (err) {
+    console.error("Erro inesperado no upload:", err);
+    return null;
+  }
 };

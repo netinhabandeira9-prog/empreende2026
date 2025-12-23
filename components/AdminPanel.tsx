@@ -58,12 +58,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   };
 
   const handleFileUpload = async (id: string, file: File) => {
+    // Verificar tamanho (limite de 2MB para evitar erros de timeout)
+    if (file.size > 2 * 1024 * 1024) {
+      alert("A imagem é muito grande! Use arquivos de até 2MB.");
+      return;
+    }
+
     setUploadingId(id);
     const url = await uploadBanner(file);
+    
     if (url) {
-      setAffiliates(affiliates.map(a => a.id === id ? { ...a, banner_url: url } : a));
+      setAffiliates(prev => prev.map(a => a.id === id ? { ...a, banner_url: url } : a));
     } else {
-      alert("Falha no upload da imagem.");
+      alert("Falha no upload. Verifique se você executou o SQL de permissões no Supabase (Policies).");
     }
     setUploadingId(null);
   };
@@ -78,6 +85,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     setError('');
 
     try {
+      // Filtrar campos para bater com a tabela do banco
       const toUpsert = affiliates.map(a => ({
         id: a.id.startsWith('new-') ? undefined : a.id,
         name: a.name,
@@ -139,23 +147,29 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                 {/* Visualização do Banner */}
                 <div className="md:col-span-3">
-                  <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative">
+                  <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative shadow-inner">
                     {item.banner_url ? (
                       <img src={item.banner_url} alt="Banner" className="w-full h-full object-cover" />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-400 text-xs font-bold">Sem Imagem</div>
                     )}
-                    <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                    <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
                       <input 
                         type="file" 
                         className="hidden" 
                         accept="image/*"
                         onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0])}
                       />
-                      <span className="text-white text-[10px] font-black uppercase">
+                      <i className="fas fa-cloud-upload-alt text-white text-2xl mb-2"></i>
+                      <span className="text-white text-[10px] font-black uppercase tracking-widest">
                         {uploadingId === item.id ? 'Subindo...' : 'Alterar Imagem'}
                       </span>
                     </label>
+                    {uploadingId === item.id && (
+                       <div className="absolute inset-0 bg-blue-600/20 backdrop-blur-sm flex items-center justify-center">
+                          <i className="fas fa-spinner animate-spin text-blue-600 text-3xl"></i>
+                       </div>
+                    )}
                   </div>
                 </div>
 
@@ -164,14 +178,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                   <input 
                     type="text" 
                     value={item.name} 
-                    onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? { ...a, name: e.target.value } : a))}
+                    onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, name: e.target.value } : a))}
                     className="w-full bg-transparent font-black text-lg border-b border-gray-200 focus:border-blue-600 outline-none"
                     placeholder="Nome da Plataforma/Oferta"
                   />
                   <input 
                     type="text" 
                     value={item.link} 
-                    onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? { ...a, link: e.target.value } : a))}
+                    onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, link: e.target.value } : a))}
                     className="w-full bg-transparent text-sm text-blue-600 border-b border-gray-100 focus:border-blue-600 outline-none"
                     placeholder="https://link-de-afiliado.com"
                   />
@@ -183,7 +197,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                     <input 
                       type="checkbox" 
                       checked={item.active} 
-                      onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? { ...a, active: e.target.checked } : a))}
+                      onChange={(e) => setAffiliates(prev => prev.map(a => a.id === item.id ? { ...a, active: e.target.checked } : a))}
                       className="w-8 h-4 bg-gray-200 rounded-full appearance-none checked:bg-green-500 transition-all cursor-pointer relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:bg-white after:rounded-full after:transition-all checked:after:translate-x-4"
                     />
                     <span className="ml-2 text-[10px] font-black uppercase text-gray-400">{item.active ? 'On' : 'Off'}</span>
