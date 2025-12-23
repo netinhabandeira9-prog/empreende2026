@@ -82,8 +82,8 @@ const App: React.FC = () => {
                     >
                       <i className="fas fa-times text-sm"></i>
                     </button>
-                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white hover:scale-[1.02] transition-transform duration-500">
-                      <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover max-h-[400px]" />
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white hover:scale-[1.02] transition-transform duration-500 aspect-[21/9]">
+                      <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
                     </a>
                   </div>
                 ))}
@@ -146,9 +146,9 @@ const App: React.FC = () => {
         {/* Sidebar Esquerda (Desktop) - Scroll para BAIXO */}
         <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
-            {[...banners.left, ...banners.left, ...banners.left].map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300">
-                <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
+            {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300 aspect-video">
+                <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
           </div>
@@ -166,8 +166,8 @@ const App: React.FC = () => {
               </div>
               <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x">
                 {banners.allActive.map(b => (
-                  <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[280px] snap-center rounded-[2rem] overflow-hidden shadow-lg border-2 border-white bg-white">
-                    <img src={b.banner_url} alt={b.name} className="w-full h-40 object-cover" />
+                  <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[280px] snap-center rounded-[2rem] overflow-hidden shadow-lg border-2 border-white bg-white aspect-video">
+                    <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
                   </a>
                 ))}
               </div>
@@ -178,9 +178,9 @@ const App: React.FC = () => {
         {/* Sidebar Direita (Desktop) - Scroll para CIMA */}
         <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
-            {[...banners.right, ...banners.right, ...banners.right].map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300">
-                <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
+            {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300 aspect-video">
+                <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
           </div>

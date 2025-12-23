@@ -74,7 +74,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           active: a.active,
           position: a.position || 'center'
         };
-        if (!a.id.startsWith('new-')) {
+        // CRÍTICO: Se for um novo item, NÃO enviamos o ID para o banco gerar sozinho
+        if (!a.id.toString().startsWith('new-')) {
           item.id = a.id;
         }
         return item;
@@ -83,8 +84,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       const { error: upsertError } = await supabase.from('affiliates').upsert(payload);
       
       if (upsertError) {
-        if (upsertError.message.includes('position')) {
-          throw new Error("A coluna 'position' não foi encontrada no banco. Você executou o comando SQL sugerido?");
+        if (upsertError.message.includes('id')) {
+          throw new Error("Erro de ID: Certifique-se de que a coluna ID no Supabase tem o 'Default Value' como gen_random_uuid().");
         }
         throw upsertError;
       }
@@ -132,7 +133,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
         <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-6">
           <div>
             <h2 className="text-4xl font-black text-gray-900">Gestão de Publicidade</h2>
-            <p className="text-gray-500 mt-2 italic">Dica: Adicione a coluna 'position' no seu SQL Editor do Supabase para funcionar.</p>
+            <p className="text-gray-500 mt-2 italic">Ajuste os banners para 2026</p>
           </div>
           <div className="flex gap-4">
             <button onClick={handleAddAffiliate} className="bg-green-500 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-lg shadow-green-500/20 flex items-center space-x-2 active:scale-95 transition">
