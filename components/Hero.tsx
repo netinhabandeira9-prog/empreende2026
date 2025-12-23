@@ -17,11 +17,11 @@ const Hero: React.FC<HeroProps> = ({ onSelectTool, onSelectConsultant }) => {
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
           Navegue na Reforma Tributária de 2026
         </h1>
-        <p className="mt-6 text-xl text-blue-100 max-w-3xl mx-auto">
+        <p className="mt-6 text-xl text-blue-100 max-w-2xl mx-auto">
           Ferramentas completas para o MEI e Autônomo prosperarem com as novas regras do IBS, CBS e gestão financeira de ponta.
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">

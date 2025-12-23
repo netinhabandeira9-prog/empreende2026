@@ -90,7 +90,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button onClick={() => navigateToTool(CalculatorType.TAX)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-blue-100 p-3 rounded-full text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
@@ -143,7 +143,7 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda - Banners Laterais que NÃO sobrepõem o texto */}
+        {/* Sidebar Esquerda - Centralizada no corredor lateral esquerdo */}
         <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
@@ -154,13 +154,13 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* ÁREA PRINCIPAL COM PADDING ESTRATÉGICO PARA OS BANNERS */}
-        <main className="flex-grow bg-white min-w-0 xl:px-60">
+        {/* ÁREA PRINCIPAL COM PADDING MUITO LARGO NO DESKTOP PARA DAR ESPAÇO AOS BANNERS */}
+        <main className="flex-grow bg-white min-w-0 xl:px-[250px]">
           {renderContent()}
 
           {/* Grid Mobile - Exibição Adaptada */}
           <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-5xl mx-auto px-6">
               <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Parceiros em Destaque</h3>
               <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x">
                 {banners.allActive.map(b => (
@@ -173,7 +173,7 @@ const App: React.FC = () => {
           </div>
         </main>
 
-        {/* Sidebar Direita - Banners Laterais que NÃO sobrepõem o texto */}
+        {/* Sidebar Direita - Centralizada no corredor lateral direito */}
         <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
@@ -229,7 +229,7 @@ const App: React.FC = () => {
       )}
 
       <footer className="bg-gray-900 text-gray-400 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="flex items-center justify-center space-x-2 mb-6">
               <div className="bg-blue-600 p-2 rounded-lg"><i className="fas fa-chart-line text-white"></i></div>
               <span className="text-xl font-bold text-white">Empreende<span className="text-blue-600">2026</span></span>
