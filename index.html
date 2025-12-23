@@ -24,24 +24,28 @@
 
         /* Animação Esquerda (Top to Bottom) */
         @keyframes scrollDown {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100vh); }
+          0% { transform: translateY(-50%); }
+          100% { transform: translateY(0%); }
         }
         .animate-scrollDown {
-          animation: scrollDown 20s linear infinite;
+          animation: scrollDown 30s linear infinite;
         }
 
         /* Animação Direita (Bottom to Top) */
         @keyframes scrollUp {
-          0% { transform: translateY(100vh); }
-          100% { transform: translateY(-100%); }
+          0% { transform: translateY(0%); }
+          100% { transform: translateY(-50%); }
         }
         .animate-scrollUp {
-          animation: scrollUp 20s linear infinite;
+          animation: scrollUp 30s linear infinite;
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .mask-linear-vertical {
+          mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
     </style>
 <script type="importmap">
 {

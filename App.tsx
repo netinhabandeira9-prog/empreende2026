@@ -46,17 +46,12 @@ const App: React.FC = () => {
     fetchAffiliates();
   }, []);
 
-  const navigateToTool = (tool: CalculatorType) => {
-    setSelectedTool(tool);
-    setCurrentView('tool-detail');
-  };
-
   const banners = useMemo(() => {
     const active = affiliates.filter(a => a.active && a.banner_url && a.banner_url.startsWith('http'));
     return {
-      left: active.filter(a => a.position === 'left'),
-      right: active.filter(a => a.position === 'right'),
-      center: active.filter(a => a.position === 'center' && !closedBanners.has(a.id)),
+      left: active.filter(a => (a.position || 'center') === 'left'),
+      right: active.filter(a => (a.position || 'center') === 'right'),
+      center: active.filter(a => (a.position || 'center') === 'center' && !closedBanners.has(a.id)),
       allActive: active
     };
   }, [affiliates, closedBanners]);
@@ -76,19 +71,19 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={navigateToTool} onSelectConsultant={() => setCurrentView('home')} />
             
-            {/* Banner Central Fechável (Desktop & Mobile) */}
+            {/* Banner Central Fechável */}
             {banners.center.length > 0 && (
-              <div className="max-w-4xl mx-auto px-4 mt-8 space-y-4">
+              <div className="max-w-4xl mx-auto px-4 mt-8 space-y-6">
                 {banners.center.map(b => (
                   <div key={b.id} className="relative group animate-fadeIn">
                     <button 
                       onClick={() => toggleBannerClosed(b.id)}
-                      className="absolute -top-3 -right-3 z-30 bg-white shadow-lg text-gray-900 w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition"
+                      className="absolute -top-3 -right-3 z-30 bg-white shadow-xl text-gray-900 w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90 active:scale-90"
                     >
-                      <i className="fas fa-times text-xs"></i>
+                      <i className="fas fa-times text-sm"></i>
                     </button>
-                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-xl border-4 border-white hover:scale-[1.01] transition-transform">
-                      <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover max-h-48 md:max-h-64" />
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white hover:scale-[1.02] transition-transform duration-500">
+                      <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover max-h-[400px]" />
                     </a>
                   </div>
                 ))}
@@ -131,15 +126,9 @@ const App: React.FC = () => {
     }
   };
 
-  const formatPostContent = (content: string) => {
-    return content.split('\n').map((paragraph, idx) => {
-      const trimmed = paragraph.trim();
-      if (!trimmed) return <br key={idx} />;
-      if (trimmed.startsWith('###')) return <h3 key={idx} className="text-2xl font-black text-gray-900 mt-8 mb-4">{trimmed.replace('###', '').trim()}</h3>;
-      if (trimmed.startsWith('*')) return <li key={idx} className="ml-6 mb-2 text-gray-700 list-disc">{trimmed.replace('*', '').trim()}</li>;
-      if (trimmed.startsWith('**Dica') || trimmed.startsWith('**Atenção')) return <div key={idx} className="bg-amber-50 border-l-4 border-amber-500 p-6 my-8 rounded-r-2xl"><p className="text-amber-900 font-bold italic">{trimmed.replace(/\*\*/g, '')}</p></div>;
-      return <p key={idx} className="mb-6 text-gray-700 leading-relaxed text-lg">{trimmed}</p>;
-    });
+  const navigateToTool = (tool: CalculatorType) => {
+    setSelectedTool(tool);
+    setCurrentView('tool-detail');
   };
 
   return (
@@ -154,11 +143,11 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda - Desktop (Flutuante e Animada) */}
-        <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-40 z-40 overflow-hidden pointer-events-none">
-          <div className="flex flex-col gap-4 animate-scrollDown pointer-events-auto">
-            {banners.left.concat(banners.left).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:scale-105 transition-transform">
+        {/* Sidebar Esquerda (Desktop) - Scroll para BAIXO */}
+        <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+          <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
+            {[...banners.left, ...banners.left, ...banners.left].map((b, i) => (
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300">
                 <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
               </a>
             ))}
@@ -168,24 +157,29 @@ const App: React.FC = () => {
         <main className="flex-grow bg-white min-w-0">
           {renderContent()}
 
-          {/* Versão Mobile dos Banners Laterais (Antes do Footer) */}
-          <div className="xl:hidden max-w-7xl mx-auto px-4 py-12 border-t border-gray-50">
-             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-6">Ofertas Recomendadas</p>
-             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-               {banners.allActive.filter(b => b.position !== 'center').map(b => (
-                 <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                    <img src={b.banner_url} alt={b.name} className="w-full h-32 object-cover" />
-                 </a>
-               ))}
-             </div>
+          {/* Seção de Ofertas Mobile - Melhorado */}
+          <div className="xl:hidden bg-gray-50 py-12 border-t border-gray-100">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xl font-black text-gray-900">Recomendações</h3>
+                <span className="bg-blue-600 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase">Parceiros</span>
+              </div>
+              <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x">
+                {banners.allActive.map(b => (
+                  <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[280px] snap-center rounded-[2rem] overflow-hidden shadow-lg border-2 border-white bg-white">
+                    <img src={b.banner_url} alt={b.name} className="w-full h-40 object-cover" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </main>
 
-        {/* Sidebar Direita - Desktop (Flutuante e Animada) */}
-        <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-40 z-40 overflow-hidden pointer-events-none">
-          <div className="flex flex-col gap-4 animate-scrollUp pointer-events-auto">
-            {banners.right.concat(banners.right).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:scale-105 transition-transform">
+        {/* Sidebar Direita (Desktop) - Scroll para CIMA */}
+        <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+          <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
+            {[...banners.right, ...banners.right, ...banners.right].map((b, i) => (
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-105 transition-transform duration-300">
                 <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
               </a>
             ))}
@@ -220,13 +214,15 @@ const App: React.FC = () => {
                   <span className="text-gray-400 text-xs font-bold">{selectedPost.date}</span>
                 </div>
                 <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">{selectedPost.title}</h2>
-                <div className="max-w-none">{formatPostContent(selectedPost.content)}</div>
-                <div className="mt-16 p-8 bg-gray-50 rounded-3xl border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="text-center md:text-left">
-                    <h4 className="font-black text-gray-900">Gostou deste guia educativo?</h4>
-                    <p className="text-gray-500 text-sm">Atualizamos semanalmente com novos conteúdos técnicos.</p>
-                  </div>
-                  <button onClick={() => setSelectedPost(null)} className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black hover:bg-blue-700 transition shadow-lg active:scale-95">Concluir Leitura</button>
+                <div className="max-w-none">
+                  {selectedPost.content.split('\n').map((paragraph, idx) => {
+                    const trimmed = paragraph.trim();
+                    if (!trimmed) return <br key={idx} />;
+                    if (trimmed.startsWith('###')) return <h3 key={idx} className="text-2xl font-black text-gray-900 mt-8 mb-4">{trimmed.replace('###', '').trim()}</h3>;
+                    if (trimmed.startsWith('*')) return <li key={idx} className="ml-6 mb-2 text-gray-700 list-disc">{trimmed.replace('*', '').trim()}</li>;
+                    if (trimmed.startsWith('**Dica') || trimmed.startsWith('**Atenção')) return <div key={idx} className="bg-amber-50 border-l-4 border-amber-500 p-6 my-8 rounded-r-2xl"><p className="text-amber-900 font-bold italic">{trimmed.replace(/\*\*/g, '')}</p></div>;
+                    return <p key={idx} className="mb-6 text-gray-700 leading-relaxed text-lg">{trimmed}</p>;
+                  })}
                 </div>
               </div>
             </div>
