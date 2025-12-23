@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 
 export async function getTaxAdvice(userContext: string) {
@@ -18,7 +19,7 @@ export async function getTaxAdvice(userContext: string) {
     });
 
     // Access the .text property directly to get the generated content
-    const text = response.text;
+    const text = response.text || "Não foi possível obter uma resposta clara no momento.";
     
     // Extract grounding URLs from groundingMetadata as required when using search tools
     const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(chunk => ({

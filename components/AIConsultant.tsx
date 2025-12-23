@@ -18,7 +18,8 @@ const AIConsultant: React.FC = () => {
     setResponse(null);
     setSources([]);
     const result = await getTaxAdvice(query);
-    setResponse(result.text);
+    // Garantimos que undefined vire null para satisfazer o TypeScript
+    setResponse(result.text ?? null);
     setSources(result.sources);
     setLoading(false);
   };

@@ -29,7 +29,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
 
   const handleSave = async () => {
     if (!isSupabaseConfigured) {
-      setError("Erro: Variáveis SUPABASE_URL ou SUPABASE_ANON_KEY não encontradas na Vercel.");
+      setError("Erro: Variáveis VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY não encontradas.");
       return;
     }
 
@@ -55,7 +55,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
       onClose();
     } catch (err: any) {
       console.error("Erro ao salvar no Supabase:", err);
-      setError("Falha ao salvar no banco de dados. Verifique se a tabela 'affiliates' existe.");
+      setError("Falha ao salvar. Verifique se a tabela 'affiliates' existe no Supabase.");
     } finally {
       setIsSaving(false);
     }
@@ -64,7 +64,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-[200] bg-gray-900 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-10 w-full max-w-md shadow-2xl animate-fadeIn">
+        <div className="bg-white rounded-3xl p-10 w-full max-md shadow-2xl animate-fadeIn">
           <h2 className="text-2xl font-black mb-6 text-center text-gray-900">Acesso Restrito</h2>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -106,9 +106,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
           <div className="bg-amber-50 border-2 border-amber-200 p-6 rounded-2xl mb-8 flex items-start space-x-4">
             <i className="fas fa-exclamation-circle text-amber-500 text-xl mt-1"></i>
             <div>
-              <h4 className="text-amber-900 font-black text-sm uppercase">Configuração Pendente na Vercel</h4>
+              <h4 className="text-amber-900 font-black text-sm uppercase">Configuração VITE_ Pendente</h4>
               <p className="text-amber-800 text-xs mt-1 leading-relaxed">
-                As variáveis de ambiente <strong>SUPABASE_URL</strong> e <strong>SUPABASE_ANON_KEY</strong> ainda não foram detectadas. Adicione-as nas configurações do projeto na Vercel e faça um novo deploy para ativar a sincronização.
+                Use os nomes <strong>VITE_SUPABASE_URL</strong> e <strong>VITE_SUPABASE_ANON_KEY</strong> na Vercel. 
+                O prefixo <code className="bg-amber-100 px-1 rounded">VITE_</code> é obrigatório para que o navegador consiga ler as chaves.
               </p>
             </div>
           </div>
