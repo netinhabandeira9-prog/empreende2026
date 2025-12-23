@@ -35,6 +35,15 @@ const PricingCalculator: React.FC = () => {
     return parseFloat(value.replace(/\./g, "").replace(",", "."));
   };
 
+  // Helper para diminuir a fonte conforme o tamanho do número para evitar quebra
+  const getDynamicFontSize = (value: string, baseSize: string = 'text-3xl md:text-5xl') => {
+    const len = value.length;
+    if (len > 15) return 'text-xl md:text-2xl';
+    if (len > 12) return 'text-2xl md:text-3xl';
+    if (len > 10) return 'text-3xl md:text-4xl';
+    return baseSize;
+  };
+
   const results = useMemo<CalculationResult | null>(() => {
     const cost = parseToNumber(totalCost);
     const mPercent = parseFloat(margin) / 100;
@@ -43,11 +52,6 @@ const PricingCalculator: React.FC = () => {
     if (cost <= 0 || isNaN(mPercent) || mPercent >= 1) return null;
 
     const effectiveTax = includeTax ? TAX_2026_RATE : 0;
-    
-    /**
-     * CÁLCULO DE MARGEM SOBRE O PREÇO DE VENDA (Ideal para varejo)
-     * Fórmula: PV = Custo / (1 - %Margem - %Impostos)
-     */
     const denominator = 1 - mPercent - effectiveTax;
     
     if (denominator <= 0) {
@@ -90,7 +94,6 @@ const PricingCalculator: React.FC = () => {
           </div>
         </div>
         
-        {/* Seletor de Modo: Unidade ou Fardo */}
         <div className="flex p-1.5 bg-gray-100 rounded-2xl">
           <button 
             onClick={() => setCalcMode('UNIT')}
@@ -166,15 +169,15 @@ const PricingCalculator: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-purple-900 rounded-[2.5rem] p-6 md:p-8 text-white flex flex-col justify-center shadow-2xl shadow-purple-200 min-h-[480px] overflow-hidden">
+      <div className="bg-purple-900 rounded-[2.5rem] p-6 md:p-8 text-white flex flex-col justify-center shadow-2xl shadow-purple-200 min-h-[500px] overflow-hidden">
         {results && !results.error ? (
           <div className="animate-fadeIn w-full space-y-6">
             <div className="text-center">
               <p className="text-[10px] font-black text-purple-300 uppercase mb-3 tracking-widest opacity-80">
                 Preço de Venda {calcMode === 'BATCH' ? 'do Fardo' : 'Sugerido'}
               </p>
-              <div className="inline-block bg-white/5 px-6 py-4 rounded-3xl border border-white/10">
-                <h4 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight break-all">
+              <div className="inline-block bg-white/5 px-4 py-4 rounded-3xl border border-white/10 w-full max-w-full overflow-hidden">
+                <h4 className={`font-black text-white leading-tight break-all ${getDynamicFontSize(results.totalSalePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))}`}>
                   {results.totalSalePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </h4>
               </div>
@@ -182,15 +185,15 @@ const PricingCalculator: React.FC = () => {
 
             {calcMode === 'BATCH' && (
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/5">
+                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/5 flex flex-col justify-center overflow-hidden">
                   <p className="text-[9px] font-black text-green-400 uppercase mb-1">Venda / Unidade</p>
-                  <p className="text-lg sm:text-xl font-black text-white break-all leading-tight">
+                  <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(results.unitSalePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 'text-xl sm:text-2xl')}`}>
                     {results.unitSalePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </p>
                 </div>
-                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/5">
+                <div className="bg-white/10 rounded-2xl p-4 text-center border border-white/5 flex flex-col justify-center overflow-hidden">
                   <p className="text-[9px] font-black text-blue-400 uppercase mb-1">Lucro / Unidade</p>
-                  <p className="text-lg sm:text-xl font-black text-white break-all leading-tight">
+                  <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(results.unitProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 'text-xl sm:text-2xl')}`}>
                     {results.unitProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </p>
                 </div>
@@ -198,15 +201,15 @@ const PricingCalculator: React.FC = () => {
             )}
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-black/20 p-4 rounded-2xl border border-white/5 group hover:bg-black/30 transition-all">
+              <div className="bg-black/20 p-4 rounded-2xl border border-white/5 group hover:bg-black/30 transition-all flex flex-col justify-center overflow-hidden">
                 <p className="text-[8px] uppercase font-black text-purple-300 mb-1.5 opacity-60">Lucro Total</p>
-                <p className="font-black text-sm sm:text-base md:text-lg text-green-400 break-all leading-tight">
+                <p className={`font-black text-green-400 leading-tight break-all ${getDynamicFontSize(results.totalProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 'text-base sm:text-lg')}`}>
                   {results.totalProfit.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
               </div>
-              <div className="bg-black/20 p-4 rounded-2xl border border-white/5 group hover:bg-black/30 transition-all">
+              <div className="bg-black/20 p-4 rounded-2xl border border-white/5 group hover:bg-black/30 transition-all flex flex-col justify-center overflow-hidden">
                 <p className="text-[8px] uppercase font-black text-purple-300 mb-1.5 opacity-60">Imposto 2026</p>
-                <p className="font-black text-sm sm:text-base md:text-lg text-red-400 break-all leading-tight">
+                <p className={`font-black text-red-400 leading-tight break-all ${getDynamicFontSize(results.taxAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 'text-base sm:text-lg')}`}>
                   {results.taxAmount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </p>
               </div>
@@ -217,8 +220,8 @@ const PricingCalculator: React.FC = () => {
                 <span className="uppercase tracking-widest">Markup Sugerido:</span>
                 <span className="bg-white/10 px-3 py-1 rounded-lg text-white font-black">{results.markup.toFixed(2)}x</span>
               </div>
-              <p className="text-[9px] text-center text-purple-200/60 italic mt-4 leading-relaxed">
-                Preço calculado para margem de {margin}% real sobre o faturamento, já descontando a reforma tributária.
+              <p className="text-[9px] text-center text-purple-200/60 italic mt-4 leading-relaxed px-2">
+                Preço calculado para margem de {margin}% real sobre o faturamento final.
               </p>
             </div>
           </div>
