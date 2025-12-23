@@ -30,6 +30,40 @@ const App: React.FC = () => {
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
   const [isLoadingAffiliates, setIsLoadingAffiliates] = useState(true);
 
+  // Monitora mudanças no Hash da URL para simular roteamento
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '') as View;
+      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy'];
+      
+      if (validViews.includes(hash)) {
+        setCurrentView(hash);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Atualiza título para o Google identificar "páginas" diferentes
+        const titles: Record<string, string> = {
+          home: 'Início | Empreende 2026',
+          blog: 'Blog Editorial | Empreende 2026',
+          calculators: 'Calculadoras | Empreende 2026',
+          'tool-detail': 'Simulador | Empreende 2026',
+          about: 'Sobre Nós | Empreende 2026',
+          contact: 'Contato | Empreende 2026',
+          privacy: 'Privacidade | Empreende 2026'
+        };
+        document.title = titles[hash] || 'Empreende 2026';
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    // Checagem inicial
+    if (window.location.hash) handleHashChange();
+    
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const navigateTo = (view: View) => {
+    window.location.hash = view;
+  };
+
   const fetchAffiliates = async () => {
     if (!isSupabaseConfigured) {
       setIsLoadingAffiliates(false);
@@ -69,7 +103,7 @@ const App: React.FC = () => {
       case 'home':
         return (
           <>
-            <Hero onSelectTool={navigateToTool} onSelectConsultant={() => setCurrentView('home')} />
+            <Hero onSelectTool={navigateToTool} onSelectConsultant={() => navigateTo('home')} />
             
             {/* Banner Central - Estética Slim Panorâmica */}
             {banners.center.length > 0 && (
@@ -99,19 +133,19 @@ const App: React.FC = () => {
                   <div className="bg-blue-100 p-3 rounded-full text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
                     <i className="fas fa-university text-xl"></i>
                   </div>
-                  <div><h3 className="font-bold text-gray-900">IBS & CBS 2026</h3><p className="text-xs text-gray-500">Transição tributária.</p></div>
+                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">IBS & CBS 2026</h3><p className="text-[10px] md:text-xs text-gray-500">Transição tributária.</p></div>
                 </button>
                 <button onClick={() => navigateToTool(CalculatorType.VACATION)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-green-100 p-3 rounded-full text-green-600 group-hover:bg-green-600 group-hover:text-white transition">
                     <i className="fas fa-umbrella-beach text-xl"></i>
                   </div>
-                  <div><h3 className="font-bold text-gray-900">Minhas Férias</h3><p className="text-xs text-gray-500">Simulador trabalhador.</p></div>
+                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">Minhas Férias</h3><p className="text-[10px] md:text-xs text-gray-500">Simulador trabalhador.</p></div>
                 </button>
                 <button onClick={() => navigateToTool(CalculatorType.RETIREMENT)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-amber-100 p-3 rounded-full text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition">
                     <i className="fas fa-hourglass-half text-xl"></i>
                   </div>
-                  <div><h3 className="font-bold text-gray-900">Aposentadoria</h3><p className="text-xs text-gray-500">Regras de 2026.</p></div>
+                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">Aposentadoria</h3><p className="text-[10px] md:text-xs text-gray-500">Regras de 2026.</p></div>
                 </button>
               </div>
             </div>
@@ -131,22 +165,23 @@ const App: React.FC = () => {
 
   const navigateToTool = (tool: CalculatorType) => {
     setSelectedTool(tool);
-    setCurrentView('tool-detail');
+    navigateTo('tool-detail');
   };
 
   return (
     <div className="min-h-screen flex flex-col font-['Inter'] selection:bg-blue-100 relative">
       <Header 
         onSelectTool={navigateToTool} 
-        onSelectBlog={() => setCurrentView('blog')} 
-        onSelectConsultant={() => setCurrentView('home')} 
+        onSelectBlog={() => navigateTo('blog')} 
+        onSelectConsultant={() => navigateTo('home')} 
         onOpenMemberArea={() => setShowMemberArea(true)}
-        onNavigate={(view: View) => setCurrentView(view)}
+        onNavigate={navigateTo}
         onOpenAdmin={() => setShowAdmin(true)}
+        currentView={currentView}
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda - Recuada para não cobrir conteúdo */}
+        {/* Sidebar Esquerda */}
         <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
@@ -157,11 +192,11 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* ÁREA PRINCIPAL COM CORREDOR LATERAL AMPLO */}
+        {/* ÁREA PRINCIPAL */}
         <main className="flex-grow bg-white min-w-0 xl:px-[250px]">
           {renderContent()}
 
-          {/* Grid Mobile */}
+          {/* Grid Mobile Banners */}
           <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100">
             <div className="max-w-5xl mx-auto px-6">
               <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Destaques</h3>
@@ -176,7 +211,7 @@ const App: React.FC = () => {
           </div>
         </main>
 
-        {/* Sidebar Direita - Recuada para não cobrir conteúdo */}
+        {/* Sidebar Direita */}
         <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
@@ -199,9 +234,9 @@ const App: React.FC = () => {
       )}
 
       {selectedPost && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
           <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl relative">
-            <button onClick={() => setSelectedPost(null)} className="fixed md:absolute top-6 right-6 z-50 bg-white shadow-xl text-gray-900 w-12 h-12 rounded-full flex items-center justify-center transition hover:bg-red-500 hover:text-white border border-gray-100">
+            <button onClick={() => setSelectedPost(null)} className="fixed md:absolute top-6 right-6 z-[110] bg-white shadow-xl text-gray-900 w-12 h-12 rounded-full flex items-center justify-center transition hover:bg-red-500 hover:text-white border border-gray-100">
               <i className="fas fa-times text-lg"></i>
             </button>
             <div className="relative h-64 md:h-96">
@@ -214,15 +249,15 @@ const App: React.FC = () => {
                   <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">{selectedPost.category}</span>
                   <span className="text-gray-400 text-xs font-bold">{selectedPost.date}</span>
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">{selectedPost.title}</h2>
+                <h2 className="text-2xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">{selectedPost.title}</h2>
                 <div className="max-w-none">
                   {selectedPost.content.split('\n').map((paragraph, idx) => {
                     const trimmed = paragraph.trim();
                     if (!trimmed) return <br key={idx} />;
-                    if (trimmed.startsWith('###')) return <h3 key={idx} className="text-2xl font-black text-gray-900 mt-8 mb-4">{trimmed.replace('###', '').trim()}</h3>;
-                    if (trimmed.startsWith('*')) return <li key={idx} className="ml-6 mb-2 text-gray-700 list-disc">{trimmed.replace('*', '').trim()}</li>;
-                    if (trimmed.startsWith('**Dica') || trimmed.startsWith('**Atenção')) return <div key={idx} className="bg-amber-50 border-l-4 border-amber-500 p-6 my-8 rounded-r-2xl"><p className="text-amber-900 font-bold italic">{trimmed.replace(/\*\*/g, '')}</p></div>;
-                    return <p key={idx} className="mb-6 text-gray-700 leading-relaxed text-lg">{trimmed}</p>;
+                    if (trimmed.startsWith('###')) return <h3 key={idx} className="text-xl md:text-2xl font-black text-gray-900 mt-8 mb-4">{trimmed.replace('###', '').trim()}</h3>;
+                    if (trimmed.startsWith('*')) return <li key={idx} className="ml-6 mb-2 text-gray-700 list-disc text-sm md:text-base">{trimmed.replace('*', '').trim()}</li>;
+                    if (trimmed.startsWith('**Dica') || trimmed.startsWith('**Atenção')) return <div key={idx} className="bg-amber-50 border-l-4 border-amber-500 p-6 my-8 rounded-r-2xl"><p className="text-amber-900 font-bold italic text-sm md:text-base">{trimmed.replace(/\*\*/g, '')}</p></div>;
+                    return <p key={idx} className="mb-6 text-gray-700 leading-relaxed text-sm md:text-lg">{trimmed}</p>;
                   })}
                 </div>
               </div>
@@ -237,8 +272,8 @@ const App: React.FC = () => {
               <div className="bg-blue-600 p-2 rounded-lg"><i className="fas fa-chart-line text-white"></i></div>
               <span className="text-xl font-bold text-white">Empreende<span className="text-blue-600">2026</span></span>
             </div>
-            <p className="text-sm max-w-sm mx-auto mb-8">Educação técnica e estratégica para o microempreendedor enfrentar os desafios de 2026.</p>
-            <div className="pt-8 border-t border-gray-800 text-xs text-gray-600">
+            <p className="text-sm max-w-sm mx-auto mb-8 px-4">Educação técnica e estratégica para o microempreendedor enfrentar os desafios de 2026.</p>
+            <div className="pt-8 border-t border-gray-800 text-[10px] md:text-xs text-gray-600 px-4">
               <p>&copy; 2026 Empreende2026. Todos os direitos reservados. Informação técnica para fins educativos.</p>
             </div>
         </div>
