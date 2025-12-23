@@ -31,14 +31,12 @@ export interface BlogPost {
   isFeatured?: boolean;
 }
 
-export interface TaxResults {
-  totalTax: number;
-  netIncome: number;
-  breakdown: {
-    label: string;
-    value: number;
-    description: string;
-  }[];
+export interface Affiliate {
+  id: string;
+  name: string;
+  link: string;
+  banner_url: string;
+  active: boolean;
 }
 
 export interface GroundingSource {

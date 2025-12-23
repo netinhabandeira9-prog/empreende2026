@@ -1,21 +1,22 @@
 
 import React, { useState } from 'react';
-import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
-import { AffiliateConfig } from '../App';
+import { supabase, isSupabaseConfigured, uploadBanner } from '../services/supabaseClient';
+import { Affiliate } from '../types';
 
 interface AdminPanelProps {
   onClose: () => void;
-  onSave: (config: AffiliateConfig) => void;
-  currentConfig: AffiliateConfig;
+  initialAffiliates: Affiliate[];
+  onRefresh: () => void;
 }
 
-const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig }) => {
+const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onRefresh }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [config, setConfig] = useState<AffiliateConfig>(currentConfig);
+  const [affiliates, setAffiliates] = useState<Affiliate[]>(initialAffiliates);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,9 +28,49 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
     }
   };
 
+  const handleAddAffiliate = () => {
+    const newItem: Affiliate = {
+      id: `new-${Date.now()}`,
+      name: 'Novo Afiliado',
+      link: '',
+      banner_url: '',
+      active: true
+    };
+    setAffiliates([newItem, ...affiliates]);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (id.startsWith('new-')) {
+      setAffiliates(affiliates.filter(a => a.id !== id));
+      return;
+    }
+
+    if (!confirm("Tem certeza que deseja excluir este afiliado permanentemente?")) return;
+
+    try {
+      const { error: delError } = await supabase.from('affiliates').delete().eq('id', id);
+      if (delError) throw delError;
+      setAffiliates(affiliates.filter(a => a.id !== id));
+      onRefresh();
+    } catch (err) {
+      alert("Erro ao excluir. Tente novamente.");
+    }
+  };
+
+  const handleFileUpload = async (id: string, file: File) => {
+    setUploadingId(id);
+    const url = await uploadBanner(file);
+    if (url) {
+      setAffiliates(affiliates.map(a => a.id === id ? { ...a, banner_url: url } : a));
+    } else {
+      alert("Falha no upload da imagem.");
+    }
+    setUploadingId(null);
+  };
+
   const handleSave = async () => {
     if (!isSupabaseConfigured) {
-      setError("Erro: Variáveis VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY não encontradas.");
+      setError("Supabase não configurado.");
       return;
     }
 
@@ -37,25 +78,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
     setError('');
 
     try {
-      const payload = (Object.entries(config) as [string, any][]).map(([id, data]) => ({
-        id,
-        link: data.link,
-        banner_url: data.bannerUrl,
-        active: data.active
+      const toUpsert = affiliates.map(a => ({
+        id: a.id.startsWith('new-') ? undefined : a.id,
+        name: a.name,
+        link: a.link,
+        banner_url: a.banner_url,
+        active: a.active
       }));
 
-      const { error: supabaseError } = await supabase
-        .from('affiliates')
-        .upsert(payload, { onConflict: 'id' });
+      const { error: upsertError } = await supabase.from('affiliates').upsert(toUpsert);
+      if (upsertError) throw upsertError;
 
-      if (supabaseError) throw supabaseError;
-
-      onSave(config);
-      alert("Configurações salvas no Supabase com sucesso!");
+      alert("Todas as alterações foram salvas!");
+      onRefresh();
       onClose();
     } catch (err: any) {
-      console.error("Erro ao salvar no Supabase:", err);
-      setError("Falha ao salvar. Verifique se a tabela 'affiliates' existe no Supabase.");
+      console.error(err);
+      setError("Falha ao salvar no banco de dados.");
     } finally {
       setIsSaving(false);
     }
@@ -64,22 +103,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 z-[200] bg-gray-900 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-10 w-full max-md shadow-2xl animate-fadeIn">
-          <h2 className="text-2xl font-black mb-6 text-center text-gray-900">Acesso Restrito</h2>
+        <div className="bg-white rounded-3xl p-10 w-full max-w-md shadow-2xl">
+          <h2 className="text-2xl font-black mb-6 text-center">Admin Empreende</h2>
           <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-black uppercase text-gray-400 mb-1">Usuário</label>
-              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none" />
-            </div>
-            <div>
-              <label className="block text-xs font-black uppercase text-gray-400 mb-1">Senha</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-600 outline-none" />
-            </div>
+            <input type="text" placeholder="Usuário" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl outline-none border border-gray-100" />
+            <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-4 bg-gray-50 rounded-2xl outline-none border border-gray-100" />
             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
-            <div className="flex gap-4 pt-4">
-              <button type="button" onClick={onClose} className="flex-1 py-4 font-bold text-gray-400">Cancelar</button>
-              <button type="submit" className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black">Entrar</button>
-            </div>
+            <button type="submit" className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black">Acessar Painel</button>
+            <button type="button" onClick={onClose} className="w-full py-2 text-gray-400 text-sm font-bold">Voltar</button>
           </form>
         </div>
       </div>
@@ -88,102 +119,98 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, onSave, currentConfig 
 
   return (
     <div className="fixed inset-0 z-[200] bg-gray-900 overflow-y-auto p-4 md:p-12">
-      <div className="max-w-4xl mx-auto bg-white rounded-[3rem] p-8 md:p-16 shadow-2xl animate-fadeIn">
+      <div className="max-w-5xl mx-auto bg-white rounded-[3rem] p-8 md:p-16 shadow-2xl relative">
         <div className="flex justify-between items-center mb-12">
           <div>
-            <h2 className="text-3xl font-black text-gray-900 italic">Gestão de Afiliados</h2>
-            <div className="flex items-center mt-1 space-x-2">
-              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Sincronizado via Supabase</p>
-              {!isSupabaseConfigured && (
-                <span className="bg-red-100 text-red-600 text-[9px] px-2 py-0.5 rounded-full font-black animate-pulse">OFFLINE</span>
-              )}
-            </div>
+            <h2 className="text-3xl font-black text-gray-900">Gerenciador de Banners</h2>
+            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Crie, Edite ou Remova Ofertas</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-red-600 transition-colors"><i className="fas fa-times text-2xl"></i></button>
+          <div className="flex gap-4">
+            <button onClick={handleAddAffiliate} className="bg-green-100 text-green-600 px-6 py-3 rounded-2xl font-black text-sm hover:bg-green-200 transition">
+              <i className="fas fa-plus mr-2"></i> Adicionar Novo
+            </button>
+            <button onClick={onClose} className="text-gray-400 hover:text-red-600"><i className="fas fa-times text-2xl"></i></button>
+          </div>
         </div>
 
-        {!isSupabaseConfigured && (
-          <div className="bg-amber-50 border-2 border-amber-200 p-6 rounded-2xl mb-8 flex items-start space-x-4">
-            <i className="fas fa-exclamation-circle text-amber-500 text-xl mt-1"></i>
-            <div>
-              <h4 className="text-amber-900 font-black text-sm uppercase">Configuração VITE_ Pendente</h4>
-              <p className="text-amber-800 text-xs mt-1 leading-relaxed">
-                Use os nomes <strong>VITE_SUPABASE_URL</strong> e <strong>VITE_SUPABASE_ANON_KEY</strong> na Vercel. 
-                O prefixo <code className="bg-amber-100 px-1 rounded">VITE_</code> é obrigatório para que o navegador consiga ler as chaves.
-              </p>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-8">
-          {(['amazon', 'mercadolivre', 'shopee'] as const).map((platform) => (
-            <section key={platform} className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                    platform === 'amazon' ? 'bg-orange-100 text-orange-600' :
-                    platform === 'mercadolivre' ? 'bg-yellow-100 text-yellow-600' : 'bg-red-100 text-red-600'
-                  }`}>
-                    <i className={`fab fa-${platform === 'mercadolivre' ? 'handshake' : platform} text-xl`}></i>
+        <div className="space-y-6">
+          {affiliates.map((item) => (
+            <div key={item.id} className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 relative group">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                {/* Visualização do Banner */}
+                <div className="md:col-span-3">
+                  <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative">
+                    {item.banner_url ? (
+                      <img src={item.banner_url} alt="Banner" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400 text-xs font-bold">Sem Imagem</div>
+                    )}
+                    <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0])}
+                      />
+                      <span className="text-white text-[10px] font-black uppercase">
+                        {uploadingId === item.id ? 'Subindo...' : 'Alterar Imagem'}
+                      </span>
+                    </label>
                   </div>
-                  <h3 className="text-xl font-black capitalize">{platform === 'mercadolivre' ? 'Mercado Livre' : platform}</h3>
                 </div>
-                <label className="flex items-center cursor-pointer">
-                  <span className="mr-3 text-xs font-black uppercase text-gray-400">{config[platform].active ? 'Ativo' : 'Inativo'}</span>
-                  <input 
-                    type="checkbox" 
-                    checked={config[platform].active} 
-                    onChange={(e) => setConfig({...config, [platform]: {...config[platform], active: e.target.checked}})}
-                    className="w-10 h-6 bg-gray-200 rounded-full appearance-none checked:bg-blue-600 transition-all cursor-pointer relative after:content-[''] after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full after:transition-all checked:after:translate-x-4"
-                  />
-                </label>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Link de Afiliado</label>
+
+                {/* Dados */}
+                <div className="md:col-span-7 space-y-3">
                   <input 
                     type="text" 
-                    value={config[platform].link}
-                    onChange={(e) => setConfig({...config, [platform]: {...config[platform], link: e.target.value}})}
-                    className="w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-600"
-                    placeholder="https://..."
+                    value={item.name} 
+                    onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? { ...a, name: e.target.value } : a))}
+                    className="w-full bg-transparent font-black text-lg border-b border-gray-200 focus:border-blue-600 outline-none"
+                    placeholder="Nome da Plataforma/Oferta"
                   />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">URL do Banner (Imagem)</label>
                   <input 
                     type="text" 
-                    value={config[platform].bannerUrl}
-                    onChange={(e) => setConfig({...config, [platform]: {...config[platform], bannerUrl: e.target.value}})}
-                    className="w-full p-4 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-600"
-                    placeholder="https://..."
+                    value={item.link} 
+                    onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? { ...a, link: e.target.value } : a))}
+                    className="w-full bg-transparent text-sm text-blue-600 border-b border-gray-100 focus:border-blue-600 outline-none"
+                    placeholder="https://link-de-afiliado.com"
                   />
                 </div>
+
+                {/* Controles */}
+                <div className="md:col-span-2 flex flex-col items-end gap-4">
+                  <label className="flex items-center cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={item.active} 
+                      onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? { ...a, active: e.target.checked } : a))}
+                      className="w-8 h-4 bg-gray-200 rounded-full appearance-none checked:bg-green-500 transition-all cursor-pointer relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:bg-white after:rounded-full after:transition-all checked:after:translate-x-4"
+                    />
+                    <span className="ml-2 text-[10px] font-black uppercase text-gray-400">{item.active ? 'On' : 'Off'}</span>
+                  </label>
+                  <button onClick={() => handleDelete(item.id)} className="text-gray-300 hover:text-red-500 transition-colors text-sm">
+                    <i className="fas fa-trash-alt"></i> Excluir
+                  </button>
+                </div>
               </div>
-            </section>
+            </div>
           ))}
 
-          {error && <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-center font-bold text-sm border border-red-100">{error}</div>}
+          {affiliates.length === 0 && (
+            <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+              <p className="text-gray-400 font-bold uppercase text-xs">Nenhum afiliado cadastrado.</p>
+            </div>
+          )}
+        </div>
 
-          <div className="flex justify-end pt-8">
-            <button 
-              onClick={handleSave}
-              disabled={isSaving || !isSupabaseConfigured}
-              className="bg-blue-600 text-white px-12 py-5 rounded-2xl font-black text-lg shadow-xl hover:bg-blue-700 transition flex items-center space-x-3 disabled:opacity-30 active:scale-95"
-            >
-              {isSaving ? (
-                <>
-                  <i className="fas fa-spinner animate-spin"></i>
-                  <span>Sincronizando...</span>
-                </>
-              ) : (
-                <>
-                  <i className="fas fa-cloud-upload-alt"></i>
-                  <span>Salvar no Supabase</span>
-                </>
-              )}
-            </button>
-          </div>
+        <div className="mt-12 flex justify-end pt-8 border-t border-gray-100">
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="bg-blue-600 text-white px-12 py-5 rounded-2xl font-black text-xl shadow-xl hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isSaving ? 'Sincronizando...' : 'Salvar Alterações'}
+          </button>
         </div>
       </div>
     </div>

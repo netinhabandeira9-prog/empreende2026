@@ -3,11 +3,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import BlogSection from './components/BlogSection';
-import Calculator from './components/Calculator';
 import AIConsultant from './components/AIConsultant';
 import MemberArea from './components/MemberArea';
 import AdminPanel from './components/AdminPanel';
-import { BlogPost, CalculatorType } from './types';
+import { BlogPost, CalculatorType, Affiliate } from './types';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 
 // Páginas
@@ -20,18 +19,6 @@ import BlogPage from './components/BlogPage';
 
 type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy';
 
-export interface AffiliateConfig {
-  amazon: { link: string; bannerUrl: string; active: boolean };
-  mercadolivre: { link: string; bannerUrl: string; active: boolean };
-  shopee: { link: string; bannerUrl: string; active: boolean };
-}
-
-const DEFAULT_AFFILIATE_CONFIG: AffiliateConfig = {
-  amazon: { link: '#', bannerUrl: '', active: false },
-  mercadolivre: { link: '#', bannerUrl: '', active: false },
-  shopee: { link: '#', bannerUrl: '', active: false },
-};
-
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('home');
   const [selectedTool, setSelectedTool] = useState<CalculatorType>(CalculatorType.TAX);
@@ -39,41 +26,31 @@ const App: React.FC = () => {
   const [showMemberArea, setShowMemberArea] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   
-  const [affiliateConfig, setAffiliateConfig] = useState<AffiliateConfig>(DEFAULT_AFFILIATE_CONFIG);
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [isLoadingAffiliates, setIsLoadingAffiliates] = useState(true);
 
-  useEffect(() => {
-    const fetchAffiliates = async () => {
-      // Só tenta buscar se o Supabase estiver configurado
-      if (!isSupabaseConfigured) {
-        setIsLoadingAffiliates(false);
-        return;
-      }
+  const fetchAffiliates = async () => {
+    if (!isSupabaseConfigured) {
+      setIsLoadingAffiliates(false);
+      return;
+    }
 
-      try {
-        const { data, error } = await supabase.from('affiliates').select('*');
-        if (error) throw error;
+    try {
+      const { data, error } = await supabase
+        .from('affiliates')
+        .select('*')
+        .order('created_at', { ascending: false });
         
-        if (data && data.length > 0) {
-          const newConfig = { ...DEFAULT_AFFILIATE_CONFIG };
-          data.forEach((item: any) => {
-            if (item.id in newConfig) {
-              (newConfig as any)[item.id] = {
-                link: item.link,
-                bannerUrl: item.banner_url,
-                active: item.active
-              };
-            }
-          });
-          setAffiliateConfig(newConfig);
-        }
-      } catch (err) {
-        console.error("Erro ao carregar afiliados do Supabase:", err);
-      } finally {
-        setIsLoadingAffiliates(false);
-      }
-    };
+      if (error) throw error;
+      if (data) setAffiliates(data as Affiliate[]);
+    } catch (err) {
+      console.error("Erro ao carregar afiliados:", err);
+    } finally {
+      setIsLoadingAffiliates(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAffiliates();
   }, []);
 
@@ -87,10 +64,8 @@ const App: React.FC = () => {
   };
 
   const activeBanners = useMemo(() => {
-    return (Object.entries(affiliateConfig) as [string, any][])
-      .filter(([_, data]) => data.active && data.bannerUrl)
-      .map(([key, data]) => ({ ...data, id: key }));
-  }, [affiliateConfig]);
+    return affiliates.filter(a => a.active && a.banner_url);
+  }, [affiliates]);
 
   const renderContent = () => {
     switch (currentView) {
@@ -171,9 +146,9 @@ const App: React.FC = () => {
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-2">Recomendados</p>
           {activeBanners.filter((_, i) => i % 2 === 0).map((b) => (
             <a key={b.id} href={b.link} target="_blank" rel="noopener" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
-              <img src={b.bannerUrl} alt="Banner" className="w-full h-auto object-cover" />
+              <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
               <div className="bg-white p-3 text-center border-t border-gray-100">
-                <span className="text-[10px] font-black text-blue-600 uppercase">Ver na Loja</span>
+                <span className="text-[10px] font-black text-blue-600 uppercase">Ver Oferta</span>
               </div>
             </a>
           ))}
@@ -188,7 +163,7 @@ const App: React.FC = () => {
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-2">Ofertas do Dia</p>
           {activeBanners.filter((_, i) => i % 2 !== 0).map((b) => (
             <a key={b.id} href={b.link} target="_blank" rel="noopener" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
-              <img src={b.bannerUrl} alt="Banner" className="w-full h-auto object-cover" />
+              <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
               <div className="bg-white p-3 text-center border-t border-gray-100">
                 <span className="text-[10px] font-black text-blue-600 uppercase">Comprar Agora</span>
               </div>
@@ -203,8 +178,8 @@ const App: React.FC = () => {
       {showAdmin && (
         <AdminPanel 
           onClose={() => setShowAdmin(false)} 
-          currentConfig={affiliateConfig} 
-          onSave={(newConfig) => setAffiliateConfig(newConfig)} 
+          initialAffiliates={affiliates} 
+          onRefresh={fetchAffiliates} 
         />
       )}
 
