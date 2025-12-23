@@ -71,18 +71,21 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={navigateToTool} onSelectConsultant={() => setCurrentView('home')} />
             
-            {/* Banner Central - Estética "Cinema" com Corte Automático */}
+            {/* Banner Central - Estética Slim Panorâmica */}
             {banners.center.length > 0 && (
-              <div className="max-w-4xl mx-auto px-4 mt-12 space-y-8">
+              <div className="max-w-3xl mx-auto px-4 mt-8 mb-4 space-y-6">
                 {banners.center.map(b => (
                   <div key={b.id} className="relative group animate-fadeIn">
+                    <div className="absolute -top-3 left-6 z-30 bg-blue-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                      Parceiro Empreende
+                    </div>
                     <button 
                       onClick={() => toggleBannerClosed(b.id)}
-                      className="absolute -top-4 -right-4 z-30 bg-white shadow-2xl text-gray-900 w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90 active:scale-90"
+                      className="absolute -top-3 -right-3 z-40 bg-white shadow-xl text-gray-400 w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all transform hover:rotate-90"
                     >
-                      <i className="fas fa-times"></i>
+                      <i className="fas fa-times text-xs"></i>
                     </button>
-                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white hover:scale-[1.01] transition-all duration-500 aspect-[21/9] bg-gray-100">
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-lg shadow-blue-500/5 border-2 border-white hover:border-blue-100 transition-all duration-500 aspect-[3/1] bg-gray-50">
                       <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     </a>
                   </div>
@@ -90,7 +93,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative z-20">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <button onClick={() => navigateToTool(CalculatorType.TAX)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-blue-100 p-3 rounded-full text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
@@ -143,7 +146,7 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda - Centralizada no corredor lateral esquerdo */}
+        {/* Sidebar Esquerda - Recuada para não cobrir conteúdo */}
         <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
@@ -154,14 +157,14 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* ÁREA PRINCIPAL COM PADDING MUITO LARGO NO DESKTOP PARA DAR ESPAÇO AOS BANNERS */}
+        {/* ÁREA PRINCIPAL COM CORREDOR LATERAL AMPLO */}
         <main className="flex-grow bg-white min-w-0 xl:px-[250px]">
           {renderContent()}
 
-          {/* Grid Mobile - Exibição Adaptada */}
+          {/* Grid Mobile */}
           <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100">
             <div className="max-w-5xl mx-auto px-6">
-              <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Parceiros em Destaque</h3>
+              <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Destaques</h3>
               <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x">
                 {banners.allActive.map(b => (
                   <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[260px] snap-center rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white">
@@ -173,7 +176,7 @@ const App: React.FC = () => {
           </div>
         </main>
 
-        {/* Sidebar Direita - Centralizada no corredor lateral direito */}
+        {/* Sidebar Direita - Recuada para não cobrir conteúdo */}
         <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
