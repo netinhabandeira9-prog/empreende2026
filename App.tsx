@@ -31,18 +31,27 @@ const App: React.FC = () => {
 
   const fetchAffiliates = async () => {
     if (!isSupabaseConfigured) {
+      console.warn("Supabase não está configurado. Verifique as variáveis de ambiente.");
       setIsLoadingAffiliates(false);
       return;
     }
 
     try {
+      // Alterado para ordenar por 'id' ou remover ordenação se 'created_at' não existir
+      // Usando 'id' como fallback seguro já que vimos que ele existe
       const { data, error } = await supabase
         .from('affiliates')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*');
         
-      if (error) throw error;
-      if (data) setAffiliates(data as Affiliate[]);
+      if (error) {
+        console.error("Erro na consulta do Supabase:", error);
+        throw error;
+      }
+
+      if (data) {
+        console.log("Afiliados carregados com sucesso:", data);
+        setAffiliates(data as Affiliate[]);
+      }
     } catch (err) {
       console.error("Erro ao carregar afiliados:", err);
     } finally {
@@ -64,7 +73,8 @@ const App: React.FC = () => {
   };
 
   const activeBanners = useMemo(() => {
-    return affiliates.filter(a => a.active && a.banner_url);
+    // Filtra apenas os que estão ativos e possuem uma URL de imagem válida
+    return affiliates.filter(a => a.active && a.banner_url && a.banner_url.startsWith('http'));
   }, [affiliates]);
 
   const renderContent = () => {
@@ -142,34 +152,50 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        <aside className="hidden xl:flex flex-col w-60 sticky top-20 h-[calc(100vh-80px)] p-6 space-y-6 border-r border-gray-50 bg-gray-50/20 overflow-y-auto no-scrollbar">
+        {/* Sidebar Esquerda */}
+        <aside className="hidden xl:flex flex-col w-64 sticky top-20 h-[calc(100vh-80px)] p-6 space-y-6 border-r border-gray-50 bg-gray-50/20 overflow-y-auto no-scrollbar">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-2">Recomendados</p>
           {activeBanners.filter((_, i) => i % 2 === 0).map((b) => (
-            <a key={b.id} href={b.link} target="_blank" rel="noopener" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
-              <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
-              <div className="bg-white p-3 text-center border-t border-gray-100">
-                <span className="text-[10px] font-black text-blue-600 uppercase">Ver Oferta</span>
+            <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 bg-white border border-gray-100">
+              <div className="aspect-video w-full overflow-hidden">
+                <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              </div>
+              <div className="p-3 text-center bg-white">
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">Ver {b.name || 'Oferta'}</span>
               </div>
             </a>
           ))}
-          {activeBanners.length === 0 && <div className="text-center text-[10px] text-gray-300 italic">Espaço Publicitário</div>}
+          {activeBanners.length === 0 && !isLoadingAffiliates && (
+             <div className="text-center py-10 opacity-30">
+                <i className="fas fa-ad text-2xl mb-2"></i>
+                <p className="text-[10px] font-bold uppercase tracking-widest">Espaço Publicitário</p>
+             </div>
+          )}
         </aside>
 
         <main className="flex-grow bg-white min-w-0">
           {renderContent()}
         </main>
 
-        <aside className="hidden xl:flex flex-col w-60 sticky top-20 h-[calc(100vh-80px)] p-6 space-y-6 border-l border-gray-50 bg-gray-50/20 overflow-y-auto no-scrollbar">
+        {/* Sidebar Direita */}
+        <aside className="hidden xl:flex flex-col w-64 sticky top-20 h-[calc(100vh-80px)] p-6 space-y-6 border-l border-gray-50 bg-gray-50/20 overflow-y-auto no-scrollbar">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-2">Ofertas do Dia</p>
           {activeBanners.filter((_, i) => i % 2 !== 0).map((b) => (
-            <a key={b.id} href={b.link} target="_blank" rel="noopener" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
-              <img src={b.banner_url} alt={b.name} className="w-full h-auto object-cover" />
-              <div className="bg-white p-3 text-center border-t border-gray-100">
-                <span className="text-[10px] font-black text-blue-600 uppercase">Comprar Agora</span>
+            <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 bg-white border border-gray-100">
+              <div className="aspect-video w-full overflow-hidden">
+                <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              </div>
+              <div className="p-3 text-center bg-white">
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">Comprar {b.name || 'Agora'}</span>
               </div>
             </a>
           ))}
-          {activeBanners.length === 0 && <div className="text-center text-[10px] text-gray-300 italic">Espaço Publicitário</div>}
+          {activeBanners.length === 0 && !isLoadingAffiliates && (
+             <div className="text-center py-10 opacity-30">
+                <i className="fas fa-tag text-2xl mb-2"></i>
+                <p className="text-[10px] font-bold uppercase tracking-widest">Espaço Publicitário</p>
+             </div>
+          )}
         </aside>
       </div>
 
@@ -177,7 +203,10 @@ const App: React.FC = () => {
       
       {showAdmin && (
         <AdminPanel 
-          onClose={() => setShowAdmin(false)} 
+          onClose={() => {
+            setShowAdmin(false);
+            fetchAffiliates(); // Atualiza a lista quando fechar o admin
+          }} 
           initialAffiliates={affiliates} 
           onRefresh={fetchAffiliates} 
         />
