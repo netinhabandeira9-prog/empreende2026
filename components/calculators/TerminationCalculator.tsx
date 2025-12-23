@@ -60,13 +60,13 @@ const TerminationCalculator: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
       <div className="space-y-6">
         <h3 className="text-2xl font-black text-gray-900">Dados do Vínculo</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className="text-[10px] font-black uppercase text-gray-400">Admissão</label><input type="date" value={admissionDate} onChange={(e) => setAdmissionDate(e.target.value)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none font-bold mt-1" /></div>
           <div><label className="text-[10px] font-black uppercase text-gray-400">Demissão</label><input type="date" value={dismissalDate} onChange={(e) => setDismissalDate(e.target.value)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none font-bold mt-1" /></div>
         </div>
         <div>
           <label className="text-[10px] font-black uppercase text-gray-400">Último Salário Bruto</label>
-          <input type="text" value={salary} onChange={(e) => handleCurrencyInput(e.target.value, setSalary)} className="w-full p-5 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-2xl font-black mt-1" placeholder="R$ 0,00" />
+          <input type="text" value={salary} onChange={(e) => handleCurrencyInput(e.target.value, setSalary)} className="w-full p-5 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-xl md:text-2xl font-black mt-1" placeholder="R$ 0,00" />
         </div>
         <select value={terminationType} onChange={(e:any) => setTerminationType(e.target.value)} className="w-full p-5 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none font-bold appearance-none">
           <option value="WITHOUT_CAUSE">Demissão Sem Justa Causa</option>
@@ -74,7 +74,7 @@ const TerminationCalculator: React.FC = () => {
           <option value="WITH_CAUSE">Demissão Com Justa Causa</option>
           <option value="AGREEMENT">Acordo entre as Partes</option>
         </select>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <select value={noticeType} onChange={(e:any) => setNoticeType(e.target.value)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none font-bold">
             <option value="INDEMNIFIED">Aviso Indenizado</option>
             <option value="WORKED">Aviso Trabalhado</option>
@@ -83,19 +83,22 @@ const TerminationCalculator: React.FC = () => {
           <button onClick={() => setHasVestedVacation(!hasVestedVacation)} className={`p-4 rounded-xl font-bold border-2 transition-all ${hasVestedVacation ? 'border-red-600 bg-red-50 text-red-600' : 'border-gray-100 text-gray-400'}`}>Férias Vencidas: {hasVestedVacation ? 'Sim' : 'Não'}</button>
         </div>
       </div>
-      <div className="bg-red-900 rounded-[2.5rem] p-8 text-white flex flex-col justify-center min-h-[400px] shadow-2xl shadow-red-100">
+      <div className="bg-red-900 rounded-[2.5rem] p-6 md:p-10 text-white flex flex-col justify-center min-h-[350px] lg:min-h-[400px] shadow-2xl shadow-red-100 overflow-hidden">
         {results ? (
-          <>
+          <div className="animate-fadeIn w-full">
             <p className="text-[10px] font-black text-red-300 uppercase mb-2 tracking-widest">Total Líquido Estimado</p>
-            <h4 className="text-4xl font-black mb-8">{results.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h4>
+            <h4 className="text-2xl sm:text-3xl md:text-4xl font-black mb-8 break-words leading-tight">{results.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h4>
             <p className="text-[10px] text-red-200 italic mb-4">Período calculado: {results.totalDays} dias</p>
             <div className="space-y-3 pt-6 border-t border-white/10">
               {results.breakdown.map((item, i) => (
-                <div key={i} className="flex justify-between text-sm"><span className="text-red-200 font-bold">{item.l}</span><span className="font-black">{item.v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span></div>
+                <div key={i} className="flex justify-between items-center gap-4 text-xs sm:text-sm">
+                  <span className="text-red-200 font-bold truncate">{item.l}</span>
+                  <span className="font-black whitespace-nowrap">{item.v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                </div>
               ))}
             </div>
-          </>
-        ) : <div className="text-center opacity-20"><i className="fas fa-file-signature text-6xl"></i><p className="mt-4 text-xs font-bold uppercase tracking-widest">Aguardando dados</p></div>}
+          </div>
+        ) : <div className="text-center opacity-20 py-10"><i className="fas fa-file-signature text-6xl"></i><p className="mt-4 text-xs font-bold uppercase tracking-widest">Aguardando dados</p></div>}
       </div>
     </div>
   );

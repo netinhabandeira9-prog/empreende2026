@@ -31,26 +31,26 @@ const BreakEvenCalculator: React.FC = () => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
       <div className="space-y-6">
         <h3 className="text-2xl font-black text-gray-900">Saúde Financeira</h3>
-        <div><label className="text-[10px] font-black text-gray-400 uppercase">Custos Fixos Totais (Mensal)</label><input type="text" value={fixedCosts} onChange={(e) => handleCurrencyInput(e.target.value, setFixedCosts)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-xl font-black mt-1" placeholder="R$ 0,00" /></div>
-        <div className="grid grid-cols-2 gap-4">
+        <div><label className="text-[10px] font-black text-gray-400 uppercase">Custos Fixos Totais (Mensal)</label><input type="text" value={fixedCosts} onChange={(e) => handleCurrencyInput(e.target.value, setFixedCosts)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-xl md:text-2xl font-black mt-1" placeholder="R$ 0,00" /></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className="text-[10px] font-black text-gray-400 uppercase">Custo Unitário</label><input type="text" value={variableUnitCost} onChange={(e) => handleCurrencyInput(e.target.value, setVariableUnitCost)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-lg font-bold mt-1" placeholder="R$ 0,00" /></div>
           <div><label className="text-[10px] font-black text-gray-400 uppercase">Preço Unitário</label><input type="text" value={unitPrice} onChange={(e) => handleCurrencyInput(e.target.value, setUnitPrice)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-lg font-bold mt-1" placeholder="R$ 0,00" /></div>
         </div>
       </div>
-      <div className="bg-orange-900 rounded-[2.5rem] p-10 text-white flex flex-col justify-center text-center shadow-2xl shadow-orange-100 min-h-[400px]">
+      <div className="bg-orange-900 rounded-[2.5rem] p-6 md:p-10 text-white flex flex-col justify-center text-center shadow-2xl shadow-orange-100 min-h-[350px] lg:min-h-[400px] overflow-hidden">
         {results ? (
-          <div className="space-y-8">
-            <div className="bg-white/10 p-8 rounded-[2rem]">
+          <div className="space-y-8 animate-fadeIn w-full">
+            <div className="bg-white/10 p-6 md:p-8 rounded-[2rem]">
               <p className="text-[10px] font-black text-orange-300 uppercase mb-4 tracking-widest">Sua Meta Mensal</p>
-              <h4 className="text-7xl font-black">{results.units}</h4>
-              <p className="text-sm font-bold uppercase mt-2">Unidades p/ Mês</p>
+              <h4 className="text-4xl sm:text-6xl md:text-7xl font-black break-words leading-tight">{results.units}</h4>
+              <p className="text-[10px] sm:text-sm font-bold uppercase mt-2">Unidades p/ Mês</p>
             </div>
             <div className="pt-6 border-t border-white/10">
-              <p className="text-xs uppercase text-orange-200 mb-1 tracking-widest">Faturamento para Empatar</p>
-              <p className="text-3xl font-black">{results.revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+              <p className="text-[9px] sm:text-xs uppercase text-orange-200 mb-1 tracking-widest">Faturamento para Empatar</p>
+              <p className="text-xl sm:text-2xl md:text-3xl font-black break-words">{results.revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
             </div>
           </div>
-        ) : <div className="opacity-20"><i className="fas fa-balance-scale text-6xl"></i><p className="mt-4 text-xs font-bold uppercase">Calcular Meta</p></div>}
+        ) : <div className="opacity-20 py-10"><i className="fas fa-balance-scale text-6xl"></i><p className="mt-4 text-xs font-bold uppercase tracking-widest">Calcular Meta</p></div>}
       </div>
     </div>
   );
