@@ -47,7 +47,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     try {
       const { data } = await supabase.from('partners').select('*');
       if (data) {
-        // Correção do erro TS7006 adicionando tipo explícito (p: any) ou (p: Partner)
         setPartners(data.map((p: any) => ({ ...p, active: p.active ?? true })));
       }
     } catch (err) { console.error(err); }
@@ -87,6 +86,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     setPartners([newItem, ...partners]);
   };
 
+  const handleAddLoan = () => {
+    const newItem: LoanService = {
+      id: `new-loan-${Date.now()}`,
+      title: 'Novo Serviço de Crédito',
+      description: 'Destaque (ex: Taxa 1.2%)',
+      image_url: '',
+      icon: 'fa-hand-holding-dollar',
+      active: true
+    };
+    setLoanServices([newItem, ...loanServices]);
+  };
+
   const handleDeleteItem = async (id: string, table: 'affiliates' | 'loan_services' | 'partners') => {
     if (id.startsWith('new-')) {
       if (table === 'affiliates') setAffiliates(affiliates.filter(a => a.id !== id));
@@ -111,7 +122,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
         setAffiliates(prev => prev.map(a => a.id === id ? { ...a, banner_url: url } : a));
       } else if (type === 'partner') {
         setPartners(prev => prev.map(p => p.id === id ? { ...p, logo_url: url } : p));
-      } else {
+      } else if (type === 'loan') {
         setLoanServices(prev => prev.map(a => a.id === id ? { ...a, image_url: url } : a));
       }
     }
@@ -141,18 +152,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           active: p.active ?? true
         }));
         await supabase.from('partners').upsert(payload);
-        fetchPartners(); // Atualiza a lista local após salvar
-      } else {
+        fetchPartners();
+      } else if (activeSection === 'loans') {
         const payload = loanServices.map((l, index) => ({
           id: l.id.toString().startsWith('new-') ? crypto.randomUUID() : l.id,
           title: l.title,
           description: l.description,
           image_url: l.image_url,
-          icon: l.icon,
+          icon: l.icon || 'fa-hand-holding-dollar',
           active: l.active,
           order_index: index
         }));
         await supabase.from('loan_services').upsert(payload);
+        fetchLoanServices();
       }
       alert("Sucesso!");
     } catch (err: any) {
@@ -197,11 +209,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           
           <div className="flex gap-4">
             <button 
-              onClick={activeSection === 'affiliates' ? handleAddAffiliate : activeSection === 'partners' ? handleAddPartner : () => {}}
+              onClick={activeSection === 'affiliates' ? handleAddAffiliate : activeSection === 'partners' ? handleAddPartner : handleAddLoan}
               className={`px-8 py-4 rounded-2xl font-black text-sm shadow-lg flex items-center space-x-2 text-white ${activeSection === 'loans' ? 'bg-green-600' : 'bg-blue-600'}`}
             >
               <i className="fas fa-plus"></i> 
-              <span>Novo {activeSection === 'affiliates' ? 'Produto' : activeSection === 'partners' ? 'Parceiro' : 'Empréstimo'}</span>
+              <span>Novo {activeSection === 'affiliates' ? 'Produto' : activeSection === 'partners' ? 'Parceiro' : 'Serviço de Crédito'}</span>
             </button>
             <button onClick={onClose} className="bg-gray-100 text-gray-400 w-14 h-14 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition">
               <i className="fas fa-times text-xl"></i>
@@ -267,6 +279,48 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                         <span className="text-[10px] font-black uppercase">Ativo</span>
                       </label>
                       <button onClick={() => handleDeleteItem(item.id, 'partners')} className="text-red-500"><i className="fas fa-trash-alt"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          ))}
+
+          {activeSection === 'loans' && loanServices.map((item) => (
+              <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                  <div className="lg:col-span-3">
+                    <div className="aspect-[4/5] bg-gray-200 rounded-3xl overflow-hidden relative shadow-inner border-2 border-white">
+                      {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-400 flex-col gap-2"><i className="fas fa-image text-3xl"></i><span className="text-[10px] font-black uppercase">Card Imagem</span></div>}
+                      <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer">
+                        <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'loan')} />
+                        <span className="bg-white px-4 py-2 rounded-xl text-xs font-black uppercase">{uploadingId === item.id ? '...' : 'Trocar Imagem'}</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div className="lg:col-span-6 space-y-4">
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Título do Serviço</label>
+                      <input type="text" value={item.title} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, title: e.target.value } : l))} className="w-full bg-white px-4 py-3 rounded-xl font-black border mt-1" placeholder="Ex: Aposentados & INSS" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Descrição/Badge (Ex: Taxas de 1.2%)</label>
+                      <input type="text" value={item.description} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, description: e.target.value } : l))} className="w-full bg-white px-4 py-3 rounded-xl text-xs font-bold border mt-1" placeholder="Informação de destaque no card" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Ícone Awesome (Ex: fa-money-bill)</label>
+                      <input type="text" value={item.icon} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, icon: e.target.value } : l))} className="w-full bg-white px-4 py-3 rounded-xl text-xs font-bold border mt-1" placeholder="fa-icon-name" />
+                    </div>
+                  </div>
+                  <div className="lg:col-span-3 flex flex-col gap-4">
+                    <div className="flex items-center justify-between bg-white p-4 rounded-xl border">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" checked={item.active} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, active: e.target.checked } : l))} />
+                        <span className="text-[10px] font-black uppercase">Ativo na Página</span>
+                      </label>
+                      <button onClick={() => handleDeleteItem(item.id, 'loan_services')} className="text-red-500 hover:scale-110 transition"><i className="fas fa-trash-alt"></i></button>
+                    </div>
+                    <div className="text-[10px] text-gray-400 font-bold p-2 text-center bg-gray-100 rounded-lg">
+                      Arraste para reordenar (em breve)
                     </div>
                   </div>
                 </div>
