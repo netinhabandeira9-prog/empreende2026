@@ -198,26 +198,26 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda - Visível apenas em telas muito largas para evitar sobreposição */}
-        <aside className="hidden 2xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+        {/* Sidebar Esquerda Restaurada */}
+        <aside className="hidden lg:block fixed left-4 top-24 bottom-24 w-48 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-gray-100">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
           </div>
         </aside>
 
-        {/* ÁREA PRINCIPAL - Adicionado preenchimento lateral condicional para banners laterais */}
-        <main className="flex-grow bg-white min-w-0 2xl:px-[200px]">
+        {/* ÁREA PRINCIPAL com preenchimento lateral para as Sidebars */}
+        <main className="flex-grow bg-white min-w-0 lg:px-[220px]">
           {renderContent()}
 
-          {/* Grid Mobile Banners - Aparece em telas menores onde os banners laterais fixos estão ocultos */}
+          {/* Grid Mobile Banners - Oculto quando as laterais estão ativas */}
           {banners.allActive.length > 0 && (
-            <div className="2xl:hidden bg-gray-50 py-16 border-t border-gray-100 overflow-hidden">
+            <div className="lg:hidden bg-gray-50 py-16 border-t border-gray-100 overflow-hidden">
               <div className="max-w-5xl mx-auto">
-                <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest px-6">Parceiros em Destaque</h3>
+                <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest px-6">Nossos Parceiros</h3>
                 <div className="relative flex overflow-hidden mask-linear-horizontal group">
                   <div className="flex gap-4 animate-scrollRight whitespace-nowrap py-4">
                     {[...banners.allActive, ...banners.allActive, ...banners.allActive].map((b, i) => (
@@ -232,11 +232,11 @@ const App: React.FC = () => {
           )}
         </main>
 
-        {/* Sidebar Direita */}
-        <aside className="hidden 2xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+        {/* Sidebar Direita Restaurada */}
+        <aside className="hidden lg:block fixed right-4 top-24 bottom-24 w-48 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-gray-100">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}

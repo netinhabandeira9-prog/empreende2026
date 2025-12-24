@@ -77,24 +77,24 @@ const LoanPage: React.FC = () => {
 
   return (
     <div className="animate-fadeIn min-h-screen selection:bg-green-100 bg-white">
-      {/* Hero Section Vendas */}
-      <section className="relative pt-24 pb-12 overflow-hidden">
+      {/* Hero Section Vendas - Layout Vertical para Evitar Sobreposição */}
+      <section className="relative pt-16 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-12 lg:gap-20">
-            {/* Coluna de Texto */}
-            <div className="lg:col-span-5 text-center lg:text-left">
+          <div className="flex flex-col items-center">
+            {/* Bloco de Texto Superior */}
+            <div className="w-full text-center mb-12">
               <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-green-100 rounded-full mb-8 shadow-sm">
                 <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                 <span className="text-[11px] font-black text-green-700 uppercase tracking-[0.25em]">Parceiro Oficial Confia Crédito</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black text-gray-900 mb-8 leading-[0.9] tracking-tighter">
+              <h1 className="text-5xl md:text-8xl font-black text-gray-900 mb-8 leading-[0.85] tracking-tighter">
                 Dinheiro na mão, <br/><span className="text-green-500">planos em ação.</span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              <p className="text-xl md:text-2xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto">
                 A <strong>Confia</strong> entende o empreendedor. Crédito liberado em até <span className="text-gray-900 font-black underline decoration-green-400 decoration-4 underline-offset-4">24 horas</span> diretamente na sua conta.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-center gap-4 lg:justify-start mb-12">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
                 <a 
                   href="#simulator" 
                   className="w-full sm:w-auto bg-gray-900 text-white px-10 py-5 rounded-3xl font-black text-sm uppercase tracking-widest shadow-2xl hover:bg-gray-800 transition transform active:scale-95"
@@ -111,30 +111,15 @@ const LoanPage: React.FC = () => {
                   Siga a Confia
                 </a>
               </div>
-
-              <div className="grid grid-cols-2 gap-6 max-w-sm mx-auto lg:mx-0">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 shadow-sm">
-                    <i className="fas fa-bolt text-lg"></i>
-                  </div>
-                  <span className="text-xs font-black text-gray-700 uppercase tracking-widest leading-tight">Rápido &<br/>Digital</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 shadow-sm">
-                    <i className="fas fa-shield-halved text-lg"></i>
-                  </div>
-                  <span className="text-xs font-black text-gray-700 uppercase tracking-widest leading-tight">Seguro &<br/>Garantido</span>
-                </div>
-              </div>
             </div>
 
-            {/* CARROSSEL INFINITO NO HERO (Coluna 7/12) */}
-            <div className="lg:col-span-7 relative w-full overflow-hidden mask-linear-horizontal py-4">
-               <div className="flex gap-6 animate-scrollRight whitespace-nowrap">
+            {/* CARROSSEL ABAIXO DO TEXTO - Ocupando mais largura para destaque */}
+            <div className="w-full relative overflow-hidden mask-linear-horizontal py-8">
+               <div className="flex gap-8 animate-scrollRight whitespace-nowrap">
                   {[...loanServices, ...loanServices, ...loanServices].map((item, i) => (
                     <div 
                       key={`${item.id}-${i}`} 
-                      className="inline-block min-w-[280px] md:min-w-[350px] h-[450px] md:h-[550px] bg-gray-900 rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
+                      className="inline-block min-w-[300px] md:min-w-[420px] h-[480px] md:h-[600px] bg-gray-900 rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
                     >
                       <img 
                         src={item.image_url || 'https://images.unsplash.com/photo-1556742049-13da73667422?auto=format&fit=crop&q=80&w=800'} 
@@ -144,10 +129,10 @@ const LoanPage: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
                       
                       <div className="absolute bottom-10 left-10 right-10">
-                        <div className="bg-green-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl">
+                        <div className="bg-green-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl">
                           <i className={`fas ${item.icon}`}></i>
                         </div>
-                        <h3 className="text-2xl font-black text-white leading-tight mb-2 whitespace-normal">{item.title}</h3>
+                        <h3 className="text-3xl font-black text-white leading-tight mb-2 whitespace-normal">{item.title}</h3>
                         {item.description && (
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] font-black text-green-400 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10">
@@ -160,18 +145,34 @@ const LoanPage: React.FC = () => {
                   ))}
                </div>
                
-               {/* Instagram Badge Floating */}
-               <div className="absolute top-1/2 -right-4 -translate-y-1/2 z-30 hidden xl:block">
+               {/* Instagram Badge Floating no Carrossel */}
+               <div className="absolute top-1/2 -right-2 -translate-y-1/2 z-30 hidden lg:block">
                   <a 
                     href={instagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white p-4 rounded-2xl shadow-2xl border border-pink-100 hover:scale-110 transition-transform group"
+                    className="bg-white p-5 rounded-2xl shadow-2xl border border-pink-100 hover:scale-110 transition-transform group"
                   >
-                    <i className="fab fa-instagram text-3xl text-pink-500 group-hover:rotate-12 transition-transform"></i>
-                    <span className="text-[8px] font-black text-gray-400 uppercase block mt-1">Confia Reels</span>
+                    <i className="fab fa-instagram text-4xl text-pink-500 group-hover:rotate-12 transition-transform"></i>
+                    <span className="text-[9px] font-black text-gray-400 uppercase block mt-1 text-center">Reels</span>
                   </a>
                </div>
+            </div>
+
+            {/* Selos de Confiança abaixo do carrossel */}
+            <div className="flex flex-wrap justify-center gap-12 mt-16 w-full">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 shadow-sm border border-green-100">
+                    <i className="fas fa-bolt text-xl"></i>
+                  </div>
+                  <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] leading-tight">Rápido &<br/>Digital</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 shadow-sm border border-green-100">
+                    <i className="fas fa-shield-halved text-xl"></i>
+                  </div>
+                  <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] leading-tight">Seguro &<br/>Garantido</span>
+                </div>
             </div>
           </div>
         </div>
