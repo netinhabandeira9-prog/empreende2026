@@ -84,11 +84,12 @@ export const BLOG_POSTS: BlogPost[] = [
 
 export const TAX_RATES_2026 = {
   MINIMUM_WAGE: 1640.00, 
-  MEI_LIMIT_MONTHLY: 10000.00, // Teto projetado R$ 120k/ano
+  MEI_LIMIT_MONTHLY: 10000.00,
   MEI_BASE_PERCENT: 0.05,
   EMPLOYEE_INSS_PATRONAL: 0.03,
   EMPLOYEE_FGTS: 0.08,
-  CBS_RATE: 0.088, 
-  IBS_RATE: 0.177,
-  SIMPLES_NACIONAL_START: 0.06 // Alíquota inicial ME para quem estoura MEI
+  // Alíquotas de TESTE para transição 2026
+  CBS_RATE: 0.009, 
+  IBS_RATE: 0.001,
+  SIMPLES_NACIONAL_START: 0.06
 };
