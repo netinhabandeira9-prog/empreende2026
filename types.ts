@@ -41,6 +41,16 @@ export interface Affiliate {
   position: 'left' | 'right' | 'center';
 }
 
+export interface LoanService {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  icon: string;
+  active: boolean;
+  order_index?: number;
+}
+
 export interface GroundingSource {
   title?: string;
   uri?: string;
