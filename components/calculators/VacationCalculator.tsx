@@ -16,6 +16,15 @@ const VacationCalculator: React.FC = () => {
     return parseFloat(value.replace(/\./g, "").replace(",", "."));
   };
 
+  const formatBRL = (val: number) => {
+    return new Intl.NumberFormat('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(val).replace(/\s/g, '\u00A0');
+  };
+
   const results = useMemo(() => {
     const s = parseToNumber(salary);
     if (s <= 0) return null;
@@ -25,29 +34,38 @@ const VacationCalculator: React.FC = () => {
     return { liquido: total - inss, breakdown: [{ l: 'Salário Base', v: s }, { l: '1/3 Constitucional', v: third }, { l: 'Deduções Estimadas', v: -inss }] };
   }, [salary]);
 
+  const getDynamicFontSize = (text: string) => {
+    const len = text.length;
+    if (len > 18) return 'text-xl sm:text-2xl';
+    if (len > 14) return 'text-2xl sm:text-3xl';
+    return 'text-3xl sm:text-4xl lg:text-5xl';
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
       <div className="space-y-8">
         <h3 className="text-xl md:text-2xl font-black text-gray-900">Salário das Férias</h3>
         <div>
           <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">Salário Bruto Mensal</label>
-          <input type="text" value={salary} onChange={(e) => handleCurrencyInput(e.target.value, setSalary)} className="w-full p-4 md:p-6 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-lg md:text-2xl font-black" placeholder="R$ 0,00" />
+          <input type="text" inputMode="decimal" value={salary} onChange={(e) => handleCurrencyInput(e.target.value, setSalary)} className="w-full p-4 md:p-6 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-lg md:text-2xl font-black" placeholder="R$ 0,00" />
         </div>
       </div>
-      <div className="bg-green-900 rounded-[2rem] md:rounded-[2.5rem] px-4 py-8 md:p-10 text-white flex flex-col justify-center shadow-2xl shadow-green-100 min-h-[300px] lg:min-h-[400px] overflow-hidden">
+      <div className="bg-green-900 rounded-[2rem] md:rounded-[2.5rem] px-4 py-8 md:p-10 text-white flex flex-col justify-center shadow-2xl shadow-green-100 min-h-[400px] overflow-hidden">
         {results ? (
           <div className="space-y-8 animate-fadeIn w-full">
             <div className="text-center">
-              <p className="text-[9px] font-black text-green-300 uppercase mb-2 tracking-widest">Valor Líquido Estimado</p>
-              <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black break-words leading-tight">
-                {results.liquido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-              </h4>
+              <p className="text-[9px] font-black text-green-300 uppercase mb-4 tracking-widest text-center">Valor Líquido Estimado</p>
+              <div className="flex justify-center items-center min-h-[60px]">
+                <h4 className={`font-black text-white whitespace-nowrap leading-none transition-all duration-300 ${getDynamicFontSize(formatBRL(results.liquido))}`}>
+                    {formatBRL(results.liquido)}
+                </h4>
+              </div>
             </div>
             <div className="space-y-4 pt-8 border-t border-white/10">
               {results.breakdown.map((item, i) => (
                 <div key={i} className="flex justify-between items-center gap-2 text-[10px] sm:text-xs font-bold">
                   <span className="text-green-200 truncate">{item.l}</span>
-                  <span className={`${item.v < 0 ? 'text-red-400' : 'text-white'} whitespace-nowrap`}>{item.v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                  <span className={`${item.v < 0 ? 'text-red-400' : 'text-white'} whitespace-nowrap`}>{formatBRL(item.v)}</span>
                 </div>
               ))}
             </div>

@@ -26,7 +26,14 @@ const TaxCalculator: React.FC = () => {
       currency: 'BRL',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    }).format(val);
+    }).format(val).replace(/\s/g, '\u00A0');
+  };
+
+  const getDynamicFontSize = (text: string) => {
+    const len = text.length;
+    if (len > 18) return 'text-xl sm:text-2xl';
+    if (len > 14) return 'text-2xl sm:text-3xl';
+    return 'text-3xl sm:text-4xl lg:text-5xl';
   };
 
   const results = useMemo(() => {
@@ -71,7 +78,7 @@ const TaxCalculator: React.FC = () => {
           <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">Faturamento Mensal</label>
           <div className="relative">
              <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-gray-300">R$</span>
-             <input type="text" value={revenue} onChange={(e) => handleCurrencyInput(e.target.value, setRevenue)} className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none text-xl font-black" placeholder="0,00" />
+             <input type="text" inputMode="decimal" value={revenue} onChange={(e) => handleCurrencyInput(e.target.value, setRevenue)} className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none text-xl font-black" placeholder="0,00" />
           </div>
         </div>
         {activeTab === CalculatorTab.MEI && (
@@ -80,15 +87,16 @@ const TaxCalculator: React.FC = () => {
             <button onClick={() => setEmployeeCount(1)} className={`flex-1 py-3 rounded-xl text-xs font-bold border-2 transition-all ${employeeCount === 1 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 text-gray-400'}`}>Com Auxiliar</button>
           </div>
         )}
-        <p className="text-[10px] text-gray-400 italic text-center">Simulação baseada na Reforma 2026.</p>
       </div>
       <div className="bg-gray-900 rounded-[2.5rem] p-8 md:p-10 text-white flex flex-col justify-center min-h-[400px] overflow-hidden">
         {results ? (
           <div className="animate-fadeIn w-full">
-            <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2 text-center lg:text-left">Renda Líquida Estimada</p>
-            <h4 className="text-2xl sm:text-3xl font-black mb-8 text-center lg:text-left break-all">
-              {formatBRL(results.netIncome)}
-            </h4>
+            <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-4 text-center lg:text-left">Renda Líquida Estimada</p>
+            <div className="flex justify-center lg:justify-start items-center min-h-[60px] mb-8">
+               <h4 className={`font-black text-white whitespace-nowrap leading-none transition-all duration-300 ${getDynamicFontSize(formatBRL(results.netIncome))}`}>
+                {formatBRL(results.netIncome)}
+              </h4>
+            </div>
             <div className="space-y-4 pt-6 border-t border-white/10">
               {results.breakdown.map((item, i) => (
                 <div key={i} className="flex justify-between items-center gap-2 text-[10px] sm:text-xs">
