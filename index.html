@@ -4,11 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia do Empreendedor 2026</title>
+    <title>NB Empreende | Guia do Empreendedor 2026</title>
+    <meta name="description" content="Portal oficial NB Empreende. Consultoria tributária, calculadoras MEI e blog especializado para autônomos na Reforma Tributária de 2026.">
+    <meta name="keywords" content="MEI 2026, Reforma Tributária, IBS, CBS, NB Empreende, Empreendedorismo Brasil">
+    <link rel="canonical" href="https://www.nbempreende.com.br" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.nbempreende.com.br/">
+    <meta property="og:title" content="NB Empreende | Guia do Empreendedor 2026">
+    <meta property="og:description" content="Tudo o que o MEI e Autônomo precisam para prosperar em 2026.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.nbempreende.com.br/">
+    <meta property="twitter:title" content="NB Empreende | Guia do Empreendedor 2026">
+    <meta property="twitter:description" content="Tudo o que o MEI e Autônomo precisam para prosperar em 2026.">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
@@ -20,24 +37,6 @@
         }
         .animate-fadeIn {
             animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        /* Animação Esquerda (Top to Bottom) */
-        @keyframes scrollDown {
-          0% { transform: translateY(-50%); }
-          100% { transform: translateY(0%); }
-        }
-        .animate-scrollDown {
-          animation: scrollDown 30s linear infinite;
-        }
-
-        /* Animação Direita (Bottom to Top) */
-        @keyframes scrollUp {
-          0% { transform: translateY(0%); }
-          100% { transform: translateY(-50%); }
-        }
-        .animate-scrollUp {
-          animation: scrollUp 30s linear infinite;
         }
 
         /* Animação Horizontal Infinita (Marquee) */
@@ -52,16 +51,13 @@
           animation-play-state: paused;
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .mask-linear-vertical {
-          mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
-        }
-
         .mask-linear-horizontal {
           mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
+
+        /* Melhoria de leitura para SEO */
+        .prose h2 { font-weight: 900; color: #111827; margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem; }
+        .prose p { margin-bottom: 1.25rem; line-height: 1.75; color: #374151; }
     </style>
 <script type="importmap">
 {

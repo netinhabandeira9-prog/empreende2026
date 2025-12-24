@@ -1,0 +1,17 @@
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+Allow: /#home
+Allow: /#blog
+Allow: /#loan
+Allow: /#calculators
+
+# Bloquear parâmetros de busca irrelevantes para evitar conteúdo duplicado
+Disallow: /*?search=
+Disallow: /*?utm_source=
+
+# Indicar o caminho oficial do Sitemap
+Sitemap: https://www.nbempreende.com.br/sitemap.xml
+
+# NB Empreende - Otimizado para 2026
