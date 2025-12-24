@@ -93,15 +93,15 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={(t) => { setSelectedTool(t); navigateTo(t === CalculatorType.LOAN ? 'loan' : 'tool-detail'); }} onSelectConsultant={() => {}} />
             
-            {/* Parceiros - Logos de Empresas - Padronizado e Visível */}
+            {/* Parceiros - Logos de Empresas - Tamanho Dobrado para Melhor Estética */}
             <section className="py-12 bg-white border-b border-gray-50">
                <div className="max-w-6xl mx-auto px-4 text-center">
                   <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-10">Nossos Parceiros</h3>
                   <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
                     {partners.length > 0 ? (
                       partners.map(p => (
-                        <a key={p.id} href={p.link || '#'} target="_blank" rel="noopener noreferrer" className="h-12 md:h-20 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all transform hover:scale-110">
-                           <img src={p.logo_url} alt={p.name} className="h-full object-contain" />
+                        <a key={p.id} href={p.link || '#'} target="_blank" rel="noopener noreferrer" className="h-24 md:h-40 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all transform hover:scale-110 flex items-center justify-center">
+                           <img src={p.logo_url} alt={p.name} className="h-full w-auto max-w-[250px] object-contain" />
                         </a>
                       ))
                     ) : (
