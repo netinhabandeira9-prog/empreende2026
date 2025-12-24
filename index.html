@@ -45,24 +45,34 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Animação Horizontal (Direita para Esquerda) */
-        @keyframes infiniteScroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+        /* Mobile: Esquerda para Direita */
+        @keyframes scrollRight {
+          from { transform: translateX(-50%); }
+          to { transform: translateX(0); }
         }
-        .animate-infiniteScroll {
-          animation: infiniteScroll 40s linear infinite;
+        .animate-scrollRight {
+          animation: scrollRight 40s linear infinite;
         }
 
-        /* Animação Vertical (Cima para Baixo) */
-        @keyframes verticalInfiniteScroll {
+        /* Esquerda: Cima para Baixo */
+        @keyframes scrollDown {
           from { transform: translateY(-50%); }
           to { transform: translateY(0); }
         }
-        .animate-verticalInfiniteScroll {
-          animation: verticalInfiniteScroll 35s linear infinite;
+        .animate-scrollDown {
+          animation: scrollDown 35s linear infinite;
         }
-        .animate-verticalInfiniteScroll:hover {
+
+        /* Direita: Baixo para Cima */
+        @keyframes scrollUp {
+          from { transform: translateY(0); }
+          to { transform: translateY(-50%); }
+        }
+        .animate-scrollUp {
+          animation: scrollUp 35s linear infinite;
+        }
+
+        .animate-scrollDown:hover, .animate-scrollUp:hover, .animate-scrollRight:hover {
           animation-play-state: paused;
         }
 

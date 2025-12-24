@@ -228,9 +228,9 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Laterais com Banners Verticais Infinitos (Cima para Baixo) */}
+        {/* Lateral Esquerda: Cima para Baixo */}
         <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
-          <div className="flex flex-col gap-6 animate-verticalInfiniteScroll py-10">
+          <div className="flex flex-col gap-6 animate-scrollDown py-10">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
@@ -238,13 +238,13 @@ const App: React.FC = () => {
         <main className="flex-grow min-w-0 lg:mx-36">
           {renderContent()}
 
-          {/* Mobile Carrossel (Direita para Esquerda) */}
+          {/* Mobile Carrossel: Esquerda para Direita */}
           {banners.allActive.length > 0 && currentView === 'home' && (
             <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
                <div className="max-w-5xl mx-auto px-4 text-center">
                   <h3 className="text-[10px] font-black text-gray-400 mb-6 uppercase tracking-[0.3em]">Sugestões NB para Você</h3>
                   <div className="flex gap-4 overflow-hidden mask-linear-horizontal py-2">
-                    <div className="flex gap-4 animate-infiniteScroll w-max">
+                    <div className="flex gap-4 animate-scrollRight w-max">
                       {[...banners.allActive, ...banners.allActive].map((b, i) => (
                         <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="min-w-[150px] h-[150px] rounded-3xl overflow-hidden shadow-md border-2 border-white shrink-0 bg-white group relative pointer-events-auto">
                           <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover" />
@@ -260,8 +260,9 @@ const App: React.FC = () => {
           )}
         </main>
 
+        {/* Lateral Direita: Baixo para Cima */}
         <aside className="hidden lg:block fixed right-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
-          <div className="flex flex-col gap-6 animate-verticalInfiniteScroll py-10">
+          <div className="flex flex-col gap-6 animate-scrollUp py-10">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
@@ -270,7 +271,7 @@ const App: React.FC = () => {
       {showMemberArea && <MemberArea onClose={() => setShowMemberArea(false)} />}
       {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchContent(); }} initialAffiliates={affiliates} onRefresh={fetchContent} />}
 
-      {/* Post Modal - Mantido conforme original */}
+      {/* Post Modal */}
       {selectedPost && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
           <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl relative">
