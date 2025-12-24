@@ -1,4 +1,6 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/sitemap.xml",
@@ -9,7 +11,7 @@
       "destination": "/robots.txt"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api|favicon.ico|sitemap.xml|robots.txt).*).*",
       "destination": "/index.html"
     }
   ]
