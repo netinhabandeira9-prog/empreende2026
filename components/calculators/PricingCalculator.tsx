@@ -43,7 +43,7 @@ const PricingCalculator: React.FC = () => {
     }).format(val).replace(/\s/g, '\u00A0');
   };
 
-  // Escala dinâmica aprimorada para valores extremos (Milhões)
+  // Escala dinâmica Ultra-Agressiva para evitar transbordo em milhões
   const getDynamicFontSize = (text: string, type: 'hero' | 'grid' | 'mini') => {
     const len = text.length;
     if (type === 'hero') {
@@ -53,13 +53,14 @@ const PricingCalculator: React.FC = () => {
       return 'text-4xl sm:text-5xl lg:text-6xl';
     }
     if (type === 'grid') {
-      if (len > 16) return 'text-[10px] sm:text-xs';
-      if (len > 13) return 'text-xs sm:text-sm';
+      if (len > 16) return 'text-[9px] sm:text-[10px]'; // Ultra reduzido para milhões
+      if (len > 13) return 'text-[11px] sm:text-xs';
+      if (len > 10) return 'text-xs sm:text-sm';
       return 'text-sm sm:text-base md:text-lg';
     }
     if (type === 'mini') {
-       if (len > 15) return 'text-[8px]';
-       return 'text-[10px]';
+       if (len > 15) return 'text-[7px]';
+       return 'text-[9px]';
     }
     return 'text-base';
   };
@@ -77,7 +78,7 @@ const PricingCalculator: React.FC = () => {
     
     if (denominator <= 0) {
       return { 
-        error: "Margem inviável para esses custos.",
+        error: "Margem inviável.",
         totalSalePrice: 0, unitSalePrice: 0, unitCost: 0, taxAmount: 0, totalProfit: 0, unitProfit: 0, marginApplied: 0, markup: 0
       };
     }
@@ -173,38 +174,38 @@ const PricingCalculator: React.FC = () => {
         </div>
       </div>
 
-      {/* Resultados - Estética Fluída para Grandes Valores */}
-      <div className="bg-purple-900 rounded-[3rem] p-6 sm:p-8 md:p-12 text-white flex flex-col justify-center shadow-2xl min-h-[500px] overflow-hidden relative border-8 border-purple-800/20">
+      {/* Resultados - Corrigido para não quebrar com Milhões */}
+      <div className="bg-purple-900 rounded-[3rem] p-5 sm:p-8 text-white flex flex-col justify-center shadow-2xl min-h-[520px] overflow-hidden relative border-8 border-purple-800/20">
         {results && !results.error ? (
-          <div className="animate-fadeIn w-full flex flex-col items-center space-y-8">
-            <div className="text-center w-full">
-              <p className="text-[10px] font-black text-purple-300 uppercase tracking-[0.3em] opacity-80 mb-2">
+          <div className="animate-fadeIn w-full flex flex-col items-center space-y-6">
+            <div className="text-center w-full px-2">
+              <p className="text-[9px] font-black text-purple-300 uppercase tracking-[0.2em] opacity-80 mb-2">
                 {calcMode === 'BATCH' ? 'Preço Sugerido do Lote' : 'Preço de Venda Sugerido'}
               </p>
-              <div className="flex items-center justify-center w-full py-2">
-                <h4 className={`font-black text-white leading-tight whitespace-nowrap tabular-nums tracking-tighter transition-all duration-300 ${getDynamicFontSize(formatBRL(results.totalSalePrice), 'hero')}`}>
+              <div className="flex items-center justify-center w-full py-1 min-h-[50px]">
+                <h4 className={`font-black text-white leading-tight break-all tabular-nums tracking-tighter transition-all duration-300 ${getDynamicFontSize(formatBRL(results.totalSalePrice), 'hero')}`}>
                   {formatBRL(results.totalSalePrice)}
                 </h4>
               </div>
               {calcMode === 'BATCH' && (
-                 <div className="inline-block bg-white/10 px-4 py-2 rounded-full mt-3 border border-white/10">
-                    <p className="text-[11px] font-bold text-purple-100">Unitário: <span className="font-black">{formatBRL(results.unitSalePrice)}</span></p>
+                 <div className="inline-block bg-white/10 px-4 py-1.5 rounded-full mt-2 border border-white/5">
+                    <p className="text-[10px] font-bold text-purple-100">Unitário: <span className="font-black">{formatBRL(results.unitSalePrice)}</span></p>
                  </div>
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3 w-full">
-              {/* Card de Lucro com Unidade */}
-              <div className="bg-white/5 rounded-[2rem] p-5 text-center border border-white/10 flex flex-col justify-between min-h-[120px]">
-                <div>
-                  <p className="text-[9px] font-black text-green-400 uppercase mb-2 tracking-widest leading-none">Lucro Total</p>
-                  <p className={`font-black text-white whitespace-nowrap ${getDynamicFontSize(formatBRL(results.totalProfit), 'grid')}`}>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 w-full px-1">
+              {/* Card de Lucro Total */}
+              <div className="bg-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-3 sm:p-5 text-center border border-white/10 flex flex-col justify-between min-h-[100px] sm:min-h-[120px]">
+                <div className="flex-grow flex flex-col justify-center">
+                  <p className="text-[8px] sm:text-[9px] font-black text-green-400 uppercase mb-1 tracking-widest leading-none">Lucro Total</p>
+                  <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(formatBRL(results.totalProfit), 'grid')}`}>
                     {formatBRL(results.totalProfit)}
                   </p>
                 </div>
                 {calcMode === 'BATCH' && (
-                  <div className="mt-2 pt-2 border-t border-white/5">
-                    <p className={`font-bold text-green-200/60 leading-none ${getDynamicFontSize(formatBRL(results.unitProfit), 'mini')}`}>
+                  <div className="mt-1 pt-1 border-t border-white/5">
+                    <p className={`font-bold text-green-200/50 leading-none ${getDynamicFontSize(formatBRL(results.unitProfit), 'mini')}`}>
                       Unitário: {formatBRL(results.unitProfit)}
                     </p>
                   </div>
@@ -212,36 +213,40 @@ const PricingCalculator: React.FC = () => {
               </div>
 
               {/* Card de Imposto */}
-              <div className="bg-white/5 rounded-[2rem] p-5 text-center border border-white/10 flex flex-col justify-center min-h-[120px]">
-                <p className="text-[9px] font-black text-blue-400 uppercase mb-2 tracking-widest leading-none">Imposto (1%)</p>
-                <p className={`font-black text-white whitespace-nowrap ${getDynamicFontSize(formatBRL(results.taxAmount), 'grid')}`}>
-                  {formatBRL(results.taxAmount)}
-                </p>
-                <p className="text-[8px] text-blue-200/40 mt-1 uppercase font-bold tracking-tighter">Provisão 2026</p>
+              <div className="bg-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-3 sm:p-5 text-center border border-white/10 flex flex-col justify-between min-h-[100px] sm:min-h-[120px]">
+                <div className="flex-grow flex flex-col justify-center">
+                  <p className="text-[8px] sm:text-[9px] font-black text-blue-400 uppercase mb-1 tracking-widest leading-none">Imposto (1%)</p>
+                  <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(formatBRL(results.taxAmount), 'grid')}`}>
+                    {formatBRL(results.taxAmount)}
+                  </p>
+                </div>
+                <div className="mt-1 pt-1 border-t border-white/5">
+                  <p className="text-[7px] sm:text-[8px] text-blue-200/40 uppercase font-bold tracking-tighter">Provisão 2026</p>
+                </div>
               </div>
             </div>
 
-            <div className="w-full pt-6 border-t border-white/10 text-center">
-              <div className="inline-flex items-center space-x-3 bg-white/10 px-6 py-2 rounded-full border border-white/10">
-                <span className="text-[9px] font-black uppercase tracking-widest text-purple-200">Markup Final:</span>
-                <span className="text-white font-black text-sm">{results.markup.toFixed(2)}x</span>
+            <div className="w-full pt-4 border-t border-white/10 text-center">
+              <div className="inline-flex items-center space-x-3 bg-white/10 px-5 py-2 rounded-full border border-white/10">
+                <span className="text-[8px] font-black uppercase tracking-widest text-purple-200">Markup:</span>
+                <span className="text-white font-black text-xs sm:text-sm">{results.markup.toFixed(2)}x</span>
               </div>
-              <p className="text-[9px] text-purple-300/40 italic mt-4 max-w-[220px] mx-auto leading-relaxed">
-                Este valor garante sua margem livre de impostos e custos operacionais.
+              <p className="text-[8px] text-purple-300/40 italic mt-4 max-w-[200px] mx-auto leading-tight">
+                Garante margem livre de tributos.
               </p>
             </div>
           </div>
         ) : results?.error ? (
-          <div className="text-center p-10 bg-red-500/10 rounded-[2.5rem] border-2 border-red-500/30">
-            <i className="fas fa-exclamation-triangle text-3xl text-red-500 mb-4"></i>
-            <p className="text-xs font-black text-red-100 uppercase tracking-widest leading-relaxed">{results.error}</p>
+          <div className="text-center p-8 bg-red-500/10 rounded-[2.5rem] border-2 border-red-500/30">
+            <i className="fas fa-exclamation-triangle text-2xl text-red-500 mb-3"></i>
+            <p className="text-[10px] font-black text-red-100 uppercase tracking-widest">{results.error}</p>
           </div>
         ) : (
           <div className="text-center opacity-30 py-10 space-y-6 flex flex-col items-center">
-            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center border border-white/10 animate-pulse">
-              <i className="fas fa-cash-register text-3xl"></i>
+            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center border border-white/10 animate-pulse">
+              <i className="fas fa-cash-register text-2xl"></i>
             </div>
-            <p className="text-[11px] font-black uppercase tracking-[0.3em] leading-relaxed">Aguardando Valores<br/><span className="text-[9px] font-bold opacity-60 tracking-normal italic">Insira os dados de custo e margem ao lado</span></p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed">Aguardando Valores</p>
           </div>
         )}
       </div>
