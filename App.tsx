@@ -228,9 +228,9 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Laterais com Banners Verticais Infinitos */}
+        {/* Laterais com Banners Verticais Infinitos (Cima para Baixo) */}
         <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
-          <div className="flex flex-col gap-6 animate-verticalInfiniteScroll py-10" style={{ animationDirection: 'reverse' }}>
+          <div className="flex flex-col gap-6 animate-verticalInfiniteScroll py-10">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
@@ -238,20 +238,22 @@ const App: React.FC = () => {
         <main className="flex-grow min-w-0 lg:mx-36">
           {renderContent()}
 
-          {/* Mobile Carrossel */}
+          {/* Mobile Carrossel (Direita para Esquerda) */}
           {banners.allActive.length > 0 && currentView === 'home' && (
             <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
                <div className="max-w-5xl mx-auto px-4 text-center">
                   <h3 className="text-[10px] font-black text-gray-400 mb-6 uppercase tracking-[0.3em]">Sugestões NB para Você</h3>
-                  <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                    {banners.allActive.map(b => (
-                      <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="min-w-[150px] h-[150px] rounded-3xl overflow-hidden shadow-md border-2 border-white shrink-0 bg-white group relative">
-                        <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-blue-700/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                           <span className="text-white font-black text-[10px] uppercase">Ver Oferta</span>
-                        </div>
-                      </a>
-                    ))}
+                  <div className="flex gap-4 overflow-hidden mask-linear-horizontal py-2">
+                    <div className="flex gap-4 animate-infiniteScroll w-max">
+                      {[...banners.allActive, ...banners.allActive].map((b, i) => (
+                        <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="min-w-[150px] h-[150px] rounded-3xl overflow-hidden shadow-md border-2 border-white shrink-0 bg-white group relative pointer-events-auto">
+                          <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-blue-700/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                             <span className="text-white font-black text-[10px] uppercase">Ver Oferta</span>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
                   </div>
                </div>
             </div>
@@ -268,7 +270,7 @@ const App: React.FC = () => {
       {showMemberArea && <MemberArea onClose={() => setShowMemberArea(false)} />}
       {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchContent(); }} initialAffiliates={affiliates} onRefresh={fetchContent} />}
 
-      {/* Post Modal */}
+      {/* Post Modal - Mantido conforme original */}
       {selectedPost && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
           <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl relative">

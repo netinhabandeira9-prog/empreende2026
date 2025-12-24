@@ -45,7 +45,7 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Animação Horizontal (para o carrossel de empréstimos) */
+        /* Animação Horizontal (Direita para Esquerda) */
         @keyframes infiniteScroll {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
@@ -54,13 +54,13 @@
           animation: infiniteScroll 40s linear infinite;
         }
 
-        /* Animação Vertical (para os banners laterais) */
+        /* Animação Vertical (Cima para Baixo) */
         @keyframes verticalInfiniteScroll {
-          from { transform: translateY(0); }
-          to { transform: translateY(-50%); }
+          from { transform: translateY(-50%); }
+          to { transform: translateY(0); }
         }
         .animate-verticalInfiniteScroll {
-          animation: verticalInfiniteScroll 30s linear infinite;
+          animation: verticalInfiniteScroll 35s linear infinite;
         }
         .animate-verticalInfiniteScroll:hover {
           animation-play-state: paused;
