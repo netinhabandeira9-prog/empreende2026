@@ -113,29 +113,30 @@ const LoanPage: React.FC = () => {
               </div>
             </div>
 
-            {/* CARROSSEL - TAMANHO REDUZIDO PARA MOBILE (MOSTRA PELO MENOS 3) */}
-            <div className="w-full relative overflow-hidden mask-linear-horizontal py-4">
-               <div className="flex gap-2 md:gap-8 animate-scrollRight whitespace-nowrap">
-                  {[...loanServices, ...loanServices, ...loanServices].map((item, i) => (
+            {/* CARROSSEL - INFINITO E CONTÍNUO */}
+            <div className="w-full relative overflow-hidden mask-linear-horizontal py-8">
+               <div className="flex gap-4 md:gap-8 animate-infiniteScroll whitespace-nowrap w-max">
+                  {/* Duplicamos os itens para garantir o scroll infinito sem quebras */}
+                  {[...loanServices, ...loanServices].map((item, i) => (
                     <div 
                       key={`${item.id}-${i}`} 
-                      className="inline-block min-w-[120px] md:min-w-[380px] h-[180px] md:h-[500px] bg-gray-900 rounded-[1.5rem] md:rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
+                      className="inline-block min-w-[140px] md:min-w-[380px] h-[200px] md:h-[500px] bg-gray-900 rounded-[1.5rem] md:rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-all duration-500"
                     >
                       <img 
                         src={item.image_url || 'https://images.unsplash.com/photo-1556742049-13da73667422?auto=format&fit=crop&q=80&w=800'} 
                         alt={item.title} 
-                        className="w-full h-full object-cover opacity-70 transition-all duration-700" 
+                        className="w-full h-full object-cover opacity-70" 
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-transparent to-transparent"></div>
                       
-                      <div className="absolute bottom-3 left-3 right-3 md:bottom-10 md:left-10 md:right-10">
-                        <div className="bg-green-500 text-white w-7 h-7 md:w-16 md:h-16 rounded-lg md:rounded-2xl flex items-center justify-center text-[10px] md:text-2xl mb-2 shadow-xl">
+                      <div className="absolute bottom-4 left-4 right-4 md:bottom-10 md:left-10 md:right-10">
+                        <div className="bg-green-500 text-white w-8 h-8 md:w-16 md:h-16 rounded-lg md:rounded-2xl flex items-center justify-center text-[12px] md:text-2xl mb-2 shadow-xl">
                           <i className={`fas ${item.icon}`}></i>
                         </div>
-                        <h3 className="text-[10px] md:text-3xl font-black text-white leading-tight mb-1 whitespace-normal break-words">{item.title}</h3>
+                        <h3 className="text-[12px] md:text-3xl font-black text-white leading-tight mb-1 whitespace-normal break-words">{item.title}</h3>
                         {item.description && (
                           <div className="flex items-center gap-1">
-                            <span className="text-[6px] md:text-[9px] font-black text-green-400 uppercase tracking-widest bg-white/5 px-1 py-0.5 rounded-full border border-white/10">
+                            <span className="text-[7px] md:text-[9px] font-black text-green-400 uppercase tracking-widest bg-white/5 px-1 py-0.5 rounded-full border border-white/10">
                               {item.description}
                             </span>
                           </div>
