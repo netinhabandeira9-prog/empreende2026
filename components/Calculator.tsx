@@ -38,7 +38,7 @@ const Calculator: React.FC<CalculatorProps> = ({ activeTool, onToolChange }) => 
 
   return (
     <section className="p-4 md:p-12 animate-fadeIn overflow-hidden">
-      {/* MENU DE FERRAMENTAS - SELETOR SUPERIOR */}
+      {/* MENU DE FERRAMENTAS - SELETOR SUPERIOR (Sem Empréstimos) */}
       <div className="flex overflow-x-auto no-scrollbar gap-3 mb-10 pb-4">
         {[
           { id: CalculatorType.TAX, label: 'Impostos', icon: 'fa-university', color: 'blue' },

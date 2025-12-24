@@ -31,6 +31,7 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
   const menuItems = [
     { label: 'Início', view: 'home', icon: 'fa-home' },
     { label: 'Blog Editorial', view: 'blog', icon: 'fa-newspaper' },
+    { label: 'Simulador de Crédito', view: 'loan', icon: 'fa-hand-holding-dollar' },
     { label: 'Calculadoras', view: 'calculators', icon: 'fa-calculator' },
     { label: 'Sobre', view: 'about', icon: 'fa-info-circle' },
   ];
@@ -53,12 +54,12 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
           </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-10">
+          <nav className="hidden lg:flex items-center space-x-8">
             {menuItems.map((item) => (
               <button 
                 key={item.view}
                 onClick={() => onNavigate(item.view)} 
-                className={`font-bold text-xs uppercase tracking-widest transition-all hover:text-blue-600 ${currentView === item.view ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-500'}`}
+                className={`font-bold text-[11px] uppercase tracking-widest transition-all hover:text-blue-600 ${currentView === item.view ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-500'}`}
               >
                 {item.label}
               </button>
@@ -89,20 +90,18 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
 
       {/* Mobile Navigation Drawer */}
       <div className={`lg:hidden fixed inset-0 z-[60] transition-all duration-500 ${isMobileMenuOpen ? 'visible' : 'invisible'}`}>
-        {/* Backdrop */}
         <div 
           className={`absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity duration-500 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setIsMobileMenuOpen(false)}
         ></div>
         
-        {/* Drawer Content */}
         <nav className={`absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl transition-transform duration-500 transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} p-8 flex flex-col`}>
           <div className="flex items-center justify-between mb-10">
             <span className="font-black text-gray-900 uppercase tracking-widest text-xs">Navegação</span>
             <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400"><i className="fas fa-times"></i></button>
           </div>
           
-          <div className="space-y-6 flex-grow">
+          <div className="space-y-4 flex-grow">
             {menuItems.map((item) => (
               <button 
                 key={item.view}
@@ -110,7 +109,7 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
                 className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${currentView === item.view ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'}`}
               >
                 <i className={`fas ${item.icon} w-6 text-center`}></i>
-                <span className="font-bold text-sm uppercase tracking-wider">{item.label}</span>
+                <span className="font-bold text-xs uppercase tracking-wider">{item.label}</span>
               </button>
             ))}
           </div>

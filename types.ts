@@ -6,7 +6,8 @@ export enum CalculatorType {
   BREAK_EVEN = 'BREAK_EVEN',
   VACATION = 'VACATION',
   TERMINATION = 'TERMINATION',
-  RETIREMENT = 'RETIREMENT'
+  RETIREMENT = 'RETIREMENT',
+  LOAN = 'LOAN'
 }
 
 export enum CalculatorTab {

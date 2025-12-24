@@ -53,6 +53,13 @@ const ToolDetailPage: React.FC<ToolDetailPageProps> = ({ toolType, onToolChange 
           importance: "O Ponto de Equilíbrio é o seu norte de vendas mensal para não fechar no vermelho.",
           image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800"
         };
+      case CalculatorType.LOAN:
+        return {
+          title: "Simulador de Empréstimos Empresariais",
+          intro: "Analise o custo efetivo de linhas de crédito e escolha o melhor sistema de amortização.",
+          importance: "Um empréstimo bem planejado é alavancagem; um mal planejado é dívida impagável.",
+          image: "https://images.unsplash.com/photo-1556742049-13da73667422?auto=format&fit=crop&q=80&w=800"
+        };
       default:
         return {
           title: "Calculadora de Negócios",

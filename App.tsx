@@ -16,8 +16,9 @@ import ContactPage from './components/ContactPage';
 import ToolDetailPage from './components/ToolDetailPage';
 import PrivacyPage from './components/PrivacyPage';
 import BlogPage from './components/BlogPage';
+import LoanPage from './components/LoanPage';
 
-type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy';
+type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy' | 'loan';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('home');
@@ -34,17 +35,21 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as View;
-      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy'];
+      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'loan'];
       
       if (validViews.includes(hash)) {
         setCurrentView(hash);
+        if (hash === 'loan') {
+          setSelectedTool(CalculatorType.LOAN);
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        // Atualiza título para o Google identificar "páginas" diferentes
+        
         const titles: Record<string, string> = {
           home: 'Início | Empreende 2026',
           blog: 'Blog Editorial | Empreende 2026',
           calculators: 'Calculadoras | Empreende 2026',
           'tool-detail': 'Simulador | Empreende 2026',
+          loan: 'Simulador de Crédito | Empreende 2026',
           about: 'Sobre Nós | Empreende 2026',
           contact: 'Contato | Empreende 2026',
           privacy: 'Privacidade | Empreende 2026'
@@ -54,7 +59,6 @@ const App: React.FC = () => {
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    // Checagem inicial
     if (window.location.hash) handleHashChange();
     
     return () => window.removeEventListener('hashchange', handleHashChange);
@@ -98,6 +102,15 @@ const App: React.FC = () => {
     });
   };
 
+  const navigateToTool = (tool: CalculatorType) => {
+    setSelectedTool(tool);
+    if (tool === CalculatorType.LOAN) {
+      navigateTo('loan');
+    } else {
+      navigateTo('tool-detail');
+    }
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'home':
@@ -105,7 +118,7 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={navigateToTool} onSelectConsultant={() => navigateTo('home')} />
             
-            {/* Banner Central - Estética Slim Panorâmica */}
+            {/* Banner Central */}
             {banners.center.length > 0 && (
               <div className="max-w-3xl mx-auto px-4 mt-8 mb-4 space-y-6">
                 {banners.center.map(b => (
@@ -127,25 +140,31 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative z-20">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative z-20">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <button onClick={() => navigateToTool(CalculatorType.TAX)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-blue-100 p-3 rounded-full text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
                     <i className="fas fa-university text-xl"></i>
                   </div>
-                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">IBS & CBS 2026</h3><p className="text-[10px] md:text-xs text-gray-500">Transição tributária.</p></div>
+                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">IBS & CBS 2026</h3><p className="text-[10px] md:text-xs text-gray-500">Impostos.</p></div>
                 </button>
                 <button onClick={() => navigateToTool(CalculatorType.VACATION)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-green-100 p-3 rounded-full text-green-600 group-hover:bg-green-600 group-hover:text-white transition">
                     <i className="fas fa-umbrella-beach text-xl"></i>
                   </div>
-                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">Minhas Férias</h3><p className="text-[10px] md:text-xs text-gray-500">Simulador trabalhador.</p></div>
+                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">Férias</h3><p className="text-[10px] md:text-xs text-gray-500">Cálculo trabalhador.</p></div>
+                </button>
+                <button onClick={() => navigateToTool(CalculatorType.LOAN)} className="bg-white p-6 rounded-2xl shadow-lg border border-cyan-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
+                  <div className="bg-cyan-100 p-3 rounded-full text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition">
+                    <i className="fas fa-hand-holding-dollar text-xl"></i>
+                  </div>
+                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">Empréstimos</h3><p className="text-[10px] md:text-xs text-gray-500">Crédito e Capital.</p></div>
                 </button>
                 <button onClick={() => navigateToTool(CalculatorType.RETIREMENT)} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-amber-100 p-3 rounded-full text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition">
                     <i className="fas fa-hourglass-half text-xl"></i>
                   </div>
-                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">Aposentadoria</h3><p className="text-[10px] md:text-xs text-gray-500">Regras de 2026.</p></div>
+                  <div><h3 className="font-bold text-gray-900 text-sm md:text-base">Previdência</h3><p className="text-[10px] md:text-xs text-gray-500">Aposentadoria.</p></div>
                 </button>
               </div>
             </div>
@@ -155,17 +174,15 @@ const App: React.FC = () => {
         );
       case 'blog': return <BlogPage onReadPost={setSelectedPost} />;
       case 'calculators': return <CalculatorsHub onSelectTool={navigateToTool} />;
-      case 'tool-detail': return <ToolDetailPage toolType={selectedTool} onToolChange={navigateToTool} />;
+      case 'tool-detail': 
+        return <ToolDetailPage toolType={selectedTool} onToolChange={navigateToTool} />;
+      case 'loan':
+        return <LoanPage />;
       case 'about': return <AboutPage />;
       case 'contact': return <ContactPage />;
       case 'privacy': return <PrivacyPage />;
       default: return null;
     }
-  };
-
-  const navigateToTool = (tool: CalculatorType) => {
-    setSelectedTool(tool);
-    navigateTo('tool-detail');
   };
 
   return (
@@ -196,23 +213,15 @@ const App: React.FC = () => {
         <main className="flex-grow bg-white min-w-0 xl:px-[250px]">
           {renderContent()}
 
-          {/* Grid Mobile Banners - Ticker Infinito da Esquerda para a Direita */}
+          {/* Grid Mobile Banners */}
           {banners.allActive.length > 0 && (
             <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100 overflow-hidden">
               <div className="max-w-5xl mx-auto">
                 <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest px-6">Parceiros em Destaque</h3>
-                
                 <div className="relative flex overflow-hidden mask-linear-horizontal group">
                   <div className="flex gap-4 animate-scrollRight whitespace-nowrap py-4">
-                    {/* Triplicamos o array para garantir o loop contínuo sem saltos visuais */}
                     {[...banners.allActive, ...banners.allActive, ...banners.allActive].map((b, i) => (
-                      <a 
-                        key={`${b.id}-${i}`} 
-                        href={b.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="inline-block min-w-[280px] sm:min-w-[320px] rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white shrink-0 transform hover:scale-105 transition-transform duration-500"
-                      >
+                      <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="inline-block min-w-[280px] sm:min-w-[320px] rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white shrink-0 transform hover:scale-105 transition-transform duration-500">
                         <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
                       </a>
                     ))}
@@ -236,14 +245,7 @@ const App: React.FC = () => {
       </div>
 
       {showMemberArea && <MemberArea onClose={() => setShowMemberArea(false)} />}
-      
-      {showAdmin && (
-        <AdminPanel 
-          onClose={() => { setShowAdmin(false); fetchAffiliates(); }} 
-          initialAffiliates={affiliates} 
-          onRefresh={fetchAffiliates} 
-        />
-      )}
+      {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchAffiliates(); }} initialAffiliates={affiliates} onRefresh={fetchAffiliates} />}
 
       {selectedPost && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
