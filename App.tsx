@@ -196,19 +196,31 @@ const App: React.FC = () => {
         <main className="flex-grow bg-white min-w-0 xl:px-[250px]">
           {renderContent()}
 
-          {/* Grid Mobile Banners */}
-          <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100">
-            <div className="max-w-5xl mx-auto px-6">
-              <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest">Destaques</h3>
-              <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x">
-                {banners.allActive.map(b => (
-                  <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="block min-w-[260px] snap-center rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white">
-                    <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
-                  </a>
-                ))}
+          {/* Grid Mobile Banners - Ticker Infinito da Esquerda para a Direita */}
+          {banners.allActive.length > 0 && (
+            <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100 overflow-hidden">
+              <div className="max-w-5xl mx-auto">
+                <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest px-6">Parceiros em Destaque</h3>
+                
+                <div className="relative flex overflow-hidden mask-linear-horizontal group">
+                  <div className="flex gap-4 animate-scrollRight whitespace-nowrap py-4">
+                    {/* Triplicamos o array para garantir o loop contínuo sem saltos visuais */}
+                    {[...banners.allActive, ...banners.allActive, ...banners.allActive].map((b, i) => (
+                      <a 
+                        key={`${b.id}-${i}`} 
+                        href={b.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="inline-block min-w-[280px] sm:min-w-[320px] rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white shrink-0 transform hover:scale-105 transition-transform duration-500"
+                      >
+                        <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </main>
 
         {/* Sidebar Direita */}
