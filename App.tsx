@@ -118,7 +118,7 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={navigateToTool} onSelectConsultant={() => navigateTo('home')} />
             
-            {/* Banner Central */}
+            {/* Banner Central - Padronizado */}
             {banners.center.length > 0 && (
               <div className="max-w-3xl mx-auto px-4 mt-8 mb-4 space-y-6">
                 {banners.center.map(b => (
@@ -132,7 +132,7 @@ const App: React.FC = () => {
                     >
                       <i className="fas fa-times text-xs"></i>
                     </button>
-                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-lg shadow-blue-500/5 border-2 border-white hover:border-blue-100 transition-all duration-500 aspect-[3/1] bg-gray-50">
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-lg shadow-blue-500/5 border-2 border-white hover:border-blue-100 transition-all duration-500 aspect-[4/1] bg-gray-50">
                       <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     </a>
                   </div>
@@ -198,30 +198,30 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda Restaurada */}
-        <aside className="hidden lg:block fixed left-4 top-24 bottom-24 w-48 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
-          <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
+        {/* Sidebar Esquerda - Tamanho Reduzido */}
+        <aside className="hidden lg:block fixed left-4 top-24 bottom-24 w-32 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+          <div className="flex flex-col gap-4 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
           </div>
         </aside>
 
-        {/* ÁREA PRINCIPAL com preenchimento lateral para as Sidebars */}
-        <main className="flex-grow bg-white min-w-0 lg:px-[220px]">
+        {/* ÁREA PRINCIPAL com preenchimento lateral ajustado */}
+        <main className="flex-grow bg-white min-w-0 lg:px-[160px]">
           {renderContent()}
 
-          {/* Grid Mobile Banners - Oculto quando as laterais estão ativas */}
+          {/* Grid Mobile Banners - Oculto quando as laterais estão ativas, tamanho reduzido */}
           {banners.allActive.length > 0 && (
             <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
-              <div className="max-w-5xl mx-auto">
-                <h3 className="text-sm font-black text-gray-900 mb-6 text-center uppercase tracking-[0.3em] px-6">Nossos Parceiros</h3>
+              <div className="max-w-5xl mx-auto px-4">
+                <h3 className="text-[10px] font-black text-gray-400 mb-6 text-center uppercase tracking-[0.3em]">Nossos Parceiros</h3>
                 <div className="relative flex overflow-hidden mask-linear-horizontal group">
-                  <div className="flex gap-4 animate-scrollRight whitespace-nowrap py-2">
+                  <div className="flex gap-3 animate-scrollRight whitespace-nowrap py-2">
                     {[...banners.allActive, ...banners.allActive, ...banners.allActive].map((b, i) => (
-                      <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="inline-block min-w-[150px] sm:min-w-[200px] rounded-2xl overflow-hidden shadow-lg border-2 border-white aspect-video bg-white shrink-0 transform hover:scale-105 transition-transform duration-500">
+                      <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="inline-block min-w-[120px] sm:min-w-[160px] h-[80px] sm:h-[100px] rounded-xl overflow-hidden shadow-md border-2 border-white bg-white shrink-0 transform hover:scale-105 transition-transform duration-500">
                         <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
                       </a>
                     ))}
@@ -232,11 +232,11 @@ const App: React.FC = () => {
           )}
         </main>
 
-        {/* Sidebar Direita Restaurada */}
-        <aside className="hidden lg:block fixed right-4 top-24 bottom-24 w-48 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
-          <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
+        {/* Sidebar Direita - Tamanho Reduzido */}
+        <aside className="hidden lg:block fixed right-4 top-24 bottom-24 w-32 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+          <div className="flex flex-col gap-4 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
               </a>
             ))}
