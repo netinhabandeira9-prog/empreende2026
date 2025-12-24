@@ -113,29 +113,29 @@ const LoanPage: React.FC = () => {
               </div>
             </div>
 
-            {/* CARROSSEL - TAMANHO REDUZIDO PARA MOBILE */}
+            {/* CARROSSEL - TAMANHO REDUZIDO PARA MOBILE (MOSTRA PELO MENOS 3) */}
             <div className="w-full relative overflow-hidden mask-linear-horizontal py-4">
-               <div className="flex gap-4 md:gap-8 animate-scrollRight whitespace-nowrap">
+               <div className="flex gap-2 md:gap-8 animate-scrollRight whitespace-nowrap">
                   {[...loanServices, ...loanServices, ...loanServices].map((item, i) => (
                     <div 
                       key={`${item.id}-${i}`} 
-                      className="inline-block min-w-[240px] md:min-w-[380px] h-[340px] md:h-[500px] bg-gray-900 rounded-[2.5rem] md:rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
+                      className="inline-block min-w-[120px] md:min-w-[380px] h-[180px] md:h-[500px] bg-gray-900 rounded-[1.5rem] md:rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
                     >
                       <img 
                         src={item.image_url || 'https://images.unsplash.com/photo-1556742049-13da73667422?auto=format&fit=crop&q=80&w=800'} 
                         alt={item.title} 
                         className="w-full h-full object-cover opacity-70 transition-all duration-700" 
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-transparent to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-transparent to-transparent"></div>
                       
-                      <div className="absolute bottom-8 left-6 right-6 md:bottom-10 md:left-10 md:right-10">
-                        <div className="bg-green-500 text-white w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 shadow-xl">
+                      <div className="absolute bottom-3 left-3 right-3 md:bottom-10 md:left-10 md:right-10">
+                        <div className="bg-green-500 text-white w-7 h-7 md:w-16 md:h-16 rounded-lg md:rounded-2xl flex items-center justify-center text-[10px] md:text-2xl mb-2 shadow-xl">
                           <i className={`fas ${item.icon}`}></i>
                         </div>
-                        <h3 className="text-xl md:text-3xl font-black text-white leading-tight mb-2 whitespace-normal">{item.title}</h3>
+                        <h3 className="text-[10px] md:text-3xl font-black text-white leading-tight mb-1 whitespace-normal break-words">{item.title}</h3>
                         {item.description && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black text-green-400 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-full border border-white/10">
+                          <div className="flex items-center gap-1">
+                            <span className="text-[6px] md:text-[9px] font-black text-green-400 uppercase tracking-widest bg-white/5 px-1 py-0.5 rounded-full border border-white/10">
                               {item.description}
                             </span>
                           </div>
@@ -202,7 +202,7 @@ const LoanPage: React.FC = () => {
               <div className="bg-green-500 w-12 h-12 rounded-xl flex items-center justify-center text-white mb-6 shadow-lg shadow-green-500/20">
                 <i className="fas fa-hand-holding-heart text-xl"></i>
               </div>
-              <h3 className="text-xl font-black text-gray-900 mb-3">Atendimento Humizado</h3>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Atendimento Humanizado</h3>
               <p className="text-gray-500 leading-relaxed text-sm">
                 Fale com especialistas reais. A Confia prioriza a relação próxima com o cliente.
               </p>
@@ -242,7 +242,7 @@ const LoanPage: React.FC = () => {
                     rel="noopener noreferrer"
                     className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-10 py-5 rounded-[2rem] font-black text-lg shadow-2xl flex items-center justify-center gap-4 transition transform active:scale-95"
                   >
-                    <i className="fab fa-whatsapp text-2xl"></i>
+                    <i className="fab fa-whatsapp text-2xl group-hover:rotate-12 transition-transform"></i>
                     Falar com a Confia
                   </a>
                   <a 
