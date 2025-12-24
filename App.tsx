@@ -215,13 +215,13 @@ const App: React.FC = () => {
 
           {/* Grid Mobile Banners - Oculto quando as laterais estão ativas */}
           {banners.allActive.length > 0 && (
-            <div className="lg:hidden bg-gray-50 py-16 border-t border-gray-100 overflow-hidden">
+            <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
               <div className="max-w-5xl mx-auto">
-                <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest px-6">Nossos Parceiros</h3>
+                <h3 className="text-sm font-black text-gray-900 mb-6 text-center uppercase tracking-[0.3em] px-6">Nossos Parceiros</h3>
                 <div className="relative flex overflow-hidden mask-linear-horizontal group">
-                  <div className="flex gap-4 animate-scrollRight whitespace-nowrap py-4">
+                  <div className="flex gap-4 animate-scrollRight whitespace-nowrap py-2">
                     {[...banners.allActive, ...banners.allActive, ...banners.allActive].map((b, i) => (
-                      <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="inline-block min-w-[280px] sm:min-w-[320px] rounded-[2rem] overflow-hidden shadow-xl border-2 border-white aspect-video bg-white shrink-0 transform hover:scale-105 transition-transform duration-500">
+                      <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="inline-block min-w-[150px] sm:min-w-[200px] rounded-2xl overflow-hidden shadow-lg border-2 border-white aspect-video bg-white shrink-0 transform hover:scale-105 transition-transform duration-500">
                         <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
                       </a>
                     ))}
