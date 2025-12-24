@@ -43,22 +43,24 @@ const PricingCalculator: React.FC = () => {
     }).format(val).replace(/\s/g, '\u00A0');
   };
 
-  // Escala dinâmica Ultra-Agressiva para evitar transbordo em milhões
+  // Função de Escala Ultra-Adaptativa para evitar qualquer tipo de quebra ou transbordo
   const getDynamicFontSize = (text: string, type: 'hero' | 'grid' | 'mini') => {
     const len = text.length;
     if (type === 'hero') {
+      if (len > 22) return 'text-lg sm:text-xl';
       if (len > 18) return 'text-xl sm:text-2xl';
       if (len > 15) return 'text-2xl sm:text-3xl';
       if (len > 12) return 'text-3xl sm:text-4xl';
       return 'text-4xl sm:text-5xl lg:text-6xl';
     }
     if (type === 'grid') {
-      if (len > 16) return 'text-[9px] sm:text-[10px]'; // Ultra reduzido para milhões
-      if (len > 13) return 'text-[11px] sm:text-xs';
-      if (len > 10) return 'text-xs sm:text-sm';
+      if (len > 18) return 'text-[8px] sm:text-[9px]'; 
+      if (len > 15) return 'text-[10px] sm:text-[11px]';
+      if (len > 12) return 'text-xs sm:text-sm';
       return 'text-sm sm:text-base md:text-lg';
     }
     if (type === 'mini') {
+       if (len > 18) return 'text-[6px]';
        if (len > 15) return 'text-[7px]';
        return 'text-[9px]';
     }
@@ -78,7 +80,7 @@ const PricingCalculator: React.FC = () => {
     
     if (denominator <= 0) {
       return { 
-        error: "Margem inviável.",
+        error: "Margem inviável para este custo.",
         totalSalePrice: 0, unitSalePrice: 0, unitCost: 0, taxAmount: 0, totalProfit: 0, unitProfit: 0, marginApplied: 0, markup: 0
       };
     }
@@ -108,11 +110,11 @@ const PricingCalculator: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center space-x-3">
           <div className="bg-purple-600 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg">
-            <i className="fas fa-tag text-xl"></i>
+            <i className="fas fa-calculator text-xl"></i>
           </div>
           <div>
             <h3 className="text-2xl font-black text-gray-900 leading-tight">Precificação</h3>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none">Configurações de Venda</p>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none">Ajuste de Margens</p>
           </div>
         </div>
         
@@ -123,7 +125,7 @@ const PricingCalculator: React.FC = () => {
 
         <div className="space-y-5">
           <div>
-            <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 ml-1">Custo Total (Compra)</label>
+            <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 ml-1">Custo Total de Aquisição</label>
             <div className="relative">
               <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-gray-300">R$</span>
               <input 
@@ -140,7 +142,7 @@ const PricingCalculator: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             {calcMode === 'BATCH' && (
               <div>
-                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 ml-1">Quantidade</label>
+                <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 ml-1">Qtd. Itens</label>
                 <input 
                   type="text"
                   inputMode="numeric"
@@ -151,7 +153,7 @@ const PricingCalculator: React.FC = () => {
               </div>
             )}
             <div className={calcMode === 'UNIT' ? 'col-span-2' : ''}>
-              <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 ml-1">Margem Desejada (%)</label>
+              <label className="block text-[10px] font-black uppercase text-gray-400 mb-1 ml-1">Margem Lucro (%)</label>
               <div className="relative">
                 <input 
                   type="number" 
@@ -166,45 +168,44 @@ const PricingCalculator: React.FC = () => {
 
           <button onClick={() => setIncludeTax(!includeTax)} className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all ${includeTax ? 'border-purple-600 bg-purple-50 text-purple-700 shadow-sm' : 'border-gray-100 text-gray-400'}`}>
             <div className="text-left">
-              <p className="text-[10px] font-black uppercase leading-none mb-1">Simular Impostos (1%)</p>
-              <p className="text-[9px] font-bold opacity-60 italic leading-none">Alíquota teste Reforma 2026</p>
+              <p className="text-[10px] font-black uppercase leading-none mb-1">Simular Tributos (1%)</p>
+              <p className="text-[9px] font-bold opacity-60 italic leading-none">Regras Reforma 2026</p>
             </div>
             <i className={`fas ${includeTax ? 'fa-check-circle text-xl' : 'fa-circle text-xl opacity-20'}`}></i>
           </button>
         </div>
       </div>
 
-      {/* Resultados - Corrigido para não quebrar com Milhões */}
-      <div className="bg-purple-900 rounded-[3rem] p-5 sm:p-8 text-white flex flex-col justify-center shadow-2xl min-h-[520px] overflow-hidden relative border-8 border-purple-800/20">
+      {/* Área de Resultados - Design Corrigido para Valores Extremos */}
+      <div className="bg-purple-900 rounded-[3rem] p-6 sm:p-10 text-white flex flex-col justify-center shadow-2xl min-h-[550px] overflow-hidden relative border-8 border-purple-800/20">
         {results && !results.error ? (
-          <div className="animate-fadeIn w-full flex flex-col items-center space-y-6">
+          <div className="animate-fadeIn w-full flex flex-col items-center space-y-8">
             <div className="text-center w-full px-2">
-              <p className="text-[9px] font-black text-purple-300 uppercase tracking-[0.2em] opacity-80 mb-2">
-                {calcMode === 'BATCH' ? 'Preço Sugerido do Lote' : 'Preço de Venda Sugerido'}
+              <p className="text-[10px] font-black text-purple-300 uppercase tracking-[0.3em] opacity-80 mb-2">
+                {calcMode === 'BATCH' ? 'Preço do Lote Sugerido' : 'Preço Unitário Sugerido'}
               </p>
-              <div className="flex items-center justify-center w-full py-1 min-h-[50px]">
+              <div className="flex items-center justify-center w-full py-2">
                 <h4 className={`font-black text-white leading-tight break-all tabular-nums tracking-tighter transition-all duration-300 ${getDynamicFontSize(formatBRL(results.totalSalePrice), 'hero')}`}>
                   {formatBRL(results.totalSalePrice)}
                 </h4>
               </div>
               {calcMode === 'BATCH' && (
-                 <div className="inline-block bg-white/10 px-4 py-1.5 rounded-full mt-2 border border-white/5">
-                    <p className="text-[10px] font-bold text-purple-100">Unitário: <span className="font-black">{formatBRL(results.unitSalePrice)}</span></p>
+                 <div className="inline-block bg-white/10 px-5 py-2 rounded-full mt-3 border border-white/10">
+                    <p className="text-[11px] font-bold text-purple-100">Unitário: <span className="font-black">{formatBRL(results.unitSalePrice)}</span></p>
                  </div>
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:gap-4 w-full px-1">
-              {/* Card de Lucro Total */}
-              <div className="bg-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-3 sm:p-5 text-center border border-white/10 flex flex-col justify-between min-h-[100px] sm:min-h-[120px]">
-                <div className="flex-grow flex flex-col justify-center">
-                  <p className="text-[8px] sm:text-[9px] font-black text-green-400 uppercase mb-1 tracking-widest leading-none">Lucro Total</p>
-                  <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(formatBRL(results.totalProfit), 'grid')}`}>
-                    {formatBRL(results.totalProfit)}
-                  </p>
-                </div>
+            {/* Grid de Cards Circulares/Pills */}
+            <div className="grid grid-cols-2 gap-4 w-full px-1">
+              {/* Card de Lucro */}
+              <div className="bg-white/5 rounded-[2.5rem] p-4 sm:p-6 text-center border border-white/10 flex flex-col items-center justify-center aspect-square md:aspect-auto md:min-h-[140px]">
+                <p className="text-[9px] font-black text-green-400 uppercase mb-2 tracking-widest leading-none">Lucro Total</p>
+                <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(formatBRL(results.totalProfit), 'grid')}`}>
+                  {formatBRL(results.totalProfit)}
+                </p>
                 {calcMode === 'BATCH' && (
-                  <div className="mt-1 pt-1 border-t border-white/5">
+                  <div className="mt-2 pt-2 border-t border-white/5 w-full">
                     <p className={`font-bold text-green-200/50 leading-none ${getDynamicFontSize(formatBRL(results.unitProfit), 'mini')}`}>
                       Unitário: {formatBRL(results.unitProfit)}
                     </p>
@@ -213,38 +214,34 @@ const PricingCalculator: React.FC = () => {
               </div>
 
               {/* Card de Imposto */}
-              <div className="bg-white/5 rounded-[1.5rem] sm:rounded-[2rem] p-3 sm:p-5 text-center border border-white/10 flex flex-col justify-between min-h-[100px] sm:min-h-[120px]">
-                <div className="flex-grow flex flex-col justify-center">
-                  <p className="text-[8px] sm:text-[9px] font-black text-blue-400 uppercase mb-1 tracking-widest leading-none">Imposto (1%)</p>
-                  <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(formatBRL(results.taxAmount), 'grid')}`}>
-                    {formatBRL(results.taxAmount)}
-                  </p>
-                </div>
-                <div className="mt-1 pt-1 border-t border-white/5">
-                  <p className="text-[7px] sm:text-[8px] text-blue-200/40 uppercase font-bold tracking-tighter">Provisão 2026</p>
-                </div>
+              <div className="bg-white/5 rounded-[2.5rem] p-4 sm:p-6 text-center border border-white/10 flex flex-col items-center justify-center aspect-square md:aspect-auto md:min-h-[140px]">
+                <p className="text-[9px] font-black text-blue-400 uppercase mb-2 tracking-widest leading-none">Imposto (1%)</p>
+                <p className={`font-black text-white leading-tight break-all ${getDynamicFontSize(formatBRL(results.taxAmount), 'grid')}`}>
+                  {formatBRL(results.taxAmount)}
+                </p>
+                <p className="text-[8px] text-blue-200/40 mt-2 uppercase font-black tracking-tighter">Provisão 2026</p>
               </div>
             </div>
 
-            <div className="w-full pt-4 border-t border-white/10 text-center">
-              <div className="inline-flex items-center space-x-3 bg-white/10 px-5 py-2 rounded-full border border-white/10">
-                <span className="text-[8px] font-black uppercase tracking-widest text-purple-200">Markup:</span>
-                <span className="text-white font-black text-xs sm:text-sm">{results.markup.toFixed(2)}x</span>
+            <div className="w-full pt-6 border-t border-white/10 text-center">
+              <div className="inline-flex items-center space-x-3 bg-white/10 px-6 py-2.5 rounded-full border border-white/10">
+                <span className="text-[9px] font-black uppercase tracking-widest text-purple-200">Markup:</span>
+                <span className="text-white font-black text-sm">{results.markup.toFixed(2)}x</span>
               </div>
-              <p className="text-[8px] text-purple-300/40 italic mt-4 max-w-[200px] mx-auto leading-tight">
-                Garante margem livre de tributos.
+              <p className="text-[9px] text-purple-300/40 italic mt-6 max-w-[220px] mx-auto leading-relaxed">
+                Este valor garante sua margem livre de impostos e custos operacionais.
               </p>
             </div>
           </div>
         ) : results?.error ? (
-          <div className="text-center p-8 bg-red-500/10 rounded-[2.5rem] border-2 border-red-500/30">
-            <i className="fas fa-exclamation-triangle text-2xl text-red-500 mb-3"></i>
-            <p className="text-[10px] font-black text-red-100 uppercase tracking-widest">{results.error}</p>
+          <div className="text-center p-10 bg-red-500/10 rounded-[2.5rem] border-2 border-red-500/30">
+            <i className="fas fa-exclamation-triangle text-3xl text-red-500 mb-4"></i>
+            <p className="text-xs font-black text-red-100 uppercase tracking-widest leading-relaxed">{results.error}</p>
           </div>
         ) : (
           <div className="text-center opacity-30 py-10 space-y-6 flex flex-col items-center">
             <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center border border-white/10 animate-pulse">
-              <i className="fas fa-cash-register text-2xl"></i>
+              <i className="fas fa-calculator text-2xl"></i>
             </div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed">Aguardando Valores</p>
           </div>
