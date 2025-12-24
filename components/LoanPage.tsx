@@ -9,7 +9,6 @@ const LoanPage: React.FC = () => {
   const [loanServices, setLoanServices] = useState<LoanService[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fotos padrão solicitadas com descrições removidas conforme solicitado
   const defaultServices: LoanService[] = [
     {
       id: "default-fgts",
@@ -81,16 +80,17 @@ const LoanPage: React.FC = () => {
       {/* Hero Section Vendas */}
       <section className="relative pt-24 pb-12 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-            <div className="lg:w-5/12 text-center lg:text-left">
+          <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-12 lg:gap-20">
+            {/* Coluna de Texto */}
+            <div className="lg:col-span-5 text-center lg:text-left">
               <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-green-100 rounded-full mb-8 shadow-sm">
-                <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
+                <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                 <span className="text-[11px] font-black text-green-700 uppercase tracking-[0.25em]">Parceiro Oficial Confia Crédito</span>
               </div>
-              <h1 className="text-6xl md:text-8xl font-black text-gray-900 mb-8 leading-[0.85] tracking-tighter">
+              <h1 className="text-5xl md:text-7xl font-black text-gray-900 mb-8 leading-[0.9] tracking-tighter">
                 Dinheiro na mão, <br/><span className="text-green-500">planos em ação.</span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-600 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              <p className="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0">
                 A <strong>Confia</strong> entende o empreendedor. Crédito liberado em até <span className="text-gray-900 font-black underline decoration-green-400 decoration-4 underline-offset-4">24 horas</span> diretamente na sua conta.
               </p>
               
@@ -128,13 +128,13 @@ const LoanPage: React.FC = () => {
               </div>
             </div>
 
-            {/* CARROSSEL INFINITO NO HERO (Esquerda para Direita) */}
-            <div className="lg:w-7/12 relative w-full overflow-hidden mask-linear-horizontal py-10">
+            {/* CARROSSEL INFINITO NO HERO (Coluna 7/12) */}
+            <div className="lg:col-span-7 relative w-full overflow-hidden mask-linear-horizontal py-4">
                <div className="flex gap-6 animate-scrollRight whitespace-nowrap">
                   {[...loanServices, ...loanServices, ...loanServices].map((item, i) => (
                     <div 
                       key={`${item.id}-${i}`} 
-                      className="inline-block min-w-[320px] md:min-w-[380px] h-[500px] bg-gray-900 rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
+                      className="inline-block min-w-[280px] md:min-w-[350px] h-[450px] md:h-[550px] bg-gray-900 rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
                     >
                       <img 
                         src={item.image_url || 'https://images.unsplash.com/photo-1556742049-13da73667422?auto=format&fit=crop&q=80&w=800'} 
@@ -144,7 +144,7 @@ const LoanPage: React.FC = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
                       
                       <div className="absolute bottom-10 left-10 right-10">
-                        <div className="bg-green-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl shadow-green-500/30">
+                        <div className="bg-green-500 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl">
                           <i className={`fas ${item.icon}`}></i>
                         </div>
                         <h3 className="text-2xl font-black text-white leading-tight mb-2 whitespace-normal">{item.title}</h3>
@@ -161,15 +161,15 @@ const LoanPage: React.FC = () => {
                </div>
                
                {/* Instagram Badge Floating */}
-               <div className="absolute top-1/2 -right-4 -translate-y-1/2 z-30 hidden lg:block">
+               <div className="absolute top-1/2 -right-4 -translate-y-1/2 z-30 hidden xl:block">
                   <a 
                     href={instagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white p-4 rounded-2xl shadow-2xl shadow-pink-500/20 flex flex-col items-center gap-1 border border-pink-100 hover:scale-110 transition-transform group"
+                    className="bg-white p-4 rounded-2xl shadow-2xl border border-pink-100 hover:scale-110 transition-transform group"
                   >
                     <i className="fab fa-instagram text-3xl text-pink-500 group-hover:rotate-12 transition-transform"></i>
-                    <span className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">Confia Reels</span>
+                    <span className="text-[8px] font-black text-gray-400 uppercase block mt-1">Confia Reels</span>
                   </a>
                </div>
             </div>

@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+    <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-[100] border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           {/* Logo */}
@@ -54,12 +54,12 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
           </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {menuItems.map((item) => (
               <button 
                 key={item.view}
                 onClick={() => onNavigate(item.view)} 
-                className={`font-bold text-[11px] uppercase tracking-widest transition-all hover:text-blue-600 ${currentView === item.view ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-500'}`}
+                className={`font-bold text-[10px] xl:text-[11px] uppercase tracking-widest transition-all hover:text-blue-600 whitespace-nowrap ${currentView === item.view ? 'text-blue-600 border-b-2 border-blue-600 pb-1' : 'text-gray-500'}`}
               >
                 {item.label}
               </button>
@@ -89,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
       </div>
 
       {/* Mobile Navigation Drawer */}
-      <div className={`lg:hidden fixed inset-0 z-[60] transition-all duration-500 ${isMobileMenuOpen ? 'visible' : 'invisible'}`}>
+      <div className={`lg:hidden fixed inset-0 z-[110] transition-all duration-500 ${isMobileMenuOpen ? 'visible' : 'invisible'}`}>
         <div 
           className={`absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity duration-500 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setIsMobileMenuOpen(false)}

@@ -198,8 +198,8 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda */}
-        <aside className="hidden xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+        {/* Sidebar Esquerda - Visível apenas em telas muito largas para evitar sobreposição */}
+        <aside className="hidden 2xl:block fixed left-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
               <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-gray-100">
@@ -209,13 +209,13 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* ÁREA PRINCIPAL */}
-        <main className="flex-grow bg-white min-w-0 xl:px-[250px]">
+        {/* ÁREA PRINCIPAL - Adicionado preenchimento lateral condicional para banners laterais */}
+        <main className="flex-grow bg-white min-w-0 2xl:px-[200px]">
           {renderContent()}
 
-          {/* Grid Mobile Banners */}
+          {/* Grid Mobile Banners - Aparece em telas menores onde os banners laterais fixos estão ocultos */}
           {banners.allActive.length > 0 && (
-            <div className="xl:hidden bg-gray-50 py-16 border-t border-gray-100 overflow-hidden">
+            <div className="2xl:hidden bg-gray-50 py-16 border-t border-gray-100 overflow-hidden">
               <div className="max-w-5xl mx-auto">
                 <h3 className="text-xl font-black text-gray-900 mb-8 text-center uppercase tracking-widest px-6">Parceiros em Destaque</h3>
                 <div className="relative flex overflow-hidden mask-linear-horizontal group">
@@ -233,7 +233,7 @@ const App: React.FC = () => {
         </main>
 
         {/* Sidebar Direita */}
-        <aside className="hidden xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
+        <aside className="hidden 2xl:block fixed right-4 top-24 bottom-24 w-44 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-6 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
               <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:scale-110 transition-all duration-300 aspect-square bg-gray-100">
@@ -248,9 +248,9 @@ const App: React.FC = () => {
       {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchAffiliates(); }} initialAffiliates={affiliates} onRefresh={fetchAffiliates} />}
 
       {selectedPost && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
           <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl relative">
-            <button onClick={() => setSelectedPost(null)} className="fixed md:absolute top-6 right-6 z-[110] bg-white shadow-xl text-gray-900 w-12 h-12 rounded-full flex items-center justify-center transition hover:bg-red-500 hover:text-white border border-gray-100">
+            <button onClick={() => setSelectedPost(null)} className="fixed md:absolute top-6 right-6 z-[130] bg-white shadow-xl text-gray-900 w-12 h-12 rounded-full flex items-center justify-center transition hover:bg-red-500 hover:text-white border border-gray-100">
               <i className="fas fa-times text-lg"></i>
             </button>
             <div className="relative h-64 md:h-96">
