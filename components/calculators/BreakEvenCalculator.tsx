@@ -18,6 +18,15 @@ const BreakEvenCalculator: React.FC = () => {
     return parseFloat(value.replace(/\./g, "").replace(",", "."));
   };
 
+  const formatBRL = (val: number) => {
+    return new Intl.NumberFormat('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(val).replace(/\s/g, '\u00A0');
+  };
+
   const results = useMemo(() => {
     const f = parseToNumber(fixedCosts);
     const v = parseToNumber(variableUnitCost);
@@ -28,29 +37,64 @@ const BreakEvenCalculator: React.FC = () => {
   }, [fixedCosts, variableUnitCost, unitPrice]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+    <div className="max-w-3xl mx-auto space-y-10">
       <div className="space-y-6">
-        <h3 className="text-xl md:text-2xl font-black text-gray-900">Saúde Financeira</h3>
-        <div><label className="text-[10px] font-black text-gray-400 uppercase">Custos Fixos Totais (Mensal)</label><input type="text" value={fixedCosts} onChange={(e) => handleCurrencyInput(e.target.value, setFixedCosts)} className="w-full p-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-lg md:text-xl font-black mt-1" placeholder="R$ 0,00" /></div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="text-[10px] font-black text-gray-400 uppercase">Custo Unitário</label><input type="text" value={variableUnitCost} onChange={(e) => handleCurrencyInput(e.target.value, setVariableUnitCost)} className="w-full p-3 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-base font-bold mt-1" placeholder="R$ 0,00" /></div>
-          <div><label className="text-[10px] font-black text-gray-400 uppercase">Preço Unitário</label><input type="text" value={unitPrice} onChange={(e) => handleCurrencyInput(e.target.value, setUnitPrice)} className="w-full p-3 rounded-xl bg-gray-50 ring-1 ring-gray-200 outline-none text-base font-bold mt-1" placeholder="R$ 0,00" /></div>
+        <div className="flex items-center space-x-3">
+          <div className="bg-orange-600 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg">
+            <i className="fas fa-balance-scale text-xl"></i>
+          </div>
+          <div>
+            <h3 className="text-2xl font-black text-gray-900 leading-tight">Ponto de Equilíbrio</h3>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none">Gestão Financeira</p>
+          </div>
         </div>
-      </div>
-      <div className="bg-orange-900 rounded-[2rem] md:rounded-[2.5rem] px-4 py-8 md:p-10 text-white flex flex-col justify-center text-center shadow-2xl shadow-orange-100 min-h-[300px] lg:min-h-[400px] overflow-hidden">
-        {results ? (
-          <div className="space-y-8 animate-fadeIn w-full">
-            <div className="bg-white/10 p-6 md:p-8 rounded-[1.5rem]">
-              <p className="text-[9px] font-black text-orange-300 uppercase mb-4 tracking-widest">Sua Meta Mensal</p>
-              <h4 className="text-3xl sm:text-4xl md:text-5xl font-black break-words leading-tight">{results.units}</h4>
-              <p className="text-[9px] sm:text-xs font-bold uppercase mt-2">Unidades p/ Mês</p>
-            </div>
-            <div className="pt-6 border-t border-white/10">
-              <p className="text-[8px] sm:text-xs uppercase text-orange-200 mb-1 tracking-widest">Faturamento para Empatar</p>
-              <p className="text-lg sm:text-xl md:text-2xl font-black break-words">{results.revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+
+        <div className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100 space-y-5">
+          <div>
+            <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Custos Fixos Totais (Mês)</label>
+            <div className="relative">
+               <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-gray-300">R$</span>
+               <input type="text" value={fixedCosts} onChange={(e) => handleCurrencyInput(e.target.value, setFixedCosts)} className="w-full pl-14 pr-6 py-5 rounded-2xl bg-white border-2 border-transparent focus:border-orange-600 outline-none text-xl font-black shadow-sm transition-all" placeholder="0,00" />
             </div>
           </div>
-        ) : <div className="opacity-20 py-10"><i className="fas fa-balance-scale text-5xl"></i><p className="mt-4 text-[10px] font-bold uppercase tracking-widest">Calcular Meta</p></div>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div><label className="text-[10px] font-black text-gray-400 uppercase ml-1">Custo Unitário</label><input type="text" value={variableUnitCost} onChange={(e) => handleCurrencyInput(e.target.value, setVariableUnitCost)} className="w-full p-4 rounded-xl bg-white border-2 border-transparent focus:border-orange-600 outline-none text-base font-black shadow-sm" placeholder="R$ 0,00" /></div>
+            <div><label className="text-[10px] font-black text-gray-400 uppercase ml-1">Preço Venda Unitário</label><input type="text" value={unitPrice} onChange={(e) => handleCurrencyInput(e.target.value, setUnitPrice)} className="w-full p-4 rounded-xl bg-white border-2 border-transparent focus:border-orange-600 outline-none text-base font-black shadow-sm" placeholder="R$ 0,00" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-orange-900 rounded-[3rem] p-6 sm:p-12 text-white shadow-2xl relative border-8 border-orange-800/30 overflow-hidden">
+        {results ? (
+          <div className="animate-fadeIn w-full flex flex-col items-center space-y-10">
+            <div className="text-center w-full">
+              <p className="text-[10px] font-black text-orange-300 uppercase tracking-[0.4em] opacity-80 mb-3">Vendas p/ Equilíbrio</p>
+              <div className="flex justify-center items-center min-h-[80px]">
+                <h4 className="text-5xl sm:text-6xl lg:text-7xl font-black tabular-nums tracking-tighter transition-all duration-300 leading-tight">
+                  {results.units}
+                </h4>
+              </div>
+              <p className="text-xs font-black uppercase text-orange-200 mt-2">Unidades / Mês</p>
+            </div>
+
+            <div className="w-full pt-8 border-t border-white/10 text-center">
+              <div className="inline-flex flex-col items-center space-y-2 bg-white/10 px-10 py-5 rounded-[2.5rem] border border-white/10 shadow-lg">
+                <span className="text-[10px] font-black uppercase tracking-widest text-orange-200">Faturamento Mínimo:</span>
+                <span className="text-white font-black text-2xl">{formatBRL(results.revenue)}</span>
+              </div>
+              <p className="text-[10px] text-orange-300/40 italic mt-8 max-w-sm mx-auto leading-relaxed">
+                Este é o valor mínimo de vendas para cobrir todos os seus custos mensais.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center opacity-20 py-20 flex flex-col items-center space-y-4">
+            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center border border-white/10 animate-pulse">
+              <i className="fas fa-balance-scale text-2xl"></i>
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-widest">Aguardando custos e preços</p>
+          </div>
+        )}
       </div>
     </div>
   );
