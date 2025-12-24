@@ -46,7 +46,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     setIsLoading(true);
     try {
       const { data } = await supabase.from('partners').select('*');
-      if (data) setPartners(data.map(p => ({ ...p, active: p.active ?? true })));
+      if (data) {
+        // Correção do erro TS7006 adicionando tipo explícito (p: any) ou (p: Partner)
+        setPartners(data.map((p: any) => ({ ...p, active: p.active ?? true })));
+      }
     } catch (err) { console.error(err); }
     finally { setIsLoading(false); }
   };
@@ -138,6 +141,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           active: p.active ?? true
         }));
         await supabase.from('partners').upsert(payload);
+        fetchPartners(); // Atualiza a lista local após salvar
       } else {
         const payload = loanServices.map((l, index) => ({
           id: l.id.toString().startsWith('new-') ? crypto.randomUUID() : l.id,
