@@ -21,7 +21,12 @@ const TaxCalculator: React.FC = () => {
   };
 
   const formatBRL = (val: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    return new Intl.NumberFormat('pt-BR', { 
+      style: 'currency', 
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(val);
   };
 
   const results = useMemo(() => {
@@ -44,7 +49,6 @@ const TaxCalculator: React.FC = () => {
       totalTax = simples;
       breakdown.push({ label: 'Simples Nacional', value: simples, description: 'Anexo III Base' });
     } else {
-      // Cenário Autônomo com Transição 2026 (1% total)
       const cbs = rev * TAX_RATES_2026.CBS_RATE;
       const ibs = rev * TAX_RATES_2026.IBS_RATE;
       totalTax = cbs + ibs;
@@ -64,8 +68,11 @@ const TaxCalculator: React.FC = () => {
           <button onClick={() => setActiveTab(CalculatorTab.AUTONOMOUS)} className={`flex-1 min-w-[80px] py-4 text-[10px] font-black rounded-lg transition-all ${activeTab === CalculatorTab.AUTONOMOUS ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}>AUTÔNOMO</button>
         </div>
         <div>
-          <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">Faturamento Bruto Mensal</label>
-          <input type="text" value={revenue} onChange={(e) => handleCurrencyInput(e.target.value, setRevenue)} className="w-full px-4 md:px-6 py-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none text-lg md:text-2xl font-black" placeholder="R$ 0,00" />
+          <label className="block text-[10px] font-black uppercase text-gray-400 mb-2">Faturamento Mensal</label>
+          <div className="relative">
+             <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-gray-300">R$</span>
+             <input type="text" value={revenue} onChange={(e) => handleCurrencyInput(e.target.value, setRevenue)} className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none text-xl font-black" placeholder="0,00" />
+          </div>
         </div>
         {activeTab === CalculatorTab.MEI && (
           <div className="flex flex-col sm:flex-row gap-3">
@@ -73,23 +80,23 @@ const TaxCalculator: React.FC = () => {
             <button onClick={() => setEmployeeCount(1)} className={`flex-1 py-3 rounded-xl text-xs font-bold border-2 transition-all ${employeeCount === 1 ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 text-gray-400'}`}>Com Auxiliar</button>
           </div>
         )}
-        <p className="text-[10px] text-gray-400 italic text-center">Baseado nas projeções de transição de 2026. Consulte um contador.</p>
+        <p className="text-[10px] text-gray-400 italic text-center">Simulação baseada na Reforma 2026.</p>
       </div>
-      <div className="bg-gray-900 rounded-[2rem] md:rounded-[2.5rem] px-6 py-8 md:p-10 text-white flex flex-col justify-center min-h-[300px] lg:min-h-[400px] overflow-hidden">
+      <div className="bg-gray-900 rounded-[2.5rem] p-8 md:p-10 text-white flex flex-col justify-center min-h-[400px] overflow-hidden">
         {results ? (
           <div className="animate-fadeIn w-full">
-            <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2 text-center lg:text-left">Resultado Estimado</p>
-            <h4 className="text-2xl sm:text-3xl lg:text-4xl font-black mb-10 text-center lg:text-left break-words">
+            <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2 text-center lg:text-left">Renda Líquida Estimada</p>
+            <h4 className="text-2xl sm:text-3xl font-black mb-8 text-center lg:text-left break-all">
               {formatBRL(results.netIncome)}
             </h4>
             <div className="space-y-4 pt-6 border-t border-white/10">
               {results.breakdown.map((item, i) => (
                 <div key={i} className="flex justify-between items-center gap-2 text-[10px] sm:text-xs">
                   <div className="flex flex-col">
-                    <span className="text-gray-400 font-bold">{item.label}</span>
+                    <span className="text-gray-400 font-bold leading-tight">{item.label}</span>
                     <span className="text-[8px] opacity-50 uppercase">{item.description}</span>
                   </div>
-                  <span className="font-black text-red-400">-{formatBRL(item.value)}</span>
+                  <span className="font-black text-red-400 whitespace-nowrap">-{formatBRL(item.value)}</span>
                 </div>
               ))}
             </div>
@@ -97,7 +104,7 @@ const TaxCalculator: React.FC = () => {
         ) : (
           <div className="text-center opacity-20 py-10">
             <i className="fas fa-university text-5xl mb-4"></i>
-            <p className="text-[10px] font-bold uppercase tracking-widest">Aguardando dados de receita</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest">Aguardando dados</p>
           </div>
         )}
       </div>
