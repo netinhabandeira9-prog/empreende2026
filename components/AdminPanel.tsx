@@ -24,6 +24,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   const [error, setError] = useState('');
   const [uploadingId, setUploadingId] = useState<string | null>(null);
 
+  // Lista padrão para facilitar a edição pelo usuário caso o banco esteja vazio
+  const defaultLoans: LoanService[] = [
+    { id: 'new-1', title: "Aposentados & INSS", description: "Taxa 1.2%", image_url: "", icon: "fa-person-cane", active: true },
+    { id: 'new-2', title: "Bolsa Família", description: "Taxa 1.5%", image_url: "", icon: "fa-house-chimney-user", active: true },
+    { id: 'new-3', title: "Consignado Privado", description: "Taxa 1.8%", image_url: "", icon: "fa-briefcase", active: true },
+    { id: 'new-4', title: "Servidor Público", description: "Taxa 1.1%", image_url: "", icon: "fa-building-columns", active: true },
+    { id: 'new-5', title: "Empresas & Equipes", description: "Taxa 2.0%", image_url: "", icon: "fa-users-gear", active: true },
+  ];
+
   useEffect(() => {
     if (isAuthenticated) {
       if (activeSection === 'loans') fetchLoanServices();
@@ -36,8 +45,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     setIsLoading(true);
     try {
       const { data } = await supabase.from('loan_services').select('*').order('order_index', { ascending: true });
-      if (data) setLoanServices(data);
-    } catch (err) { console.error(err); }
+      if (data && data.length > 0) {
+        setLoanServices(data);
+      } else {
+        // Se estiver vazio, carrega os padrões para o usuário poder "trocar" as imagens
+        setLoanServices(defaultLoans);
+      }
+    } catch (err) { 
+      console.error(err); 
+      setLoanServices(defaultLoans);
+    }
     finally { setIsLoading(false); }
   };
 
@@ -99,7 +116,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   };
 
   const handleDeleteItem = async (id: string, table: 'affiliates' | 'loan_services' | 'partners') => {
-    if (id.startsWith('new-')) {
+    if (id.toString().startsWith('new-')) {
       if (table === 'affiliates') setAffiliates(affiliates.filter(a => a.id !== id));
       if (table === 'partners') setPartners(partners.filter(p => p.id !== id));
       if (table === 'loan_services') setLoanServices(loanServices.filter(l => l.id !== id));
@@ -286,7 +303,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           ))}
 
           {activeSection === 'loans' && loanServices.map((item) => (
-              <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group">
+              <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group animate-fadeIn">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                   <div className="lg:col-span-3">
                     <div className="aspect-[4/5] bg-gray-200 rounded-3xl overflow-hidden relative shadow-inner border-2 border-white">
@@ -320,7 +337,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                       <button onClick={() => handleDeleteItem(item.id, 'loan_services')} className="text-red-500 hover:scale-110 transition"><i className="fas fa-trash-alt"></i></button>
                     </div>
                     <div className="text-[10px] text-gray-400 font-bold p-2 text-center bg-gray-100 rounded-lg">
-                      Arraste para reordenar (em breve)
+                      Item salvo localmente
                     </div>
                   </div>
                 </div>
