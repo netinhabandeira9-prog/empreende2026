@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-[100] border-b border-gray-100">
+    <header className="bg-white shadow-md sticky top-0 z-[100] border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           {/* Logo */}
@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
              {/* Mobile Menu Toggle */}
              <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-900"
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-900 border border-gray-200"
              >
                <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
              </button>
@@ -91,14 +91,14 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
       {/* Mobile Navigation Drawer */}
       <div className={`lg:hidden fixed inset-0 z-[110] transition-all duration-500 ${isMobileMenuOpen ? 'visible' : 'invisible'}`}>
         <div 
-          className={`absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity duration-500 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 bg-gray-900/80 backdrop-blur-sm transition-opacity duration-500 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setIsMobileMenuOpen(false)}
         ></div>
         
         <nav className={`absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl transition-transform duration-500 transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} p-8 flex flex-col`}>
-          <div className="flex items-center justify-between mb-10">
-            <span className="font-black text-gray-900 uppercase tracking-widest text-xs">Navegação</span>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400"><i className="fas fa-times"></i></button>
+          <div className="flex items-center justify-between mb-10 border-b border-gray-100 pb-6">
+            <span className="font-black text-gray-900 uppercase tracking-widest text-xs">Menu de Navegação</span>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center text-gray-500"><i className="fas fa-times"></i></button>
           </div>
           
           <div className="space-y-4 flex-grow">
@@ -106,16 +106,22 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
               <button 
                 key={item.view}
                 onClick={() => handleMobileNav(item.view)}
-                className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${currentView === item.view ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'}`}
+                className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${currentView === item.view ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50 border border-transparent hover:border-gray-100'}`}
               >
-                <i className={`fas ${item.icon} w-6 text-center`}></i>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${currentView === item.view ? 'bg-white/20' : 'bg-gray-100'}`}>
+                   <i className={`fas ${item.icon} text-xs`}></i>
+                </div>
                 <span className="font-bold text-xs uppercase tracking-wider">{item.label}</span>
               </button>
             ))}
           </div>
 
-          <div className="mt-auto pt-8 border-t border-gray-100 text-center">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Empreende 2026</p>
+          <div className="mt-auto pt-8 border-t border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+               <div className="bg-blue-600 p-2 rounded-lg"><i className="fas fa-chart-line text-white text-xs"></i></div>
+               <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Empreende 2026</p>
+            </div>
+            <p className="text-[9px] text-gray-400 font-bold uppercase">Soluções para o Empreendedor</p>
           </div>
         </nav>
       </div>
