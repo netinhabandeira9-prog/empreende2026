@@ -46,7 +46,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     setIsLoading(true);
     try {
       const { data } = await supabase.from('partners').select('*');
-      if (data) setPartners(data);
+      if (data) setPartners(data.map(p => ({ ...p, active: p.active ?? true })));
     } catch (err) { console.error(err); }
     finally { setIsLoading(false); }
   };
@@ -82,19 +82,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       active: true
     };
     setPartners([newItem, ...partners]);
-  };
-
-  const handleAddLoanService = () => {
-    const newItem: LoanService = {
-      id: `new-loan-${Date.now()}`,
-      title: 'Nova Modalidade',
-      description: 'Descrição breve',
-      image_url: '',
-      icon: 'fa-hand-holding-dollar',
-      active: true,
-      order_index: loanServices.length
-    };
-    setLoanServices([...loanServices, newItem]);
   };
 
   const handleDeleteItem = async (id: string, table: 'affiliates' | 'loan_services' | 'partners') => {
@@ -148,7 +135,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           name: p.name,
           link: p.link,
           logo_url: p.logo_url,
-          active: p.active
+          active: p.active ?? true
         }));
         await supabase.from('partners').upsert(payload);
       } else {
@@ -206,7 +193,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           
           <div className="flex gap-4">
             <button 
-              onClick={activeSection === 'affiliates' ? handleAddAffiliate : activeSection === 'partners' ? handleAddPartner : handleAddLoanService}
+              onClick={activeSection === 'affiliates' ? handleAddAffiliate : activeSection === 'partners' ? handleAddPartner : () => {}}
               className={`px-8 py-4 rounded-2xl font-black text-sm shadow-lg flex items-center space-x-2 text-white ${activeSection === 'loans' ? 'bg-green-600' : 'bg-blue-600'}`}
             >
               <i className="fas fa-plus"></i> 
@@ -257,7 +244,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
               <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                   <div className="lg:col-span-3">
-                    <div className="aspect-square w-32 bg-gray-200 rounded-3xl overflow-hidden relative border-2 border-white mx-auto">
+                    <div className="aspect-square w-24 bg-gray-200 rounded-3xl overflow-hidden relative border-2 border-white mx-auto">
                       {item.logo_url ? <img src={item.logo_url} className="w-full h-full object-contain p-4" /> : <div className="flex h-full items-center justify-center"><i className="fas fa-handshake text-gray-400"></i></div>}
                       <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer">
                         <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'partner')} />
@@ -276,35 +263,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                         <span className="text-[10px] font-black uppercase">Ativo</span>
                       </label>
                       <button onClick={() => handleDeleteItem(item.id, 'partners')} className="text-red-500"><i className="fas fa-trash-alt"></i></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-          ))}
-
-          {activeSection === 'loans' && loanServices.map((item) => (
-              <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                  <div className="lg:col-span-3">
-                    <div className="aspect-square bg-gray-200 rounded-3xl overflow-hidden relative border-2 border-white">
-                      {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center"><i className="fas fa-camera text-gray-400"></i></div>}
-                      <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer">
-                        <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'loan')} />
-                        <span className="bg-white px-4 py-2 rounded-xl text-xs font-black uppercase">Trocar Foto</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="lg:col-span-6 space-y-4">
-                    <input type="text" value={item.title} onChange={(e) => setLoanServices(prev => prev.map(a => a.id === item.id ? { ...a, title: e.target.value } : a))} className="w-full bg-white px-4 py-3 rounded-xl font-bold border" placeholder="Título" />
-                    <textarea value={item.description} onChange={(e) => setLoanServices(prev => prev.map(a => a.id === item.id ? { ...a, description: e.target.value } : a))} className="w-full bg-white px-4 py-3 rounded-xl text-xs border min-h-[80px]" placeholder="Descrição" />
-                  </div>
-                  <div className="lg:col-span-3 flex flex-col gap-4">
-                    <div className="flex items-center justify-between bg-white p-4 rounded-xl border">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" checked={item.active} onChange={(e) => setLoanServices(prev => prev.map(a => a.id === item.id ? { ...a, active: e.target.checked } : a))} />
-                        <span className="text-[10px] font-black uppercase">Ativo</span>
-                      </label>
-                      <button onClick={() => handleDeleteItem(item.id, 'loan_services')} className="text-red-500"><i className="fas fa-trash-alt"></i></button>
                     </div>
                   </div>
                 </div>
