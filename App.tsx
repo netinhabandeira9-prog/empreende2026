@@ -6,7 +6,7 @@ import BlogSection from './components/BlogSection';
 import AIConsultant from './components/AIConsultant';
 import MemberArea from './components/MemberArea';
 import AdminPanel from './components/AdminPanel';
-import { BlogPost, CalculatorType, Affiliate } from './types';
+import { BlogPost, CalculatorType, Affiliate, Partner } from './types';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 
 // Páginas
@@ -28,6 +28,7 @@ const App: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
   
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
   const [isLoadingAffiliates, setIsLoadingAffiliates] = useState(true);
 
@@ -68,20 +69,24 @@ const App: React.FC = () => {
     window.location.hash = view;
   };
 
-  const fetchAffiliates = async () => {
+  const fetchContent = async () => {
     if (!isSupabaseConfigured) {
       setIsLoadingAffiliates(false);
       return;
     }
     try {
-      const { data, error } = await supabase.from('affiliates').select('*');
-      if (data) setAffiliates(data as Affiliate[]);
+      const [affs, parts] = await Promise.all([
+        supabase.from('affiliates').select('*'),
+        supabase.from('partners').select('*').eq('active', true)
+      ]);
+      if (affs.data) setAffiliates(affs.data as Affiliate[]);
+      if (parts.data) setPartners(parts.data as Partner[]);
     } catch (err) { console.error(err); }
     finally { setIsLoadingAffiliates(false); }
   };
 
   useEffect(() => {
-    fetchAffiliates();
+    fetchContent();
   }, []);
 
   const banners = useMemo(() => {
@@ -118,13 +123,14 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={navigateToTool} onSelectConsultant={() => navigateTo('home')} />
             
-            {/* Banner Central - Padronizado */}
+            {/* Seção de Ofertas Centrais - Rótulo Chamativo */}
             {banners.center.length > 0 && (
               <div className="max-w-3xl mx-auto px-4 mt-8 mb-4 space-y-6">
                 {banners.center.map(b => (
                   <div key={b.id} className="relative group animate-fadeIn">
-                    <div className="absolute -top-3 left-6 z-30 bg-blue-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
-                      Parceiro Empreende
+                    <div className="absolute -top-3 left-6 z-30 bg-red-600 text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2">
+                      <i className="fas fa-fire-flame-curved"></i>
+                      OFERTA LIMITADA
                     </div>
                     <button 
                       onClick={() => toggleBannerClosed(b.id)}
@@ -132,7 +138,7 @@ const App: React.FC = () => {
                     >
                       <i className="fas fa-times text-xs"></i>
                     </button>
-                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-lg shadow-blue-500/5 border-2 border-white hover:border-blue-100 transition-all duration-500 aspect-[4/1] bg-gray-50">
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-xl border-2 border-white hover:border-red-100 transition-all duration-500 aspect-[4/1] bg-gray-50">
                       <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     </a>
                   </div>
@@ -168,6 +174,25 @@ const App: React.FC = () => {
                 </button>
               </div>
             </div>
+            
+            {/* SEÇÃO NOSSOS PARCEIROS (Logos de Empresas) */}
+            <section className="py-12 bg-white overflow-hidden">
+               <div className="max-w-6xl mx-auto px-4 text-center">
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-10">Nossos Parceiros</h3>
+                  <div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-60 hover:opacity-100 transition-opacity">
+                    {partners.length > 0 ? (
+                      partners.map(p => (
+                        <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="h-8 md:h-12 grayscale hover:grayscale-0 transition-all transform hover:scale-110">
+                           <img src={p.logo_url} alt={p.name} className="h-full object-contain" />
+                        </a>
+                      ))
+                    ) : (
+                      <div className="text-[9px] font-bold text-gray-300 uppercase">Empresas que confiam na Empreende 2026</div>
+                    )}
+                  </div>
+               </div>
+            </section>
+
             <BlogSection onReadPost={setSelectedPost} />
             <AIConsultant />
           </>
@@ -198,31 +223,35 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Sidebar Esquerda - Tamanho Reduzido */}
+        {/* Sidebar Esquerda - Ofertas */}
         <aside className="hidden lg:block fixed left-4 top-24 bottom-24 w-32 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-4 animate-scrollDown pointer-events-auto py-20">
             {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white relative group">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                   <span className="text-[8px] font-black text-white opacity-0 group-hover:opacity-100 uppercase tracking-widest bg-red-600 px-2 py-1 rounded">Comprar</span>
+                </div>
               </a>
             ))}
           </div>
         </aside>
 
-        {/* ÁREA PRINCIPAL com preenchimento lateral ajustado */}
+        {/* ÁREA PRINCIPAL */}
         <main className="flex-grow bg-white min-w-0 lg:px-[160px]">
           {renderContent()}
 
-          {/* Grid Mobile Banners - Oculto quando as laterais estão ativas, tamanho reduzido */}
+          {/* Grid Mobile Ofertas - Chamada para compra */}
           {banners.allActive.length > 0 && (
             <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
               <div className="max-w-5xl mx-auto px-4">
-                <h3 className="text-[10px] font-black text-gray-400 mb-6 text-center uppercase tracking-[0.3em]">Nossos Parceiros</h3>
+                <h3 className="text-[10px] font-black text-gray-400 mb-6 text-center uppercase tracking-[0.3em]">Produtos & Ofertas</h3>
                 <div className="relative flex overflow-hidden mask-linear-horizontal group">
                   <div className="flex gap-3 animate-scrollRight whitespace-nowrap py-2">
                     {[...banners.allActive, ...banners.allActive, ...banners.allActive].map((b, i) => (
-                      <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="inline-block min-w-[120px] sm:min-w-[160px] h-[80px] sm:h-[100px] rounded-xl overflow-hidden shadow-md border-2 border-white bg-white shrink-0 transform hover:scale-105 transition-transform duration-500">
+                      <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="inline-block min-w-[120px] sm:min-w-[160px] h-[80px] sm:h-[100px] rounded-xl overflow-hidden shadow-md border-2 border-white bg-white shrink-0 transform hover:scale-105 transition-transform duration-500 relative">
                         <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
+                        <div className="absolute top-1 left-1 bg-red-600 text-white text-[6px] font-black px-1.5 py-0.5 rounded-full shadow-sm">LOJA</div>
                       </a>
                     ))}
                   </div>
@@ -232,12 +261,15 @@ const App: React.FC = () => {
           )}
         </main>
 
-        {/* Sidebar Direita - Tamanho Reduzido */}
+        {/* Sidebar Direita - Ofertas */}
         <aside className="hidden lg:block fixed right-4 top-24 bottom-24 w-32 z-40 overflow-hidden pointer-events-none mask-linear-vertical">
           <div className="flex flex-col gap-4 animate-scrollUp pointer-events-auto py-20">
             {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white">
+              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all duration-300 aspect-square bg-white relative group">
                 <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
+                <div className="absolute inset-x-0 bottom-0 bg-red-600 text-white py-1 text-center translate-y-full group-hover:translate-y-0 transition-transform">
+                   <span className="text-[7px] font-black uppercase tracking-widest">Aproveite</span>
+                </div>
               </a>
             ))}
           </div>
@@ -245,7 +277,7 @@ const App: React.FC = () => {
       </div>
 
       {showMemberArea && <MemberArea onClose={() => setShowMemberArea(false)} />}
-      {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchAffiliates(); }} initialAffiliates={affiliates} onRefresh={fetchAffiliates} />}
+      {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchContent(); }} initialAffiliates={affiliates} onRefresh={fetchContent} />}
 
       {selectedPost && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">

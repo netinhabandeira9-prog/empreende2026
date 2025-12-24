@@ -41,6 +41,14 @@ export interface Affiliate {
   position: 'left' | 'right' | 'center';
 }
 
+export interface Partner {
+  id: string;
+  name: string;
+  logo_url: string;
+  link: string;
+  active: boolean;
+}
+
 export interface LoanService {
   id: string;
   title: string;
