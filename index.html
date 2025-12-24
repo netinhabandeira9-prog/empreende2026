@@ -1,10 +1,22 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NB Empreende | Guia do Empreendedor 2026</title>
+    
+    <!-- Favicon Principal (SVG para browsers modernos) -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    
+    <!-- Fallback para browsers antigos (Coloque um favicon.ico na pasta public se desejar) -->
+    <link rel="alternate icon" href="/favicon.ico">
+    
+    <!-- Apple Touch Icon (Ícone para iPhone/iPad) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Manifesto para Android e PWA -->
+    <link rel="manifest" href="/site.webmanifest">
+    
     <meta name="description" content="Portal oficial NB Empreende. Consultoria tributária, calculadoras MEI e blog especializado para autônomos na Reforma Tributária de 2026.">
     <meta name="keywords" content="MEI 2026, Reforma Tributária, IBS, CBS, NB Empreende, Empreendedorismo Brasil">
     <link rel="canonical" href="https://www.nbempreende.com.br" />
@@ -39,7 +51,6 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Animação Horizontal Infinita (Marquee) */
         @keyframes infiniteScroll {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
@@ -55,7 +66,6 @@
           mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
 
-        /* Melhoria de leitura para SEO */
         .prose h2 { font-weight: 900; color: #111827; margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem; }
         .prose p { margin-bottom: 1.25rem; line-height: 1.75; color: #374151; }
     </style>
