@@ -100,7 +100,7 @@ const App: React.FC = () => {
                   <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
                     {partners.length > 0 ? (
                       partners.map(p => (
-                        <a key={p.id} href={p.link || '#'} target="_blank" rel="noopener noreferrer" className="h-6 md:h-10 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all transform hover:scale-110">
+                        <a key={p.id} href={p.link || '#'} target="_blank" rel="noopener noreferrer" className="h-12 md:h-20 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all transform hover:scale-110">
                            <img src={p.logo_url} alt={p.name} className="h-full object-contain" />
                         </a>
                       ))
