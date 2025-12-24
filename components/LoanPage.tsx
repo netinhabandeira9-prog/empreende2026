@@ -77,27 +77,27 @@ const LoanPage: React.FC = () => {
 
   return (
     <div className="animate-fadeIn min-h-screen selection:bg-green-100 bg-white">
-      {/* Hero Section Vendas - Layout Vertical para Evitar Sobreposição */}
-      <section className="relative pt-16 pb-20 overflow-hidden">
+      {/* Hero Section Vendas */}
+      <section className="relative pt-12 pb-16 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col items-center">
             {/* Bloco de Texto Superior */}
-            <div className="w-full text-center mb-12">
-              <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-green-100 rounded-full mb-8 shadow-sm">
+            <div className="w-full text-center mb-8">
+              <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-green-100 rounded-full mb-6 shadow-sm">
                 <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                <span className="text-[11px] font-black text-green-700 uppercase tracking-[0.25em]">Parceiro Oficial Confia Crédito</span>
+                <span className="text-[10px] font-black text-green-700 uppercase tracking-[0.25em]">Parceiro Oficial Confia Crédito</span>
               </div>
-              <h1 className="text-5xl md:text-8xl font-black text-gray-900 mb-8 leading-[0.85] tracking-tighter">
+              <h1 className="text-4xl md:text-7xl font-black text-gray-900 mb-6 leading-[0.9] tracking-tighter">
                 Dinheiro na mão, <br/><span className="text-green-500">planos em ação.</span>
               </h1>
-              <p className="text-xl md:text-2xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto">
-                A <strong>Confia</strong> entende o empreendedor. Crédito liberado em até <span className="text-gray-900 font-black underline decoration-green-400 decoration-4 underline-offset-4">24 horas</span> diretamente na sua conta.
+              <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto px-4">
+                Crédito liberado em até <span className="text-gray-900 font-black underline decoration-green-400 decoration-2 underline-offset-4">24 horas</span> diretamente na sua conta.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 px-4">
                 <a 
                   href="#simulator" 
-                  className="w-full sm:w-auto bg-gray-900 text-white px-10 py-5 rounded-3xl font-black text-sm uppercase tracking-widest shadow-2xl hover:bg-gray-800 transition transform active:scale-95"
+                  className="w-full sm:w-auto bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-gray-800 transition transform active:scale-95"
                 >
                   Simular Agora
                 </a>
@@ -105,37 +105,37 @@ const LoanPage: React.FC = () => {
                   href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto bg-white border-2 border-pink-100 text-pink-600 px-10 py-5 rounded-3xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-pink-50 transition transform active:scale-95 shadow-lg"
+                  className="w-full sm:w-auto bg-white border-2 border-pink-100 text-pink-600 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-pink-50 transition transform active:scale-95"
                 >
-                  <i className="fab fa-instagram text-xl"></i>
+                  <i className="fab fa-instagram text-lg"></i>
                   Siga a Confia
                 </a>
               </div>
             </div>
 
-            {/* CARROSSEL ABAIXO DO TEXTO - Ocupando mais largura para destaque */}
-            <div className="w-full relative overflow-hidden mask-linear-horizontal py-8">
-               <div className="flex gap-8 animate-scrollRight whitespace-nowrap">
+            {/* CARROSSEL - TAMANHO REDUZIDO PARA MOBILE */}
+            <div className="w-full relative overflow-hidden mask-linear-horizontal py-4">
+               <div className="flex gap-4 md:gap-8 animate-scrollRight whitespace-nowrap">
                   {[...loanServices, ...loanServices, ...loanServices].map((item, i) => (
                     <div 
                       key={`${item.id}-${i}`} 
-                      className="inline-block min-w-[300px] md:min-w-[420px] h-[480px] md:h-[600px] bg-gray-900 rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
+                      className="inline-block min-w-[240px] md:min-w-[380px] h-[340px] md:h-[500px] bg-gray-900 rounded-[2.5rem] md:rounded-[3.5rem] relative overflow-hidden shadow-2xl transform hover:scale-[1.02] transition-transform duration-500"
                     >
                       <img 
                         src={item.image_url || 'https://images.unsplash.com/photo-1556742049-13da73667422?auto=format&fit=crop&q=80&w=800'} 
                         alt={item.title} 
-                        className="w-full h-full object-cover opacity-60 grayscale-[40%] hover:grayscale-0 transition-all duration-700" 
+                        className="w-full h-full object-cover opacity-70 transition-all duration-700" 
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-transparent to-transparent"></div>
                       
-                      <div className="absolute bottom-10 left-10 right-10">
-                        <div className="bg-green-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl">
+                      <div className="absolute bottom-8 left-6 right-6 md:bottom-10 md:left-10 md:right-10">
+                        <div className="bg-green-500 text-white w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-2xl mb-4 shadow-xl">
                           <i className={`fas ${item.icon}`}></i>
                         </div>
-                        <h3 className="text-3xl font-black text-white leading-tight mb-2 whitespace-normal">{item.title}</h3>
+                        <h3 className="text-xl md:text-3xl font-black text-white leading-tight mb-2 whitespace-normal">{item.title}</h3>
                         {item.description && (
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black text-green-400 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                            <span className="text-[9px] font-black text-green-400 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-full border border-white/10">
                               {item.description}
                             </span>
                           </div>
@@ -144,34 +144,21 @@ const LoanPage: React.FC = () => {
                     </div>
                   ))}
                </div>
-               
-               {/* Instagram Badge Floating no Carrossel */}
-               <div className="absolute top-1/2 -right-2 -translate-y-1/2 z-30 hidden lg:block">
-                  <a 
-                    href={instagramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-white p-5 rounded-2xl shadow-2xl border border-pink-100 hover:scale-110 transition-transform group"
-                  >
-                    <i className="fab fa-instagram text-4xl text-pink-500 group-hover:rotate-12 transition-transform"></i>
-                    <span className="text-[9px] font-black text-gray-400 uppercase block mt-1 text-center">Reels</span>
-                  </a>
-               </div>
             </div>
 
-            {/* Selos de Confiança abaixo do carrossel */}
-            <div className="flex flex-wrap justify-center gap-12 mt-16 w-full">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 shadow-sm border border-green-100">
-                    <i className="fas fa-bolt text-xl"></i>
+            {/* Selos de Confiança menores */}
+            <div className="flex flex-wrap justify-center gap-8 md:gap-12 mt-12 w-full px-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 md:w-14 md:h-14 bg-green-50 rounded-xl flex items-center justify-center text-green-600 shadow-sm border border-green-100">
+                    <i className="fas fa-bolt text-base md:text-xl"></i>
                   </div>
-                  <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] leading-tight">Rápido &<br/>Digital</span>
+                  <span className="text-[9px] md:text-[10px] font-black text-gray-700 uppercase tracking-widest leading-tight">Rápido &<br/>Digital</span>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 shadow-sm border border-green-100">
-                    <i className="fas fa-shield-halved text-xl"></i>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 md:w-14 md:h-14 bg-green-50 rounded-xl flex items-center justify-center text-green-600 shadow-sm border border-green-100">
+                    <i className="fas fa-shield-halved text-base md:text-xl"></i>
                   </div>
-                  <span className="text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] leading-tight">Seguro &<br/>Garantido</span>
+                  <span className="text-[9px] md:text-[10px] font-black text-gray-700 uppercase tracking-widest leading-tight">Seguro &<br/>Garantido</span>
                 </div>
             </div>
           </div>
@@ -179,55 +166,55 @@ const LoanPage: React.FC = () => {
       </section>
 
       {/* Simulador Section */}
-      <section id="simulator" className="py-24 bg-gray-50 border-y border-gray-100 relative">
+      <section id="simulator" className="py-20 bg-gray-50 border-y border-gray-100 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <div className="inline-block px-4 py-1.5 bg-gray-900 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full mb-6">
               Simulador Confia 2026
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Qual o tamanho do seu sonho?</h2>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-              Temos taxas competitivas para cada perfil. Escolha a modalidade, digite o valor e receba sua proposta personalizada agora.
+            <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight px-4">Qual o tamanho do seu sonho?</h2>
+            <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed px-4">
+              Temos taxas competitivas para cada perfil. Escolha a modalidade, digite o valor e receba sua proposta agora.
             </p>
           </div>
 
-          <div className="bg-white rounded-[4rem] p-8 md:p-16 shadow-2xl shadow-green-900/5 border border-white relative overflow-hidden">
+          <div className="bg-white rounded-[3rem] md:rounded-[4rem] p-6 md:p-16 shadow-2xl shadow-green-900/5 border border-white relative overflow-hidden">
             <LoanCalculator />
           </div>
         </div>
       </section>
 
       {/* Pilares da Confiança */}
-      <section className="py-32 bg-white">
+      <section className="py-20 bg-white px-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="relative group p-10 bg-gray-50 rounded-[3rem] border border-gray-100 transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:bg-white hover:border-green-100">
-              <div className="bg-green-500 w-16 h-16 rounded-2xl flex items-center justify-center text-white mb-8 shadow-xl shadow-green-500/20 group-hover:scale-110 transition-transform">
-                <i className="fas fa-bolt-lightning text-2xl"></i>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="relative group p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 transition-all duration-500">
+              <div className="bg-green-500 w-12 h-12 rounded-xl flex items-center justify-center text-white mb-6 shadow-lg shadow-green-500/20">
+                <i className="fas fa-bolt-lightning text-xl"></i>
               </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4">Aprovação em Minutos</h3>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Aprovação em Minutos</h3>
               <p className="text-gray-500 leading-relaxed text-sm">
-                Sabemos que o tempo é dinheiro. Por isso, nosso sistema analisa sua solicitação em minutos e libera o depósito no mesmo dia útil.
+                Sabemos que o tempo é dinheiro. Análise em minutos e depósito no mesmo dia útil.
               </p>
             </div>
 
-            <div className="relative group p-10 bg-gray-50 rounded-[3rem] border border-gray-100 transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:bg-white hover:border-green-100">
-              <div className="bg-green-500 w-16 h-16 rounded-2xl flex items-center justify-center text-white mb-8 shadow-xl shadow-green-500/20 group-hover:scale-110 transition-transform">
-                <i className="fas fa-hand-holding-heart text-2xl"></i>
+            <div className="relative group p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 transition-all duration-500">
+              <div className="bg-green-500 w-12 h-12 rounded-xl flex items-center justify-center text-white mb-6 shadow-lg shadow-green-500/20">
+                <i className="fas fa-hand-holding-heart text-xl"></i>
               </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4">Atendimento Humanizado</h3>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Atendimento Humizado</h3>
               <p className="text-gray-500 leading-relaxed text-sm">
-                Fale com especialistas reais. A Confia prioriza a relação próxima com o cliente para garantir a melhor experiência de crédito.
+                Fale com especialistas reais. A Confia prioriza a relação próxima com o cliente.
               </p>
             </div>
 
-            <div className="relative group p-10 bg-gray-50 rounded-[3rem] border border-gray-100 transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:bg-white hover:border-green-100">
-              <div className="bg-green-500 w-16 h-16 rounded-2xl flex items-center justify-center text-white mb-8 shadow-xl shadow-green-500/20 group-hover:scale-110 transition-transform">
-                <i className="fas fa-shield-check text-2xl"></i>
+            <div className="relative group p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 transition-all duration-500">
+              <div className="bg-green-500 w-12 h-12 rounded-xl flex items-center justify-center text-white mb-6 shadow-lg shadow-green-500/20">
+                <i className="fas fa-shield-check text-xl"></i>
               </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4">Segurança Absoluta</h3>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Segurança Absoluta</h3>
               <p className="text-gray-500 leading-relaxed text-sm">
-                Processos transparentes e seguindo todas as normas do Banco Central. Seus dados estão protegidos com criptografia de ponta a ponta.
+                Processos transparentes seguindo normas do Banco Central. Seus dados estão protegidos.
               </p>
             </div>
           </div>
@@ -235,54 +222,35 @@ const LoanPage: React.FC = () => {
       </section>
 
       {/* CTA Final com Prova Social */}
-      <section className="pb-32 px-4">
+      <section className="pb-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gray-900 rounded-[4rem] p-12 md:p-24 text-center relative overflow-hidden group shadow-2xl">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[100px] pointer-events-none group-hover:scale-150 transition-transform duration-[3s]"></div>
+          <div className="bg-gray-900 rounded-[3rem] md:rounded-[4rem] p-8 md:p-24 text-center relative overflow-hidden group shadow-2xl">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[100px] pointer-events-none"></div>
              
              <div className="relative z-10">
-                <div className="flex justify-center mb-10 text-white">
-                   <a 
-                    href={instagramUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-white/5 border border-white/10 p-4 rounded-3xl backdrop-blur-sm flex items-center gap-4 hover:bg-white/10 transition"
-                   >
-                      <div className="flex -space-x-3">
-                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" className="w-10 h-10 rounded-full border-2 border-gray-900 object-cover" />
-                         <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100" className="w-10 h-10 rounded-full border-2 border-gray-900 object-cover" />
-                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" className="w-10 h-10 rounded-full border-2 border-gray-900 object-cover" />
-                      </div>
-                      <div className="flex items-center gap-2">
-                         <i className="fab fa-instagram text-pink-500"></i>
-                         <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">Siga @confia_creditofacilseguro</span>
-                      </div>
-                   </a>
-                </div>
-
-                <h2 className="text-5xl md:text-7xl font-black text-white mb-8 leading-[0.9] tracking-tighter">
+                <h2 className="text-4xl md:text-7xl font-black text-white mb-6 leading-[0.9] tracking-tighter">
                   Sua jornada de <br/>sucesso começa aqui.
                 </h2>
-                <p className="text-green-300 text-xl md:text-2xl font-bold mb-14 max-w-2xl mx-auto leading-relaxed">
-                  Não deixe a oportunidade passar. Clique abaixo e fale agora com a <span className="text-white underline decoration-green-500">Confia Crédito</span>.
+                <p className="text-green-300 text-lg md:text-2xl font-bold mb-10 max-w-2xl mx-auto leading-relaxed">
+                  Não deixe a oportunidade passar. Fale agora com a Confia Crédito.
                 </p>
                 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <a 
                     href="https://api.whatsapp.com/send/?phone=5588996842061&text=Ol%C3%A1!%20Estou%20na%20p%C3%A1gina%20da%20Confia%20no%20Empreende2026%20e%20gostaria%20de%20falar%20com%20um%20atendente%20para%20contratar%20meu%20empr%C3%A9stimo.&type=phone_number&app_absent=0"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-12 py-6 rounded-[2.5rem] font-black text-xl shadow-2xl flex items-center justify-center gap-4 transition transform active:scale-95"
+                    className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-10 py-5 rounded-[2rem] font-black text-lg shadow-2xl flex items-center justify-center gap-4 transition transform active:scale-95"
                   >
-                    <i className="fab fa-whatsapp text-3xl"></i>
+                    <i className="fab fa-whatsapp text-2xl"></i>
                     Falar com a Confia
                   </a>
                   <a 
                     href={instagramUrl}
                     target="_blank"
-                    className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white px-12 py-6 rounded-[2.5rem] font-black text-xl backdrop-blur-md border border-white/10 transition flex items-center justify-center gap-4"
+                    className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white px-10 py-5 rounded-[2rem] font-black text-lg backdrop-blur-md border border-white/10 transition flex items-center justify-center gap-4"
                   >
-                    <i className="fab fa-instagram text-3xl"></i>
+                    <i className="fab fa-instagram text-2xl"></i>
                     Ver Instagram
                   </a>
                 </div>
