@@ -8,10 +8,10 @@
     <!-- Favicon Principal (SVG para browsers modernos) -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     
-    <!-- Fallback para browsers antigos (Coloque um favicon.ico na pasta public se desejar) -->
+    <!-- Fallback para browsers antigos -->
     <link rel="alternate icon" href="/favicon.ico">
     
-    <!-- Apple Touch Icon (Ícone para iPhone/iPad) -->
+    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     
     <!-- Manifesto para Android e PWA -->
@@ -27,12 +27,6 @@
     <meta property="og:title" content="NB Empreende | Guia do Empreendedor 2026">
     <meta property="og:description" content="Tudo o que o MEI e Autônomo precisam para prosperar em 2026.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=1200">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://www.nbempreende.com.br/">
-    <meta property="twitter:title" content="NB Empreende | Guia do Empreendedor 2026">
-    <meta property="twitter:description" content="Tudo o que o MEI e Autônomo precisam para prosperar em 2026.">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -51,6 +45,7 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
+        /* Animação Horizontal (para o carrossel de empréstimos) */
         @keyframes infiniteScroll {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
@@ -58,7 +53,16 @@
         .animate-infiniteScroll {
           animation: infiniteScroll 40s linear infinite;
         }
-        .animate-infiniteScroll:hover {
+
+        /* Animação Vertical (para os banners laterais) */
+        @keyframes verticalInfiniteScroll {
+          from { transform: translateY(0); }
+          to { transform: translateY(-50%); }
+        }
+        .animate-verticalInfiniteScroll {
+          animation: verticalInfiniteScroll 30s linear infinite;
+        }
+        .animate-verticalInfiniteScroll:hover {
           animation-play-state: paused;
         }
 
@@ -66,8 +70,16 @@
           mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
         }
 
+        .mask-linear-vertical {
+          mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+
         .prose h2 { font-weight: 900; color: #111827; margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem; }
         .prose p { margin-bottom: 1.25rem; line-height: 1.75; color: #374151; }
+        
+        /* Ocultar scrollbar mas manter funcionalidade */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 <script type="importmap">
 {

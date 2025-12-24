@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -20,6 +19,14 @@ import LoanPage from './components/LoanPage';
 
 type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy' | 'loan';
 
+const FALLBACK_AFFILIATES: Affiliate[] = [
+  { id: 'f1', name: 'Contabilidade MEI', link: '#', banner_url: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=400', active: true, position: 'left' },
+  { id: 'f2', name: 'Gestão Digital', link: '#', banner_url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400', active: true, position: 'right' },
+  { id: 'f3', name: 'Curso Reforma 2026', link: '#', banner_url: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800', active: true, position: 'center' },
+  { id: 'f4', name: 'Maquininha Confia', link: '#', banner_url: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c02?w=400', active: true, position: 'left' },
+  { id: 'f5', name: 'Seguro Autônomo', link: '#', banner_url: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400', active: true, position: 'right' }
+];
+
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('home');
   const [selectedTool, setSelectedTool] = useState<CalculatorType>(CalculatorType.TAX);
@@ -31,7 +38,7 @@ const App: React.FC = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
 
-  // SEO: Atualização dinâmica do Título e JSON-LD
+  // SEO
   useEffect(() => {
     const titles: Record<View, string> = {
       home: 'NB Empreende | Início - Guia do Empreendedor 2026',
@@ -44,24 +51,6 @@ const App: React.FC = () => {
       privacy: 'Privacidade | NB Empreende'
     };
     document.title = selectedPost ? selectedPost.title : titles[currentView];
-
-    // Injetar JSON-LD
-    const schema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "NB Empreende",
-      "url": "https://www.nbempreende.com.br",
-      "logo": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200",
-      "sameAs": [
-        "https://www.instagram.com/confia_creditofacilseguro/"
-      ]
-    };
-    const script = document.getElementById('json-ld-org') || document.createElement('script');
-    script.id = 'json-ld-org';
-    (script as any).type = 'application/ld+json';
-    script.innerHTML = JSON.stringify(schema);
-    if (!document.getElementById('json-ld-org')) document.head.appendChild(script);
-
   }, [currentView, selectedPost]);
 
   useEffect(() => {
@@ -83,15 +72,25 @@ const App: React.FC = () => {
   };
 
   const fetchContent = async () => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured) {
+      setAffiliates(FALLBACK_AFFILIATES);
+      return;
+    }
     try {
       const [affs, parts] = await Promise.all([
         supabase.from('affiliates').select('*'),
         supabase.from('partners').select('*') 
       ]);
-      if (affs.data) setAffiliates(affs.data as Affiliate[]);
+      if (affs.data && affs.data.length > 0) {
+        setAffiliates(affs.data as Affiliate[]);
+      } else {
+        setAffiliates(FALLBACK_AFFILIATES);
+      }
       if (parts.data) setPartners(parts.data.filter((p: any) => p.logo_url && p.active !== false) as Partner[]);
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err); 
+      setAffiliates(FALLBACK_AFFILIATES);
+    }
   };
 
   useEffect(() => {
@@ -116,6 +115,28 @@ const App: React.FC = () => {
     });
   };
 
+  const renderSidebarBanner = (b: Affiliate, i: number) => (
+    <a 
+      key={`${b.id}-${i}`} 
+      href={b.link} 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      className="block w-full aspect-square rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all bg-white group relative pointer-events-auto"
+    >
+      <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" />
+      
+      {/* Selo OFERTA */}
+      <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-[7px] font-black uppercase px-2 py-0.5 rounded shadow-md group-hover:scale-110 transition-transform">
+        OFERTA
+      </div>
+
+      {/* Botão Compre Agora (Aparece no Hover) */}
+      <div className="absolute inset-0 bg-blue-700/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center">
+        <span className="text-white font-black text-[9px] uppercase leading-tight">Compre<br/>Agora</span>
+      </div>
+    </a>
+  );
+
   const renderContent = () => {
     switch (currentView) {
       case 'home':
@@ -123,7 +144,6 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={(t) => { setSelectedTool(t); navigateTo(t === CalculatorType.LOAN ? 'loan' : 'tool-detail'); }} onSelectConsultant={() => {}} />
             
-            {/* Parceiros - SEO Alt tags e Links */}
             <section className="py-16 bg-white border-b border-gray-50">
                <div className="max-w-6xl mx-auto px-4 text-center">
                   <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Empresas que confiam na NB Empreende</h2>
@@ -141,7 +161,7 @@ const App: React.FC = () => {
                </div>
             </section>
 
-            {/* Banners Centrais com Lazy Loading */}
+            {/* Banners Centrais */}
             {banners.center.length > 0 && (
               <div className="max-w-xl mx-auto px-4 my-12 space-y-6">
                 {banners.center.map(b => (
@@ -150,8 +170,11 @@ const App: React.FC = () => {
                     <button onClick={() => toggleBannerClosed(b.id)} className="absolute -top-3 -right-3 z-40 bg-white shadow-md text-gray-400 w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all border border-gray-100">
                       <i className="fas fa-times text-xs"></i>
                     </button>
-                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-xl border-2 border-white aspect-video md:aspect-[3/1] bg-gray-50">
+                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-xl border-2 border-white aspect-video md:aspect-[3/1] bg-gray-50 group relative">
                       <img src={b.banner_url} alt={`Banner Oferta ${b.name}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute inset-0 bg-blue-700/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                         <span className="bg-white text-blue-700 px-6 py-2 rounded-full font-black text-xs uppercase shadow-xl">Aproveitar Oferta</span>
+                      </div>
                     </a>
                   </div>
                 ))}
@@ -205,29 +228,28 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Laterais com Banners Otimizados */}
-        <aside className="hidden lg:block fixed left-6 top-1/4 bottom-1/4 w-24 z-40 overflow-hidden pointer-events-none" aria-hidden="true">
-          <div className="flex flex-col gap-4 animate-infiniteScroll pointer-events-auto py-10" style={{ animationDirection: 'reverse' }}>
-            {(banners.left.length > 0 ? [...banners.left, ...banners.left] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full aspect-square rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all bg-white group relative">
-                <img src={b.banner_url} alt={`Destaque ${b.name}`} loading="lazy" className="w-full h-full object-cover" />
-              </a>
-            ))}
+        {/* Laterais com Banners Verticais Infinitos */}
+        <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
+          <div className="flex flex-col gap-6 animate-verticalInfiniteScroll py-10" style={{ animationDirection: 'reverse' }}>
+            {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
 
         <main className="flex-grow min-w-0 lg:mx-36">
           {renderContent()}
 
-          {/* Mobile Carrossel - Otimizado para Mobile Speed */}
+          {/* Mobile Carrossel */}
           {banners.allActive.length > 0 && currentView === 'home' && (
             <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
                <div className="max-w-5xl mx-auto px-4 text-center">
                   <h3 className="text-[10px] font-black text-gray-400 mb-6 uppercase tracking-[0.3em]">Sugestões NB para Você</h3>
                   <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
                     {banners.allActive.map(b => (
-                      <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="min-w-[150px] h-[150px] rounded-3xl overflow-hidden shadow-md border-2 border-white shrink-0 bg-white">
+                      <a key={b.id} href={b.link} target="_blank" rel="noopener noreferrer" className="min-w-[150px] h-[150px] rounded-3xl overflow-hidden shadow-md border-2 border-white shrink-0 bg-white group relative">
                         <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-blue-700/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                           <span className="text-white font-black text-[10px] uppercase">Ver Oferta</span>
+                        </div>
                       </a>
                     ))}
                   </div>
@@ -236,13 +258,9 @@ const App: React.FC = () => {
           )}
         </main>
 
-        <aside className="hidden lg:block fixed right-6 top-1/4 bottom-1/4 w-24 z-40 overflow-hidden pointer-events-none" aria-hidden="true">
-          <div className="flex flex-col gap-4 animate-infiniteScroll pointer-events-auto py-10">
-            {(banners.right.length > 0 ? [...banners.right, ...banners.right] : []).map((b, i) => (
-              <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="block w-full aspect-square rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all bg-white group relative">
-                <img src={b.banner_url} alt={`Destaque ${b.name}`} loading="lazy" className="w-full h-full object-cover" />
-              </a>
-            ))}
+        <aside className="hidden lg:block fixed right-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
+          <div className="flex flex-col gap-6 animate-verticalInfiniteScroll py-10">
+            {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
       </div>
@@ -250,7 +268,7 @@ const App: React.FC = () => {
       {showMemberArea && <MemberArea onClose={() => setShowMemberArea(false)} />}
       {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchContent(); }} initialAffiliates={affiliates} onRefresh={fetchContent} />}
 
-      {/* Post Modal com Artigo Semântico */}
+      {/* Post Modal */}
       {selectedPost && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-gray-900/80 backdrop-blur-md animate-fadeIn">
           <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl relative">
