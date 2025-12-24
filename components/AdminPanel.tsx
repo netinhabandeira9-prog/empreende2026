@@ -24,7 +24,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   const [error, setError] = useState('');
   const [uploadingId, setUploadingId] = useState<string | null>(null);
 
-  // Lista padrão para facilitar a edição pelo usuário caso o banco esteja vazio
   const defaultLoans: LoanService[] = [
     { id: 'new-1', title: "Aposentados & INSS", description: "Taxa 1.2%", image_url: "", icon: "fa-person-cane", active: true },
     { id: 'new-2', title: "Bolsa Família", description: "Taxa 1.5%", image_url: "", icon: "fa-house-chimney-user", active: true },
@@ -48,7 +47,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       if (data && data.length > 0) {
         setLoanServices(data);
       } else {
-        // Se estiver vazio, carrega os padrões para o usuário poder "trocar" as imagens
         setLoanServices(defaultLoans);
       }
     } catch (err) { 
@@ -63,9 +61,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     setIsLoading(true);
     try {
       const { data } = await supabase.from('partners').select('*');
-      if (data) {
-        setPartners(data.map((p: any) => ({ ...p, active: p.active ?? true })));
-      }
+      if (data) setPartners(data.map((p: any) => ({ ...p, active: p.active ?? true })));
     } catch (err) { console.error(err); }
     finally { setIsLoading(false); }
   };
@@ -180,10 +176,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           active: l.active,
           order_index: index
         }));
-        await supabase.from('loan_services').upsert(payload);
+        const { error } = await supabase.from('loan_services').upsert(payload);
+        if (error) throw error;
         fetchLoanServices();
       }
-      alert("Sucesso!");
+      alert("Sucesso! As alterações foram salvas.");
     } catch (err: any) {
       alert("Erro ao salvar: " + err.message);
     } finally { setIsSaving(false); }
@@ -230,7 +227,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
               className={`px-8 py-4 rounded-2xl font-black text-sm shadow-lg flex items-center space-x-2 text-white ${activeSection === 'loans' ? 'bg-green-600' : 'bg-blue-600'}`}
             >
               <i className="fas fa-plus"></i> 
-              <span>Novo {activeSection === 'affiliates' ? 'Produto' : activeSection === 'partners' ? 'Parceiro' : 'Serviço de Crédito'}</span>
+              <span>Novo {activeSection === 'affiliates' ? 'Produto' : activeSection === 'partners' ? 'Parceiro' : 'Serviço'}</span>
             </button>
             <button onClick={onClose} className="bg-gray-100 text-gray-400 w-14 h-14 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition">
               <i className="fas fa-times text-xl"></i>
@@ -239,6 +236,74 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
         </div>
 
         <div className="grid grid-cols-1 gap-8">
+          {/* Sessão de Empréstimos - Interface Melhorada */}
+          {activeSection === 'loans' && loanServices.map((item) => (
+            <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group animate-fadeIn">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-4">
+                  <div className="relative aspect-[4/5] bg-gray-200 rounded-3xl overflow-hidden shadow-inner border-4 border-white group/img">
+                    {item.image_url ? (
+                      <img src={item.image_url} className="w-full h-full object-cover" alt={item.title} />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
+                        <i className="fas fa-image text-4xl"></i>
+                        <span className="text-[10px] font-black uppercase">Sem Imagem</span>
+                      </div>
+                    )}
+                    <label className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-all flex flex-col items-center justify-center cursor-pointer">
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'loan')} />
+                      <div className="bg-white text-gray-900 px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-xl transform group-hover/img:scale-110 transition-transform">
+                        {uploadingId === item.id ? <i className="fas fa-spinner animate-spin"></i> : 'Trocar Foto'}
+                      </div>
+                    </label>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      const input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = 'image/*';
+                      input.onchange = (e: any) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'loan');
+                      input.click();
+                    }}
+                    className="w-full mt-4 py-3 bg-white text-gray-500 rounded-xl text-[10px] font-black uppercase border border-gray-200 lg:hidden"
+                  >
+                    Mudar Foto (Mobile)
+                  </button>
+                </div>
+                
+                <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="md:col-span-2 space-y-4">
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Título do Card</label>
+                      <input type="text" value={item.title} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, title: e.target.value } : l))} className="w-full bg-white px-5 py-4 rounded-2xl font-black border-2 border-transparent focus:border-green-600 outline-none text-gray-800" placeholder="Ex: Aposentados & INSS" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Destaque / Taxas (Ex: 1.2%)</label>
+                      <input type="text" value={item.description} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, description: e.target.value } : l))} className="w-full bg-white px-5 py-4 rounded-2xl font-bold border-2 border-transparent focus:border-green-600 outline-none text-gray-600" placeholder="Taxa 1.2%" />
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between bg-white p-5 rounded-2xl border">
+                    <label className="flex items-center gap-3 cursor-pointer select-none">
+                      <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition ${item.active ? 'bg-green-500 border-green-500' : 'bg-gray-100 border-gray-200'}`}>
+                        <input type="checkbox" className="hidden" checked={item.active} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, active: e.target.checked } : l))} />
+                        {item.active && <i className="fas fa-check text-white text-[10px]"></i>}
+                      </div>
+                      <span className="text-xs font-black uppercase text-gray-700">Ativo no Site</span>
+                    </label>
+                    <button onClick={() => handleDeleteItem(item.id, 'loan_services')} className="text-red-500 hover:scale-125 transition">
+                      <i className="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                  <div className="bg-gray-100 p-5 rounded-2xl flex items-center justify-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    Página Empréstimos
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Manutenção dos outros filtros (Affiliates/Partners) */}
           {activeSection === 'affiliates' && affiliates.map((item) => (
               <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -301,53 +366,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                 </div>
               </div>
           ))}
-
-          {activeSection === 'loans' && loanServices.map((item) => (
-              <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group animate-fadeIn">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                  <div className="lg:col-span-3">
-                    <div className="aspect-[4/5] bg-gray-200 rounded-3xl overflow-hidden relative shadow-inner border-2 border-white">
-                      {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-400 flex-col gap-2"><i className="fas fa-image text-3xl"></i><span className="text-[10px] font-black uppercase">Card Imagem</span></div>}
-                      <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer">
-                        <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'loan')} />
-                        <span className="bg-white px-4 py-2 rounded-xl text-xs font-black uppercase">{uploadingId === item.id ? '...' : 'Trocar Imagem'}</span>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="lg:col-span-6 space-y-4">
-                    <div>
-                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Título do Serviço</label>
-                      <input type="text" value={item.title} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, title: e.target.value } : l))} className="w-full bg-white px-4 py-3 rounded-xl font-black border mt-1" placeholder="Ex: Aposentados & INSS" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Descrição/Badge (Ex: Taxas de 1.2%)</label>
-                      <input type="text" value={item.description} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, description: e.target.value } : l))} className="w-full bg-white px-4 py-3 rounded-xl text-xs font-bold border mt-1" placeholder="Informação de destaque no card" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Ícone Awesome (Ex: fa-money-bill)</label>
-                      <input type="text" value={item.icon} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, icon: e.target.value } : l))} className="w-full bg-white px-4 py-3 rounded-xl text-xs font-bold border mt-1" placeholder="fa-icon-name" />
-                    </div>
-                  </div>
-                  <div className="lg:col-span-3 flex flex-col gap-4">
-                    <div className="flex items-center justify-between bg-white p-4 rounded-xl border">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" checked={item.active} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, active: e.target.checked } : l))} />
-                        <span className="text-[10px] font-black uppercase">Ativo na Página</span>
-                      </label>
-                      <button onClick={() => handleDeleteItem(item.id, 'loan_services')} className="text-red-500 hover:scale-110 transition"><i className="fas fa-trash-alt"></i></button>
-                    </div>
-                    <div className="text-[10px] text-gray-400 font-bold p-2 text-center bg-gray-100 rounded-lg">
-                      Item salvo localmente
-                    </div>
-                  </div>
-                </div>
-              </div>
-          ))}
         </div>
 
         <div className="mt-16 flex justify-end">
-          <button onClick={handleSave} disabled={isSaving} className="bg-gray-900 text-white px-16 py-5 rounded-[2rem] font-black text-xl shadow-2xl disabled:opacity-50 transition active:scale-95">
-            {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+          <button onClick={handleSave} disabled={isSaving} className={`bg-gray-900 text-white px-16 py-6 rounded-[2rem] font-black text-xl shadow-2xl disabled:opacity-50 transition active:scale-95 flex items-center gap-4 ${isSaving ? 'bg-gray-700' : ''}`}>
+            {isSaving ? <i className="fas fa-spinner animate-spin"></i> : <i className="fas fa-save"></i>}
+            <span>{isSaving ? 'Salvando...' : 'Salvar Todas as Alterações'}</span>
           </button>
         </div>
       </div>
