@@ -137,6 +137,16 @@ const App: React.FC = () => {
     </a>
   );
 
+  // Função para garantir que o carrossel infinito tenha itens suficientes para preencher o container e rotacionar sem cortes
+  const repeatBannersForLoop = (list: Affiliate[], minItems: number = 8) => {
+    if (list.length === 0) return [];
+    let doubled = [...list];
+    while (doubled.length < minItems) {
+      doubled = [...doubled, ...list];
+    }
+    return [...doubled, ...doubled]; // Duplicado para a lógica de -50% a 0% ou 0% a -50%
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'home':
@@ -231,7 +241,7 @@ const App: React.FC = () => {
         {/* Lateral Esquerda: Cima para Baixo */}
         <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollDown py-10">
-            {(banners.left.length > 0 ? [...banners.left, ...banners.left, ...banners.left] : []).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatBannersForLoop(banners.left).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
 
@@ -263,7 +273,7 @@ const App: React.FC = () => {
         {/* Lateral Direita: Baixo para Cima */}
         <aside className="hidden lg:block fixed right-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollUp py-10">
-            {(banners.right.length > 0 ? [...banners.right, ...banners.right, ...banners.right] : []).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatBannersForLoop(banners.right).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
       </div>
