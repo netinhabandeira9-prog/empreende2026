@@ -5,6 +5,7 @@ import BlogSection from './components/BlogSection';
 import AIConsultant from './components/AIConsultant';
 import MemberArea from './components/MemberArea';
 import AdminPanel from './components/AdminPanel';
+import AdUnit from './components/AdUnit';
 import { BlogPost, CalculatorType, Affiliate, Partner } from './types';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 
@@ -37,21 +38,6 @@ const App: React.FC = () => {
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
-
-  // SEO
-  useEffect(() => {
-    const titles: Record<View, string> = {
-      home: 'NB Empreende | Início - Guia do Empreendedor 2026',
-      blog: 'Blog Editorial | NB Empreende - Notícias para MEI',
-      calculators: 'Calculadoras Gratuitas | NB Empreende',
-      'tool-detail': 'Ferramenta de Simulação | NB Empreende',
-      loan: 'Simulador de Crédito | NB Empreende & Confia',
-      about: 'Sobre a NB Empreende',
-      contact: 'Fale Conosco | NB Empreende',
-      privacy: 'Privacidade | NB Empreende'
-    };
-    document.title = selectedPost ? selectedPost.title : titles[currentView];
-  }, [currentView, selectedPost]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -88,7 +74,6 @@ const App: React.FC = () => {
       }
       if (parts.data) setPartners(parts.data.filter((p: any) => p.logo_url && p.active !== false) as Partner[]);
     } catch (err) { 
-      console.error(err); 
       setAffiliates(FALLBACK_AFFILIATES);
     }
   };
@@ -124,26 +109,18 @@ const App: React.FC = () => {
       className="block w-full aspect-square rounded-2xl overflow-hidden shadow-lg border-2 border-white hover:scale-110 transition-all bg-white group relative pointer-events-auto"
     >
       <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500" />
-      
-      {/* Selo OFERTA */}
-      <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-[7px] font-black uppercase px-2 py-0.5 rounded shadow-md group-hover:scale-110 transition-transform">
-        OFERTA
-      </div>
-
-      {/* Botão Compre Agora (Aparece no Hover) */}
+      <div className="absolute top-2 left-2 z-10 bg-red-600 text-white text-[7px] font-black uppercase px-2 py-0.5 rounded shadow-md">OFERTA</div>
       <div className="absolute inset-0 bg-blue-700/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2 text-center">
-        <span className="text-white font-black text-[9px] uppercase leading-tight">Compre<br/>Agora</span>
+        <span className="text-white font-black text-[9px] uppercase leading-tight">Compre Agora</span>
       </div>
     </a>
   );
 
-  const repeatBannersForLoop = (list: Affiliate[], minItems: number = 10) => {
+  const repeatBanners = (list: Affiliate[], minItems: number = 20) => {
     if (list.length === 0) return [];
-    let doubled = [...list];
-    while (doubled.length < minItems) {
-      doubled = [...doubled, ...list];
-    }
-    return [...doubled, ...doubled];
+    let items = [...list];
+    while (items.length < minItems) items = [...items, ...list];
+    return [...items, ...items];
   };
 
   const renderContent = () => {
@@ -153,19 +130,19 @@ const App: React.FC = () => {
           <>
             <Hero onSelectTool={(t) => { setSelectedTool(t); navigateTo(t === CalculatorType.LOAN ? 'loan' : 'tool-detail'); }} onSelectConsultant={() => {}} />
             
+            <div className="max-w-6xl mx-auto px-4">
+              <AdUnit slot="ads-home-hero" />
+            </div>
+
             <section className="py-16 bg-white border-b border-gray-50">
                <div className="max-w-6xl mx-auto px-4 text-center">
                   <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Empresas que confiam na NB Empreende</h2>
                   <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-                    {partners.length > 0 ? (
-                      partners.map(p => (
+                    {partners.map(p => (
                         <a key={p.id} href={p.link || '#'} target="_blank" rel="noopener noreferrer" className="h-20 md:h-32 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all transform hover:scale-105 flex items-center justify-center">
-                           <img src={p.logo_url} alt={`Parceiro ${p.name}`} loading="lazy" className="h-full w-auto max-w-[220px] object-contain" />
+                           <img src={p.logo_url} alt={p.name} loading="lazy" className="h-full w-auto max-w-[220px] object-contain" />
                         </a>
-                      ))
-                    ) : (
-                      <div className="text-[9px] font-bold text-gray-200 uppercase tracking-widest">Nossos parceiros aparecerão aqui.</div>
-                    )}
+                    ))}
                   </div>
                </div>
             </section>
@@ -175,15 +152,11 @@ const App: React.FC = () => {
               <div className="max-w-xl mx-auto px-4 my-12 space-y-6">
                 {banners.center.map(b => (
                   <div key={b.id} className="relative group animate-fadeIn">
-                    <div className="absolute -top-3 left-4 z-30 bg-red-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">OFERTA NB</div>
                     <button onClick={() => toggleBannerClosed(b.id)} className="absolute -top-3 -right-3 z-40 bg-white shadow-md text-gray-400 w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all border border-gray-100">
                       <i className="fas fa-times text-xs"></i>
                     </button>
                     <a href={b.link} target="_blank" rel="noopener noreferrer" className="block rounded-3xl overflow-hidden shadow-xl border-2 border-white aspect-video md:aspect-[3/1] bg-gray-50 group relative">
-                      <img src={b.banner_url} alt={`Banner Oferta ${b.name}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-blue-700/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                         <span className="bg-white text-blue-700 px-6 py-2 rounded-full font-black text-xs uppercase shadow-xl">Aproveitar Oferta</span>
-                      </div>
+                      <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     </a>
                   </div>
                 ))}
@@ -210,6 +183,11 @@ const App: React.FC = () => {
             </div>
 
             <BlogSection onReadPost={setSelectedPost} />
+            
+            <div className="max-w-6xl mx-auto px-4">
+              <AdUnit slot="ads-home-footer" />
+            </div>
+
             <AIConsultant />
           </>
         );
@@ -240,7 +218,7 @@ const App: React.FC = () => {
         {/* Lateral Esquerda: Cima para Baixo */}
         <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollDown py-10">
-            {repeatBannersForLoop(banners.left, 15).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatBanners(banners.left).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
 
@@ -254,12 +232,9 @@ const App: React.FC = () => {
                   <h3 className="text-[10px] font-black text-gray-400 mb-6 uppercase tracking-[0.3em]">Sugestões NB para Você</h3>
                   <div className="flex gap-4 overflow-hidden mask-linear-horizontal py-2">
                     <div className="flex gap-4 animate-scrollRight w-max">
-                      {repeatBannersForLoop(banners.allActive, 10).map((b, i) => (
+                      {repeatBanners(banners.allActive).map((b, i) => (
                         <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="min-w-[150px] h-[150px] rounded-3xl overflow-hidden shadow-md border-2 border-white shrink-0 bg-white group relative pointer-events-auto">
                           <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-blue-700/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                             <span className="text-white font-black text-[10px] uppercase">Ver Oferta</span>
-                          </div>
                         </a>
                       ))}
                     </div>
@@ -272,7 +247,7 @@ const App: React.FC = () => {
         {/* Lateral Direita: Baixo para Cima */}
         <aside className="hidden lg:block fixed right-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollUp py-10">
-            {repeatBannersForLoop(banners.right, 15).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatBanners(banners.right).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
       </div>
@@ -301,15 +276,16 @@ const App: React.FC = () => {
                     </div>
                     <h2 className="text-2xl md:text-5xl font-black text-gray-900 mb-8 leading-tight">{selectedPost.title}</h2>
                   </header>
+                  <AdUnit slot="ads-post-top" />
                   <div className="text-gray-700 leading-relaxed text-lg">
                     {selectedPost.content.split('\n').map((paragraph, idx) => {
                       const trimmed = paragraph.trim();
                       if (!trimmed) return <br key={idx} />;
                       if (trimmed.startsWith('###')) return <h3 key={idx} className="font-black text-gray-900 mt-10 mb-4">{trimmed.replace('###', '').trim()}</h3>;
-                      if (trimmed.startsWith('*')) return <li key={idx} className="ml-6 mb-2 list-disc">{trimmed.replace('*', '').trim()}</li>;
                       return <p key={idx} className="mb-6">{trimmed}</p>;
                     })}
                   </div>
+                  <AdUnit slot="ads-post-bottom" />
                 </div>
               </div>
             </article>
