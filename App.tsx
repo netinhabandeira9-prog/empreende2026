@@ -137,14 +137,13 @@ const App: React.FC = () => {
     </a>
   );
 
-  // Função para garantir que o carrossel infinito tenha itens suficientes para preencher o container e rotacionar sem cortes
-  const repeatBannersForLoop = (list: Affiliate[], minItems: number = 15) => {
+  const repeatBannersForLoop = (list: Affiliate[], minItems: number = 10) => {
     if (list.length === 0) return [];
     let doubled = [...list];
     while (doubled.length < minItems) {
       doubled = [...doubled, ...list];
     }
-    return [...doubled, ...doubled]; // Duplicado para a lógica de -50% a 0% ou 0% a -50%
+    return [...doubled, ...doubled];
   };
 
   const renderContent = () => {
@@ -238,7 +237,7 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Lateral Esquerda: Cima para Baixo (Scroll Down) */}
+        {/* Lateral Esquerda: Cima para Baixo */}
         <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollDown py-10">
             {repeatBannersForLoop(banners.left, 15).map((b, i) => renderSidebarBanner(b, i))}
@@ -248,7 +247,7 @@ const App: React.FC = () => {
         <main className="flex-grow min-w-0 lg:mx-36">
           {renderContent()}
 
-          {/* Mobile Carrossel: Esquerda para Direita (Scroll Right) */}
+          {/* Mobile Carrossel: Esquerda para Direita */}
           {banners.allActive.length > 0 && currentView === 'home' && (
             <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
                <div className="max-w-5xl mx-auto px-4 text-center">
@@ -270,7 +269,7 @@ const App: React.FC = () => {
           )}
         </main>
 
-        {/* Lateral Direita: Baixo para Cima (Scroll Up) */}
+        {/* Lateral Direita: Baixo para Cima */}
         <aside className="hidden lg:block fixed right-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollUp py-10">
             {repeatBannersForLoop(banners.right, 15).map((b, i) => renderSidebarBanner(b, i))}
