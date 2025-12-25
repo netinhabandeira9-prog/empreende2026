@@ -138,7 +138,7 @@ const App: React.FC = () => {
   );
 
   // Função para garantir que o carrossel infinito tenha itens suficientes para preencher o container e rotacionar sem cortes
-  const repeatBannersForLoop = (list: Affiliate[], minItems: number = 8) => {
+  const repeatBannersForLoop = (list: Affiliate[], minItems: number = 15) => {
     if (list.length === 0) return [];
     let doubled = [...list];
     while (doubled.length < minItems) {
@@ -238,24 +238,24 @@ const App: React.FC = () => {
       />
       
       <div className="flex-grow flex relative">
-        {/* Lateral Esquerda: Cima para Baixo */}
+        {/* Lateral Esquerda: Cima para Baixo (Scroll Down) */}
         <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollDown py-10">
-            {repeatBannersForLoop(banners.left).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatBannersForLoop(banners.left, 15).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
 
         <main className="flex-grow min-w-0 lg:mx-36">
           {renderContent()}
 
-          {/* Mobile Carrossel: Esquerda para Direita */}
+          {/* Mobile Carrossel: Esquerda para Direita (Scroll Right) */}
           {banners.allActive.length > 0 && currentView === 'home' && (
             <div className="lg:hidden bg-gray-50 py-10 border-t border-gray-100 overflow-hidden">
                <div className="max-w-5xl mx-auto px-4 text-center">
                   <h3 className="text-[10px] font-black text-gray-400 mb-6 uppercase tracking-[0.3em]">Sugestões NB para Você</h3>
                   <div className="flex gap-4 overflow-hidden mask-linear-horizontal py-2">
                     <div className="flex gap-4 animate-scrollRight w-max">
-                      {[...banners.allActive, ...banners.allActive].map((b, i) => (
+                      {repeatBannersForLoop(banners.allActive, 10).map((b, i) => (
                         <a key={`${b.id}-${i}`} href={b.link} target="_blank" rel="noopener noreferrer" className="min-w-[150px] h-[150px] rounded-3xl overflow-hidden shadow-md border-2 border-white shrink-0 bg-white group relative pointer-events-auto">
                           <img src={b.banner_url} alt={b.name} loading="lazy" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-blue-700/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -270,10 +270,10 @@ const App: React.FC = () => {
           )}
         </main>
 
-        {/* Lateral Direita: Baixo para Cima */}
+        {/* Lateral Direita: Baixo para Cima (Scroll Up) */}
         <aside className="hidden lg:block fixed right-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollUp py-10">
-            {repeatBannersForLoop(banners.right).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatBannersForLoop(banners.right, 15).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
       </div>

@@ -45,7 +45,7 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Mobile: Esquerda para Direita */
+        /* Mobile: Esquerda para Direita (Scroll Right) */
         @keyframes scrollRight {
           from { transform: translateX(-50%); }
           to { transform: translateX(0); }
@@ -54,22 +54,22 @@
           animation: scrollRight 30s linear infinite;
         }
 
-        /* Esquerda: Cima para Baixo */
+        /* Esquerda: Cima para Baixo (Scroll Down) */
         @keyframes scrollDown {
           from { transform: translateY(-50%); }
           to { transform: translateY(0); }
         }
         .animate-scrollDown {
-          animation: scrollDown 40s linear infinite;
+          animation: scrollDown 35s linear infinite;
         }
 
-        /* Direita: Baixo para Cima */
+        /* Direita: Baixo para Cima (Scroll Up) */
         @keyframes scrollUp {
           from { transform: translateY(0); }
           to { transform: translateY(-50%); }
         }
         .animate-scrollUp {
-          animation: scrollUp 40s linear infinite;
+          animation: scrollUp 35s linear infinite;
         }
 
         .animate-scrollDown:hover, .animate-scrollUp:hover, .animate-scrollRight:hover {
