@@ -15,7 +15,7 @@
       "destination": "/site.webmanifest"
     },
     {
-      "source": "/((?!api|favicon.ico|favicon.svg|apple-touch-icon.png|site.webmanifest|robots.txt|sitemap.xml).*).*",
+      "source": "/((?!api|favicon.ico|favicon.svg|apple-touch-icon.png|site.webmanifest|robots.txt|sitemap.xml|assets/).*)",
       "destination": "/index.html"
     }
   ]
