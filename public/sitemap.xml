@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Portal Principal -->
+  <!-- Portal Principal NB Empreende -->
   <url>
     <loc>https://www.nbempreende.com.br/</loc>
     <lastmod>2026-05-24</lastmod>
@@ -8,25 +8,31 @@
     <priority>1.0</priority>
   </url>
   
-  <!-- Seções de Negócio -->
+  <!-- Blog Editorial e Guias Tributários -->
   <url>
     <loc>https://www.nbempreende.com.br/#blog</loc>
     <lastmod>2026-05-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
+  
+  <!-- Simulador de Crédito Confia -->
   <url>
     <loc>https://www.nbempreende.com.br/#loan</loc>
     <lastmod>2026-05-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  
+  <!-- Performance e Sono Score Pro (Novo) -->
   <url>
     <loc>https://www.nbempreende.com.br/#sono-score</loc>
     <lastmod>2026-05-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  
+  <!-- Central de Calculadoras -->
   <url>
     <loc>https://www.nbempreende.com.br/#calculators</loc>
     <lastmod>2026-05-20</lastmod>
@@ -34,7 +40,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Informacional -->
+  <!-- Páginas Institucionais -->
   <url>
     <loc>https://www.nbempreende.com.br/#about</loc>
     <lastmod>2026-01-01</lastmod>
