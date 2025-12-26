@@ -6,7 +6,7 @@ import AIConsultant from './components/AIConsultant';
 import MemberArea from './components/MemberArea';
 import AdminPanel from './components/AdminPanel';
 import AdUnit from './components/AdUnit';
-import { BlogPost, CalculatorType, Affiliate, Partner } from './types';
+import { BlogPost, CalculatorType, Affiliate, Partner, View } from './types';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 
 // Páginas
@@ -17,8 +17,7 @@ import ToolDetailPage from './components/ToolDetailPage';
 import PrivacyPage from './components/PrivacyPage';
 import BlogPage from './components/BlogPage';
 import LoanPage from './components/LoanPage';
-
-type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy' | 'loan';
+import SonoScorePage from './components/SonoScorePage';
 
 const FALLBACK_AFFILIATES: Affiliate[] = [
   { id: 'f1', name: 'Contabilidade MEI', link: '#', banner_url: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=400', active: true, position: 'left' },
@@ -42,7 +41,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as View;
-      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'loan'];
+      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'loan', 'sono-score'];
       if (validViews.includes(hash)) {
         setCurrentView(hash);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -134,7 +133,7 @@ const App: React.FC = () => {
               <AdUnit slot="ads-home-hero" />
             </div>
 
-            <section className="py-16 bg-white border-b border-gray-50">
+            <section className="py-12 bg-white border-b border-gray-50">
                <div className="max-w-6xl mx-auto px-4 text-center">
                   <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Empresas que confiam na NB Empreende</h2>
                   <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
@@ -149,7 +148,7 @@ const App: React.FC = () => {
 
             {/* Banners Centrais */}
             {banners.center.length > 0 && (
-              <div className="max-w-xl mx-auto px-4 my-12 space-y-6">
+              <div className="max-w-xl mx-auto px-4 my-8 space-y-6">
                 {banners.center.map(b => (
                   <div key={b.id} className="relative group animate-fadeIn">
                     <button onClick={() => toggleBannerClosed(b.id)} className="absolute -top-3 -right-3 z-40 bg-white shadow-md text-gray-400 w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all border border-gray-100">
@@ -163,7 +162,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+            <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                <button onClick={() => { setSelectedTool(CalculatorType.TAX); navigateTo('tool-detail'); }} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 transform hover:-translate-y-2 transition text-left group">
                   <div className="bg-blue-100 p-3 rounded-full text-blue-700 group-hover:bg-blue-700 group-hover:text-white transition"><i className="fas fa-university text-xl"></i></div>
                   <div><h3 className="font-bold text-gray-900 text-sm">IBS & CBS 2026</h3><p className="text-[10px] text-gray-500">Calculadora Tributária.</p></div>
@@ -195,6 +194,7 @@ const App: React.FC = () => {
       case 'calculators': return <CalculatorsHub onSelectTool={(t) => { setSelectedTool(t); navigateTo('tool-detail'); }} />;
       case 'tool-detail': return <ToolDetailPage toolType={selectedTool} onToolChange={setSelectedTool} />;
       case 'loan': return <LoanPage />;
+      case 'sono-score': return <SonoScorePage />;
       case 'about': return <AboutPage />;
       case 'contact': return <ContactPage />;
       case 'privacy': return <PrivacyPage />;
@@ -214,7 +214,7 @@ const App: React.FC = () => {
         currentView={currentView}
       />
       
-      <div className="flex-grow flex relative">
+      <div className={`flex-grow flex relative ${currentView === 'sono-score' ? 'bg-[#0f172a]' : ''}`}>
         {/* Lateral Esquerda: Cima para Baixo */}
         <aside className="hidden lg:block fixed left-6 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollDown py-10">
@@ -222,7 +222,7 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        <main className="flex-grow min-w-0 lg:mx-36">
+        <main className={`flex-grow min-w-0 ${currentView === 'sono-score' ? '' : 'lg:mx-36'}`}>
           {renderContent()}
 
           {/* Mobile Carrossel: Esquerda para Direita */}
@@ -293,18 +293,18 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <footer className="bg-gray-900 text-gray-400 py-16">
+      <footer className={`${currentView === 'sono-score' ? 'bg-[#0f172a] border-t border-white/5' : 'bg-gray-900'} text-gray-400 py-16 transition-colors`}>
         <div className="max-w-5xl mx-auto px-4 text-center">
             <div className="flex items-center justify-center space-x-2 mb-8">
-              <div className="bg-blue-700 p-2 rounded-lg"><i className="fas fa-chart-line text-white"></i></div>
-              <span className="text-xl font-bold text-white">NB Empreende <span className="text-blue-700">2026</span></span>
+              <div className={`${currentView === 'sono-score' ? 'bg-indigo-600' : 'bg-blue-700'} p-2 rounded-lg transition-colors`}><i className="fas fa-chart-line text-white"></i></div>
+              <span className="text-xl font-bold text-white">NB Empreende <span className={currentView === 'sono-score' ? 'text-indigo-400' : 'text-blue-700'}>2026</span></span>
             </div>
             <nav className="flex flex-wrap justify-center gap-6 mb-10 text-xs font-bold uppercase tracking-widest">
               <button onClick={() => navigateTo('home')} className="hover:text-white">Início</button>
               <button onClick={() => navigateTo('blog')} className="hover:text-white">Blog</button>
               <button onClick={() => navigateTo('calculators')} className="hover:text-white">Calculadoras</button>
+              <button onClick={() => navigateTo('sono-score')} className="hover:text-white">Sono & Performance</button>
               <button onClick={() => navigateTo('privacy')} className="hover:text-white">Privacidade</button>
-              <button onClick={() => navigateTo('contact')} className="hover:text-white">Contato</button>
             </nav>
             <div className="pt-8 border-t border-gray-800 text-[10px] text-gray-600">
               <p>&copy; 2026 NB Empreende - CNPJ 00.000.000/0001-00. Todo o conteúdo é meramente informativo para fins educativos.</p>

@@ -13,31 +13,27 @@ const AdUnit: React.FC<AdUnitProps> = ({ slot, format = 'auto', responsive = tru
     let timer: number;
 
     const pushAd = () => {
-      // Verifica se o container tem largura para evitar o erro availableWidth=0
       if (adRef.current && adRef.current.offsetWidth > 0) {
         try {
           // @ts-ignore
           (window.adsbygoogle = window.adsbygoogle || []).push({});
         } catch (e) {
-          console.error("AdSense push error:", e);
+          // Silenciosamente falha se o AdSense não estiver pronto
         }
       } else {
-        // Se a largura for 0 (ex: renderização inicial ou oculto), tenta novamente no próximo frame
-        timer = window.setTimeout(pushAd, 100);
+        timer = window.setTimeout(pushAd, 200);
       }
     };
 
-    // Pequeno delay para garantir que o layout do Flexbox/Grid foi calculado
-    timer = window.setTimeout(pushAd, 50);
-
+    timer = window.setTimeout(pushAd, 100);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div ref={adRef} className="ad-container relative w-full overflow-hidden flex justify-center">
-      <span className="ad-label">Publicidade</span>
+    <div ref={adRef} className="ad-container w-full overflow-hidden">
+      <div className="ad-label">Publicidade</div>
       <ins className="adsbygoogle"
-           style={{ display: 'block', minWidth: '250px', width: '100%' }}
+           style={{ display: 'block', width: '100%', border: 'none' }}
            data-ad-client="ca-pub-1385455036665566"
            data-ad-slot={slot || "default"}
            data-ad-format={format}

@@ -32,6 +32,7 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
     { label: 'Início', view: 'home', icon: 'fa-home' },
     { label: 'Blog Editorial', view: 'blog', icon: 'fa-newspaper' },
     { label: 'Simulador de Crédito', view: 'loan', icon: 'fa-hand-holding-dollar' },
+    { label: 'Performance & Sono', view: 'sono-score', icon: 'fa-moon' },
     { label: 'Calculadoras', view: 'calculators', icon: 'fa-calculator' },
     { label: 'Sobre', view: 'about', icon: 'fa-info-circle' },
   ];
@@ -40,7 +41,6 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
     <header className="bg-white shadow-sm sticky top-0 z-[100] border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          {/* Logo Semântico para SEO */}
           <div className="flex items-center space-x-2 cursor-pointer select-none" onClick={handleLogoClick}>
             <div className="bg-blue-700 p-2.5 rounded-xl shadow-lg shadow-blue-700/20">
               <i className="fas fa-chart-line text-white text-xl"></i>
@@ -80,7 +80,6 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       <div className={`lg:hidden fixed inset-0 z-[110] transition-all duration-500 ${isMobileMenuOpen ? 'visible' : 'invisible'}`}>
         <div className={`absolute inset-0 bg-gray-900/80 backdrop-blur-sm transition-opacity ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setIsMobileMenuOpen(false)}></div>
         <nav className={`absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl transition-transform duration-500 transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} p-8 flex flex-col`}>

@@ -63,3 +63,5 @@ export interface GroundingSource {
   title?: string;
   uri?: string;
 }
+
+export type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy' | 'loan' | 'sono-score';
