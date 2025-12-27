@@ -3,105 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NB Empreende | Guia do Empreendedor 2026</title>
+    <title>NB Empreende | Guia do Empreendedor 2026 - Reforma Tributária e MEI</title>
     
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#1D4ED8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NB Empreende">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="O maior portal de auxílio ao MEI e Autônomo em 2026. Calculadoras de IBS/CBS, guias da Reforma Tributária, crédito facilitado e consultoria com IA.">
+    <meta name="keywords" content="MEI 2026, Reforma Tributária, IBS, CBS, Calculadora Tributária, Empréstimo MEI, Autônomo 2026, NB Empreende">
+    <meta name="author" content="NB Empreende Editorial">
+    <link rel="canonical" href="https://www.nbempreende.com.br" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.nbempreende.com.br/">
+    <meta property="og:title" content="NB Empreende | Guia do Empreendedor 2026">
+    <meta property="og:description" content="Prepare-se para a Reforma Tributária com ferramentas exclusivas para MEIs e Autônomos.">
+    <meta property="og:image" content="https://www.nbempreende.com.br/assets/og-image.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.nbempreende.com.br/">
+    <meta property="twitter:title" content="NB Empreende | Guia do Empreendedor 2026">
+    <meta property="twitter:description" content="Calculadoras e guias práticos para o empreendedor do futuro.">
+    <meta property="twitter:image" content="https://www.nbempreende.com.br/assets/og-image.jpg">
+
+    <!-- JSON-LD Structured Data (Google Love) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "NB Empreende",
+      "url": "https://www.nbempreende.com.br/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.nbempreende.com.br/#blog?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "description": "Portal de apoio ao empreendedorismo focado na Reforma Tributária de 2026."
+    }
+    </script>
+
     <!-- Google AdSense - Configuração Global -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1385455036665566" crossorigin="anonymous"></script>
     
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="alternate icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg">
     <link rel="manifest" href="/site.webmanifest">
-    
-    <meta name="description" content="Portal oficial NB Empreende. Consultoria tributária, calculadoras MEI e blog especializado para autônomos na Reforma Tributária de 2026.">
-    <meta name="keywords" content="MEI 2026, Reforma Tributária, IBS, CBS, NB Empreende, Empreendedorismo Brasil, Sono Score Pro">
-    <link rel="canonical" href="https://www.nbempreende.com.br" />
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            overflow-x: hidden;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* Carrossel Infinito para a Página de Empréstimos */
-        @keyframes infiniteScroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        .animate-infiniteScroll {
-          animation: infiniteScroll 40s linear infinite;
-        }
-
-        /* Mobile: Esquerda para Direita */
-        @keyframes scrollRight {
-          from { transform: translateX(-50%); }
-          to { transform: translateX(0); }
-        }
-        .animate-scrollRight {
-          animation: scrollRight 30s linear infinite;
-        }
-
-        /* Esquerda: Cima para Baixo */
-        @keyframes scrollDown {
-          from { transform: translateY(-50%); }
-          to { transform: translateY(0); }
-        }
-        .animate-scrollDown {
-          animation: scrollDown 40s linear infinite;
-        }
-
-        /* Direita: Baixo para Cima */
-        @keyframes scrollUp {
-          from { transform: translateY(0); }
-          to { transform: translateY(-50%); }
-        }
-        .animate-scrollUp {
-          animation: scrollUp 40s linear infinite;
-        }
-
-        .animate-scrollDown:hover, .animate-scrollUp:hover, .animate-scrollRight:hover, .animate-infiniteScroll:hover {
-          animation-play-state: paused;
-        }
-
-        .mask-linear-horizontal {
-          mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
-
-        .mask-linear-vertical {
-          mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-        }
-
+        /* Animações Otimizadas */
+        @keyframes infiniteScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .animate-infiniteScroll { animation: infiniteScroll 40s linear infinite; }
+        
+        .mask-linear-horizontal { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+        .mask-linear-vertical { mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Container de Anúncios AdSense Otimizado - Removido min-height e bordas fixas para evitar espaço em branco */
-        .ad-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 1rem 0;
-            overflow: hidden;
-            width: 100%;
-            position: relative;
-            background: transparent;
-        }
-        .ad-label {
-            width: 100%;
-            text-align: center;
-            font-size: 8px;
-            font-weight: 700;
-            color: #cbd5e1;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            padding: 2px 0;
-            margin-bottom: 4px;
-        }
+        /* AdSense Layout Shift Prevention */
+        .ad-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 1.5rem 0; overflow: hidden; width: 100%; min-height: 100px; background: #f1f5f9; border-radius: 1rem; }
+        .ad-label { width: 100%; text-align: center; font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 0; }
     </style>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(reg => {
+            console.log('SW Registered');
+          }).catch(err => console.log('SW Registration failed', err));
+        });
+      }
+    </script>
+
 <script type="importmap">
 {
   "imports": {
