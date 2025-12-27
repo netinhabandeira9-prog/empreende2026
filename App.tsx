@@ -109,10 +109,10 @@ const App: React.FC = () => {
     </a>
   );
 
-  const repeatBanners = (list: Affiliate[]) => {
+  const repeatItems = (list: any[]) => {
     if (list.length === 0) return [];
     let items = [...list];
-    while (items.length < 10) items = [...items, ...list];
+    while (items.length < 15) items = [...items, ...list];
     return items;
   };
 
@@ -123,22 +123,53 @@ const App: React.FC = () => {
           <main>
             <Hero onSelectTool={(t) => { setSelectedTool(t); navigateTo(t === CalculatorType.LOAN ? 'loan' : 'tool-detail'); }} onSelectConsultant={() => {}} />
             
+            {/* Mobile Affiliates Strip - Da Esquerda para Direita */}
+            <div className="lg:hidden w-full overflow-hidden bg-white border-y border-gray-100 py-6 mb-8 mask-linear-horizontal">
+               <div className="flex gap-4 animate-scrollRight whitespace-nowrap w-max px-4">
+                  {repeatItems(banners.allActive).map((b, i) => (
+                    <a key={`mob-${b.id}-${i}`} href={b.link} target="_blank" rel="sponsored" className="inline-block w-40 h-40 rounded-2xl overflow-hidden shadow-md border-2 border-white shrink-0">
+                       <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover" />
+                    </a>
+                  ))}
+               </div>
+            </div>
+
             <div className="max-w-6xl mx-auto px-4 mt-8">
               <AdUnit slot="ads-home-top" format="rectangle" />
             </div>
 
-            <section className="py-12 bg-white">
+            {/* Parceiros em Carrossel na Web */}
+            <section className="py-12 bg-white overflow-hidden">
                <div className="max-w-6xl mx-auto px-4 text-center">
                   <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Principais Parceiros Tecnológicos</h2>
-                  <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-                    {partners.map(p => (
-                        <a key={p.id} href={p.link || '#'} target="_blank" rel="noopener" className="h-16 md:h-24 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all flex items-center">
-                           <img src={p.logo_url} alt={p.name} loading="lazy" className="h-full w-auto object-contain" />
-                        </a>
-                    ))}
+                  <div className="relative overflow-hidden mask-linear-horizontal">
+                    <div className="flex items-center gap-16 animate-infiniteScroll w-max py-4">
+                      {repeatItems(partners).map((p, i) => (
+                          <a key={`${p.id}-${i}`} href={p.link || '#'} target="_blank" rel="noopener" className="h-12 md:h-16 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all flex items-center shrink-0">
+                             <img src={p.logo_url} alt={p.name} loading="lazy" className="h-full w-auto object-contain" />
+                          </a>
+                      ))}
+                    </div>
                   </div>
                </div>
             </section>
+
+            {/* Banner Centro - Recuperado */}
+            {banners.center.length > 0 && (
+              <div className="max-w-6xl mx-auto px-4 mb-16">
+                 {banners.center.map(b => (
+                    <div key={b.id} className="relative group">
+                       <a href={b.link} target="_blank" rel="sponsored" className="block w-full h-48 md:h-64 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
+                          <img src={b.banner_url} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700" />
+                          <div className="absolute top-6 left-6 bg-red-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Oferta NB Empreende</div>
+                       </a>
+                       <button onClick={() => setClosedBanners(prev => new Set(prev).add(b.id))} className="absolute -top-3 -right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-xl border text-gray-400 hover:text-red-500 transition">
+                          <i className="fas fa-times"></i>
+                       </button>
+                    </div>
+                 ))}
+              </div>
+            )}
 
             <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                <button onClick={() => { setSelectedTool(CalculatorType.TAX); navigateTo('tool-detail'); }} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 hover:-translate-y-1 transition text-left group">
@@ -193,10 +224,10 @@ const App: React.FC = () => {
       />
       
       <div className={`flex-grow flex relative ${currentView === 'sono-score' ? 'bg-[#0f172a]' : ''}`}>
-        {/* Laterais com Banners para AdSense (Visão Desktop) */}
+        {/* Lado Esquerdo: Banners rolando de cima para baixo */}
         <aside className="hidden lg:block fixed left-4 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollDown py-10">
-            {repeatBanners(banners.left).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatItems(banners.left).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
 
@@ -204,9 +235,10 @@ const App: React.FC = () => {
           {renderContent()}
         </main>
 
+        {/* Lado Direito: Banners rolando de baixo para cima */}
         <aside className="hidden lg:block fixed right-4 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollUp py-10">
-            {repeatBanners(banners.right).map((b, i) => renderSidebarBanner(b, i))}
+            {repeatItems(banners.right).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
       </div>

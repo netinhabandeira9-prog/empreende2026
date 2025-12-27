@@ -64,6 +64,19 @@
         /* Animações Otimizadas */
         @keyframes infiniteScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         .animate-infiniteScroll { animation: infiniteScroll 40s linear infinite; }
+
+        @keyframes scrollDown { from { transform: translateY(-50%); } to { transform: translateY(0); } }
+        .animate-scrollDown { animation: scrollDown 45s linear infinite; }
+
+        @keyframes scrollUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        .animate-scrollUp { animation: scrollUp 45s linear infinite; }
+
+        @keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        .animate-scrollRight { animation: scrollRight 30s linear infinite; }
+
+        .animate-scrollDown:hover, .animate-scrollUp:hover, .animate-scrollRight:hover, .animate-infiniteScroll:hover {
+          animation-play-state: paused;
+        }
         
         .mask-linear-horizontal { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
         .mask-linear-vertical { mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent); }
