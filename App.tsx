@@ -138,14 +138,14 @@ const App: React.FC = () => {
               <AdUnit slot="ads-home-top" format="rectangle" />
             </div>
 
-            {/* Parceiros em Carrossel na Web */}
-            <section className="py-12 bg-white overflow-hidden">
-               <div className="max-w-6xl mx-auto px-4 text-center">
+            {/* Parceiros em Carrossel na Web - AUMENTADO */}
+            <section className="py-16 bg-white overflow-hidden">
+               <div className="max-w-7xl mx-auto px-4 text-center">
                   <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Principais Parceiros Tecnológicos</h2>
                   <div className="relative overflow-hidden mask-linear-horizontal">
-                    <div className="flex items-center gap-16 animate-infiniteScroll w-max py-4">
+                    <div className="flex items-center gap-16 animate-infiniteScroll w-max py-8">
                       {repeatItems(partners).map((p, i) => (
-                          <a key={`${p.id}-${i}`} href={p.link || '#'} target="_blank" rel="noopener" className="h-12 md:h-16 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all flex items-center shrink-0">
+                          <a key={`${p.id}-${i}`} href={p.link || '#'} target="_blank" rel="noopener" className="h-24 md:h-40 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all flex items-center shrink-0">
                              <img src={p.logo_url} alt={p.name} loading="lazy" className="h-full w-auto object-contain" />
                           </a>
                       ))}
