@@ -68,7 +68,7 @@ const App: React.FC = () => {
       const hash = window.location.hash.replace('#', '') as View;
       const validViews: string[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'terms', 'loan', 'sono-score', 'apps', 'app-detail'];
       if (validViews.includes(hash)) {
-        setCurrentView(hash);
+        setCurrentView(hash as View);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
