@@ -24,7 +24,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  // Fix: Alterado de 'string | null' para 'string | number | null' para suportar IDs numéricos do blog
+  const [uploadingId, setUploadingId] = useState<string | number | null>(null);
 
   const defaultLoans: LoanService[] = [
     { id: 'new-1', title: "Aposentados & INSS", description: "Taxa 1.2%", image_url: "", icon: "fa-person-cane", active: true },
@@ -140,7 +141,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       title: 'Novo Artigo NB',
       excerpt: 'Breve resumo do artigo para o blog...',
       category: 'Geral',
-      // Fix: 'Short' changed to 'short' to match valid Intl.DateTimeFormatOptions type.
       date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }),
       image: '',
       content: 'Escreva o conteúdo completo aqui...',
