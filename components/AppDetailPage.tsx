@@ -137,10 +137,15 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-blue-700 text-white px-12 py-6 rounded-[2rem] font-black flex items-center justify-center gap-4 hover:bg-blue-800 transition shadow-2xl shadow-blue-700/20 active:scale-95 group">
+                <a 
+                  href="https://nb-pre-o-certo.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-700 text-white px-12 py-6 rounded-[2rem] font-black flex items-center justify-center gap-4 hover:bg-blue-800 transition shadow-2xl shadow-blue-700/20 active:scale-95 group"
+                >
                   <span className="text-lg">Acesse NB Preço Certo</span>
                   <i className="fas fa-external-link-alt group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
-                </button>
+                </a>
               </div>
               <p className="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                 <i className="fas fa-globe mr-2"></i> Web App Otimizado - Acesse direto do seu celular
@@ -198,9 +203,14 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
       {/* CTA Final */}
       <section className="py-24 text-center bg-gray-900 text-white rounded-[5rem] mx-4 mb-20">
          <h3 className="text-3xl font-black mb-10">Otimize suas margens hoje mesmo.</h3>
-         <button className="bg-blue-600 text-white px-16 py-6 rounded-[2rem] font-black text-xl shadow-2xl hover:bg-blue-500 transition active:scale-95 flex items-center gap-4 mx-auto">
+         <a 
+          href="https://nb-pre-o-certo.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-blue-600 text-white px-16 py-6 rounded-[2rem] font-black text-xl shadow-2xl hover:bg-blue-500 transition active:scale-95 flex items-center gap-4 mx-auto w-max"
+         >
            Acesse NB Preço Certo <i className="fas fa-chevron-right"></i>
-         </button>
+         </a>
       </section>
     </div>
   );
