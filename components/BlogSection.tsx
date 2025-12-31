@@ -1,15 +1,15 @@
 
 import React, { useMemo } from 'react';
-import { BLOG_POSTS } from '../constants';
 import { BlogPost } from '../types';
 
 interface BlogSectionProps {
   onReadPost: (post: BlogPost) => void;
+  posts: BlogPost[];
 }
 
-const BlogSection: React.FC<BlogSectionProps> = ({ onReadPost }) => {
-  const urgentPost = useMemo(() => BLOG_POSTS.find(p => p.isUrgent), []);
-  const regularPosts = useMemo(() => BLOG_POSTS.filter(p => !p.isUrgent), []);
+const BlogSection: React.FC<BlogSectionProps> = ({ onReadPost, posts }) => {
+  const urgentPost = useMemo(() => posts.find(p => p.isUrgent), [posts]);
+  const regularPosts = useMemo(() => posts.filter(p => !p.isUrgent).slice(0, 6), [posts]);
 
   return (
     <section id="blog" className="py-20 bg-gray-50 border-t border-gray-100">
@@ -44,7 +44,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onReadPost }) => {
               
               <div className="md:w-1/2 h-72 md:h-auto overflow-hidden">
                 <img 
-                  src={urgentPost.image} 
+                  src={urgentPost.image || 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800'} 
                   alt={urgentPost.title} 
                   loading="lazy"
                   className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
@@ -74,7 +74,7 @@ const BlogSection: React.FC<BlogSectionProps> = ({ onReadPost }) => {
             <article key={post.id} className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 flex flex-col group">
               <div className="h-60 overflow-hidden relative" onClick={() => onReadPost(post)} style={{cursor: 'pointer'}}>
                 <img 
-                  src={post.image} 
+                  src={post.image || 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800'} 
                   alt={post.title} 
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 

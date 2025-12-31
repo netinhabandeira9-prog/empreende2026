@@ -30,11 +30,11 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
 
   const menuItems = [
     { label: 'Início', view: 'home', icon: 'fa-home' },
+    { label: 'Apps & Ferramentas', view: 'apps', icon: 'fa-th-large' },
     { label: 'Blog Editorial', view: 'blog', icon: 'fa-newspaper' },
     { label: 'Simulador de Crédito', view: 'loan', icon: 'fa-hand-holding-dollar' },
-    { label: 'Performance & Sono', view: 'sono-score', icon: 'fa-moon' },
+    { label: 'Performance', view: 'sono-score', icon: 'fa-moon' },
     { label: 'Calculadoras', view: 'calculators', icon: 'fa-calculator' },
-    { label: 'Sobre', view: 'about', icon: 'fa-info-circle' },
   ];
 
   return (

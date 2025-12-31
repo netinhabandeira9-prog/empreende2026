@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -8,6 +9,7 @@ import AdminPanel from './components/AdminPanel';
 import AdUnit from './components/AdUnit';
 import { BlogPost, CalculatorType, Affiliate, Partner, View } from './types';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
+import { BLOG_POSTS as STATIC_BLOG_POSTS } from './constants';
 
 // Páginas
 import CalculatorsHub from './components/CalculatorsHub';
@@ -18,6 +20,8 @@ import PrivacyPage from './components/PrivacyPage';
 import BlogPage from './components/BlogPage';
 import LoanPage from './components/LoanPage';
 import SonoScorePage from './components/SonoScorePage';
+import AppsPage from './components/AppsPage';
+import AppDetailPage from './components/AppDetailPage';
 
 const FALLBACK_AFFILIATES: Affiliate[] = [
   { id: 'f1', name: 'Contabilidade MEI', link: '#', banner_url: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=400', active: true, position: 'left' },
@@ -29,11 +33,13 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('home');
   const [selectedTool, setSelectedTool] = useState<CalculatorType>(CalculatorType.TAX);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [selectedAppId, setSelectedAppId] = useState<string>('preco-certo');
   const [showMemberArea, setShowMemberArea] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
 
   // SEO Dinâmico - Atualiza título conforme a navegação
@@ -43,7 +49,9 @@ const App: React.FC = () => {
       blog: "Blog Editorial NB | Notícias Reforma Tributária 2026",
       calculators: "Central de Calculadoras MEI e Autônomo",
       loan: "Simulador de Crédito Confia | Empréstimos 2026",
-      'sono-score': "Sono Score Pro | Performance para Empreendedores",
+      'sono-score': "Performance & Sono para Empreendedores",
+      apps: "Nossos Apps & Ferramentas | Ecossistema NB",
+      'app-detail': "NB Preço Certo | Sua Câmera é seu Precificador",
       about: "Sobre a NB Empreende - Nossa Missão",
       contact: "Fale Conosco - Suporte NB Empreende",
       privacy: "Política de Privacidade e Proteção de Dados LGPD"
@@ -54,7 +62,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as View;
-      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'loan', 'sono-score'];
+      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'loan', 'sono-score', 'apps', 'app-detail'];
       if (validViews.includes(hash)) {
         setCurrentView(hash);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -72,16 +80,23 @@ const App: React.FC = () => {
   const fetchContent = async () => {
     if (!isSupabaseConfigured) {
       setAffiliates(FALLBACK_AFFILIATES);
+      setBlogPosts(STATIC_BLOG_POSTS);
       return;
     }
     try {
-      const [affs, parts] = await Promise.all([
+      const [affs, parts, posts] = await Promise.all([
         supabase.from('affiliates').select('*'),
-        supabase.from('partners').select('*') 
+        supabase.from('partners').select('*'),
+        supabase.from('blog_posts').select('*').order('id', { ascending: false })
       ]);
       if (affs.data) setAffiliates(affs.data.length > 0 ? affs.data : FALLBACK_AFFILIATES);
       if (parts.data) setPartners(parts.data.filter((p: any) => p.logo_url && p.active !== false));
-    } catch (err) { setAffiliates(FALLBACK_AFFILIATES); }
+      if (posts.data && posts.data.length > 0) setBlogPosts(posts.data);
+      else setBlogPosts(STATIC_BLOG_POSTS);
+    } catch (err) { 
+        setAffiliates(FALLBACK_AFFILIATES);
+        setBlogPosts(STATIC_BLOG_POSTS);
+    }
   };
 
   useEffect(() => { fetchContent(); }, []);
@@ -123,7 +138,6 @@ const App: React.FC = () => {
           <main>
             <Hero onSelectTool={(t) => { setSelectedTool(t); navigateTo(t === CalculatorType.LOAN ? 'loan' : 'tool-detail'); }} onSelectConsultant={() => {}} />
             
-            {/* Mobile Affiliates Strip - Da Esquerda para Direita */}
             <div className="lg:hidden w-full overflow-hidden bg-white border-y border-gray-100 py-6 mb-8 mask-linear-horizontal">
                <div className="flex gap-4 animate-scrollRight whitespace-nowrap w-max px-4">
                   {repeatItems(banners.allActive).map((b, i) => (
@@ -138,7 +152,6 @@ const App: React.FC = () => {
               <AdUnit slot="ads-home-top" format="rectangle" />
             </div>
 
-            {/* Parceiros em Carrossel na Web - AUMENTADO */}
             <section className="py-16 bg-white overflow-hidden">
                <div className="max-w-7xl mx-auto px-4 text-center">
                   <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Principais Parceiros Tecnológicos</h2>
@@ -154,7 +167,6 @@ const App: React.FC = () => {
                </div>
             </section>
 
-            {/* Banner Centro - Recuperado */}
             {banners.center.length > 0 && (
               <div className="max-w-6xl mx-auto px-4 mb-16">
                  {banners.center.map(b => (
@@ -176,9 +188,9 @@ const App: React.FC = () => {
                   <div className="bg-blue-100 p-3 rounded-full text-blue-700 group-hover:bg-blue-700 group-hover:text-white transition"><i className="fas fa-university text-xl"></i></div>
                   <div><h3 className="font-bold text-gray-900 text-sm">IBS & CBS 2026</h3><p className="text-[10px] text-gray-500">Imposto Transição.</p></div>
                 </button>
-                <button onClick={() => { setSelectedTool(CalculatorType.VACATION); navigateTo('tool-detail'); }} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4 hover:-translate-y-1 transition text-left group">
-                  <div className="bg-green-100 p-3 rounded-full text-green-700 group-hover:bg-green-700 group-hover:text-white transition"><i className="fas fa-umbrella-beach text-xl"></i></div>
-                  <div><h3 className="font-bold text-gray-900 text-sm">Direitos 2026</h3><p className="text-[10px] text-gray-500">Cálculos Trabalhistas.</p></div>
+                <button onClick={() => navigateTo('apps')} className="bg-white p-6 rounded-2xl shadow-lg border border-indigo-100 flex items-center space-x-4 hover:-translate-y-1 transition text-left group">
+                  <div className="bg-indigo-100 p-3 rounded-full text-indigo-700 group-hover:bg-indigo-700 group-hover:text-white transition"><i className="fas fa-th-large text-xl"></i></div>
+                  <div><h3 className="font-bold text-gray-900 text-sm">Nossos Apps</h3><p className="text-[10px] text-gray-500">Ferramentas NB.</p></div>
                 </button>
                 <button onClick={() => navigateTo('loan')} className="bg-white p-6 rounded-2xl shadow-lg border border-cyan-100 flex items-center space-x-4 hover:-translate-y-1 transition text-left group">
                   <div className="bg-cyan-100 p-3 rounded-full text-cyan-700 group-hover:bg-cyan-700 group-hover:text-white transition"><i className="fas fa-hand-holding-dollar text-xl"></i></div>
@@ -190,7 +202,7 @@ const App: React.FC = () => {
                 </button>
             </div>
 
-            <BlogSection onReadPost={setSelectedPost} />
+            <BlogSection onReadPost={setSelectedPost} posts={blogPosts} />
             
             <div className="max-w-6xl mx-auto px-4 py-8">
               <AdUnit slot="ads-home-bottom" format="auto" />
@@ -199,11 +211,13 @@ const App: React.FC = () => {
             <AIConsultant />
           </main>
         );
-      case 'blog': return <BlogPage onReadPost={setSelectedPost} />;
+      case 'blog': return <BlogPage onReadPost={setSelectedPost} posts={blogPosts} />;
       case 'calculators': return <CalculatorsHub onSelectTool={(t) => { setSelectedTool(t); navigateTo('tool-detail'); }} />;
       case 'tool-detail': return <ToolDetailPage toolType={selectedTool} onToolChange={setSelectedTool} />;
       case 'loan': return <LoanPage />;
       case 'sono-score': return <SonoScorePage />;
+      case 'apps': return <AppsPage onSelectApp={(id) => { setSelectedAppId(id); navigateTo('app-detail'); }} />;
+      case 'app-detail': return <AppDetailPage appId={selectedAppId} />;
       case 'about': return <AboutPage />;
       case 'contact': return <ContactPage />;
       case 'privacy': return <PrivacyPage />;
@@ -223,19 +237,17 @@ const App: React.FC = () => {
         currentView={currentView}
       />
       
-      <div className={`flex-grow flex relative ${currentView === 'sono-score' ? 'bg-[#0f172a]' : ''}`}>
-        {/* Lado Esquerdo: Banners rolando de cima para baixo */}
+      <div className={`flex-grow flex relative ${currentView === 'sono-score' || currentView === 'app-detail' ? '' : ''}`}>
         <aside className="hidden lg:block fixed left-4 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollDown py-10">
             {repeatItems(banners.left).map((b, i) => renderSidebarBanner(b, i))}
           </div>
         </aside>
 
-        <main id="main-content" className={`flex-grow min-w-0 ${currentView === 'sono-score' ? '' : 'lg:mx-32'}`}>
+        <main id="main-content" className={`flex-grow min-w-0 ${currentView === 'sono-score' || currentView === 'app-detail' ? '' : 'lg:mx-32'}`}>
           {renderContent()}
         </main>
 
-        {/* Lado Direito: Banners rolando de baixo para cima */}
         <aside className="hidden lg:block fixed right-4 top-24 bottom-24 w-24 z-40 overflow-hidden pointer-events-none mask-linear-vertical" aria-hidden="true">
           <div className="flex flex-col gap-6 animate-scrollUp py-10">
             {repeatItems(banners.right).map((b, i) => renderSidebarBanner(b, i))}
@@ -246,7 +258,6 @@ const App: React.FC = () => {
       {showMemberArea && <MemberArea onClose={() => setShowMemberArea(false)} />}
       {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchContent(); }} initialAffiliates={affiliates} onRefresh={fetchContent} />}
 
-      {/* Modal de Artigo Otimizado para Leitura e AdSense */}
       {selectedPost && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-gray-900/90 backdrop-blur-md animate-fadeIn" role="dialog" aria-modal="true">
           <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl relative">
@@ -287,17 +298,17 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <footer className={`${currentView === 'sono-score' ? 'bg-[#0f172a] border-t border-white/5' : 'bg-gray-900'} text-gray-400 py-20 transition-colors`}>
+      <footer className={`${currentView === 'sono-score' || currentView === 'app-detail' ? 'bg-[#0f172a] border-t border-white/5' : 'bg-gray-900'} text-gray-400 py-20 transition-colors`}>
         <div className="max-w-5xl mx-auto px-4 text-center">
             <div className="flex items-center justify-center space-x-2 mb-10">
-              <div className={`${currentView === 'sono-score' ? 'bg-indigo-600' : 'bg-blue-700'} p-2 rounded-lg`}><i className="fas fa-chart-line text-white"></i></div>
-              <span className="text-2xl font-bold text-white tracking-tight">NB Empreende <span className={currentView === 'sono-score' ? 'text-indigo-400' : 'text-blue-700'}>2026</span></span>
+              <div className={`${currentView === 'sono-score' || currentView === 'app-detail' ? 'bg-indigo-600' : 'bg-blue-700'} p-2 rounded-lg`}><i className="fas fa-chart-line text-white"></i></div>
+              <span className="text-2xl font-bold text-white tracking-tight">NB Empreende <span className={currentView === 'sono-score' || currentView === 'app-detail' ? 'text-indigo-400' : 'text-blue-700'}>2026</span></span>
             </div>
             <nav className="flex flex-wrap justify-center gap-8 mb-12 text-[10px] font-black uppercase tracking-[0.2em]" aria-label="Navegação do rodapé">
               <button onClick={() => navigateTo('home')} className="hover:text-white transition">Início</button>
+              <button onClick={() => navigateTo('apps')} className="hover:text-white transition">Nossos Apps</button>
               <button onClick={() => navigateTo('blog')} className="hover:text-white transition">Blog</button>
               <button onClick={() => navigateTo('calculators')} className="hover:text-white transition">Calculadoras</button>
-              <button onClick={() => navigateTo('sono-score')} className="hover:text-white transition">Performance</button>
               <button onClick={() => navigateTo('privacy')} className="hover:text-white transition">Privacidade</button>
               <button onClick={() => navigateTo('contact')} className="hover:text-white transition">Contato</button>
             </nav>

@@ -1,29 +1,29 @@
 
 import React, { useState, useMemo } from 'react';
-import { BLOG_POSTS } from '../constants';
 import { BlogPost } from '../types';
 
 interface BlogPageProps {
   onReadPost: (post: BlogPost) => void;
+  posts: BlogPost[];
 }
 
-const BlogPage: React.FC<BlogPageProps> = ({ onReadPost }) => {
+const BlogPage: React.FC<BlogPageProps> = ({ onReadPost, posts }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
 
-  const categories = ['Todos', ...Array.from(new Set(BLOG_POSTS.map(p => p.category)))];
+  const categories = useMemo(() => ['Todos', ...Array.from(new Set(posts.map(p => p.category)))], [posts]);
 
   const filteredPosts = useMemo(() => {
-    return BLOG_POSTS.filter(post => {
+    return posts.filter(post => {
       const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = activeCategory === 'Todos' || post.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, activeCategory]);
+  }, [searchTerm, activeCategory, posts]);
 
-  const featuredPost = useMemo(() => BLOG_POSTS.find(p => p.isFeatured) || BLOG_POSTS[0], []);
-  const latestPosts = useMemo(() => BLOG_POSTS.slice(0, 3), []);
+  const featuredPost = useMemo(() => posts.find(p => p.isFeatured) || posts[0], [posts]);
+  const latestPosts = useMemo(() => posts.slice(0, 5), [posts]);
 
   return (
     <div className="bg-white min-h-screen">
@@ -47,21 +47,23 @@ const BlogPage: React.FC<BlogPageProps> = ({ onReadPost }) => {
                 <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
               </div>
             </div>
-            <div className="md:w-1/2 group cursor-pointer" onClick={() => onReadPost(featuredPost)}>
-              <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl">
-                <img src={featuredPost.image} alt={featuredPost.title} className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
-                <div className="absolute bottom-8 left-8 right-8 text-white">
-                  <span className="text-blue-400 font-bold text-xs uppercase mb-2 block">{featuredPost.category}</span>
-                  <h3 className="text-2xl font-black mb-2">{featuredPost.title}</h3>
-                  <div className="flex items-center space-x-4 text-sm text-gray-300">
-                    <span>{featuredPost.author || 'Redação'}</span>
-                    <span>•</span>
-                    <span>{featuredPost.readTime || '5 min'} de leitura</span>
-                  </div>
+            {featuredPost && (
+                <div className="md:w-1/2 group cursor-pointer" onClick={() => onReadPost(featuredPost)}>
+                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl">
+                    <img src={featuredPost.image || 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800'} alt={featuredPost.title} className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+                    <div className="absolute bottom-8 left-8 right-8 text-white">
+                    <span className="text-blue-400 font-bold text-xs uppercase mb-2 block">{featuredPost.category}</span>
+                    <h3 className="text-2xl font-black mb-2">{featuredPost.title}</h3>
+                    <div className="flex items-center space-x-4 text-sm text-gray-300">
+                        <span>{featuredPost.author || 'Redação'}</span>
+                        <span>•</span>
+                        <span>{featuredPost.readTime || '5 min'} de leitura</span>
+                    </div>
+                    </div>
                 </div>
-              </div>
-            </div>
+                </div>
+            )}
           </div>
         </div>
       </div>
@@ -103,7 +105,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onReadPost }) => {
                     className="flex flex-col md:flex-row gap-8 group cursor-pointer"
                   >
                     <div className="md:w-1/3 h-56 rounded-3xl overflow-hidden shadow-lg">
-                      <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <img src={post.image || 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800'} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     </div>
                     <div className="md:w-2/3 flex flex-col justify-center">
                       <div className="flex items-center space-x-3 text-[10px] font-black text-blue-600 uppercase tracking-widest mb-3">

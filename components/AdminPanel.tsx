@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured, uploadBanner } from '../services/supabaseClient';
-import { Affiliate, LoanService, Partner } from '../types';
+import { Affiliate, LoanService, Partner, BlogPost } from '../types';
+import { BLOG_POSTS } from '../constants';
 
 interface AdminPanelProps {
   onClose: () => void;
@@ -11,13 +12,14 @@ interface AdminPanelProps {
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onRefresh }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeSection, setActiveSection] = useState<'affiliates' | 'loans' | 'partners'>('affiliates');
+  const [activeSection, setActiveSection] = useState<'affiliates' | 'loans' | 'partners' | 'blog'>('affiliates');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
   const [affiliates, setAffiliates] = useState<Affiliate[]>(initialAffiliates);
   const [loanServices, setLoanServices] = useState<LoanService[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +38,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     if (isAuthenticated) {
       if (activeSection === 'loans') fetchLoanServices();
       if (activeSection === 'partners') fetchPartners();
+      if (activeSection === 'blog') fetchBlogPosts();
     }
   }, [isAuthenticated, activeSection]);
 
@@ -63,6 +66,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       const { data } = await supabase.from('partners').select('*');
       if (data) setPartners(data.map((p: any) => ({ ...p, active: p.active ?? true })));
     } catch (err) { console.error(err); }
+    finally { setIsLoading(false); }
+  };
+
+  const fetchBlogPosts = async () => {
+    if (!isSupabaseConfigured) {
+        setBlogPosts(BLOG_POSTS);
+        return;
+    }
+    setIsLoading(true);
+    try {
+      const { data } = await supabase.from('blog_posts').select('*').order('id', { ascending: false });
+      if (data && data.length > 0) {
+        setBlogPosts(data);
+      } else {
+        setBlogPosts(BLOG_POSTS);
+      }
+    } catch (err) { 
+        console.error(err); 
+        setBlogPosts(BLOG_POSTS);
+    }
     finally { setIsLoading(false); }
   };
 
@@ -111,11 +134,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     setLoanServices([newItem, ...loanServices]);
   };
 
-  const handleDeleteItem = async (id: string, table: 'affiliates' | 'loan_services' | 'partners') => {
-    if (id.toString().startsWith('new-')) {
+  const handleAddBlogPost = () => {
+    const newItem: BlogPost = {
+      id: Date.now(),
+      title: 'Novo Artigo NB',
+      excerpt: 'Breve resumo do artigo para o blog...',
+      category: 'Geral',
+      // Fix: 'Short' changed to 'short' to match valid Intl.DateTimeFormatOptions type.
+      date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }),
+      image: '',
+      content: 'Escreva o conteúdo completo aqui...',
+      author: 'Equipe NB Empreende',
+      readTime: '5 min'
+    };
+    setBlogPosts([newItem, ...blogPosts]);
+  };
+
+  const handleDeleteItem = async (id: any, table: 'affiliates' | 'loan_services' | 'partners' | 'blog_posts') => {
+    if (id.toString().startsWith('new-') || (table === 'blog_posts' && !isSupabaseConfigured)) {
       if (table === 'affiliates') setAffiliates(affiliates.filter(a => a.id !== id));
       if (table === 'partners') setPartners(partners.filter(p => p.id !== id));
       if (table === 'loan_services') setLoanServices(loanServices.filter(l => l.id !== id));
+      if (table === 'blog_posts') setBlogPosts(blogPosts.filter(b => b.id !== id));
       return;
     }
     if (!confirm("Excluir permanentemente?")) return;
@@ -124,10 +164,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       if (table === 'affiliates') { setAffiliates(affiliates.filter(a => a.id !== id)); onRefresh(); }
       if (table === 'partners') setPartners(partners.filter(p => p.id !== id));
       if (table === 'loan_services') setLoanServices(loanServices.filter(l => l.id !== id));
+      if (table === 'blog_posts') setBlogPosts(blogPosts.filter(b => b.id !== id));
     } catch (err) { console.error(err); }
   };
 
-  const handleFileUpload = async (id: string, file: File, type: 'affiliate' | 'loan' | 'partner') => {
+  const handleFileUpload = async (id: any, file: File, type: 'affiliate' | 'loan' | 'partner' | 'blog') => {
     setUploadingId(id);
     const url = await uploadBanner(file);
     if (url) {
@@ -137,12 +178,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
         setPartners(prev => prev.map(p => p.id === id ? { ...p, logo_url: url } : p));
       } else if (type === 'loan') {
         setLoanServices(prev => prev.map(a => a.id === id ? { ...a, image_url: url } : a));
+      } else if (type === 'blog') {
+        setBlogPosts(prev => prev.map(b => b.id === id ? { ...b, image: url } : b));
       }
     }
     setUploadingId(null);
   };
 
   const handleSave = async () => {
+    if (!isSupabaseConfigured) {
+        alert("Configuração do Supabase não detectada. As alterações não serão persistidas no banco de dados.");
+        return;
+    }
     setIsSaving(true);
     try {
       if (activeSection === 'affiliates') {
@@ -176,9 +223,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
           active: l.active,
           order_index: index
         }));
-        const { error } = await supabase.from('loan_services').upsert(payload);
-        if (error) throw error;
+        await supabase.from('loan_services').upsert(payload);
         fetchLoanServices();
+      } else if (activeSection === 'blog') {
+        const payload = blogPosts.map(b => ({
+            ...b,
+            id: b.id.toString().length > 10 ? b.id : b.id // Mantém ID numérico ou uuid se necessário
+        }));
+        await supabase.from('blog_posts').upsert(payload);
+        fetchBlogPosts();
       }
       alert("Sucesso! As alterações foram salvas.");
     } catch (err: any) {
@@ -214,20 +267,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
           <div>
             <h2 className="text-4xl font-black text-gray-900">Gestão de Conteúdo</h2>
-            <div className="flex bg-gray-100 p-1 rounded-xl mt-4">
-              <button onClick={() => setActiveSection('affiliates')} className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeSection === 'affiliates' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}>Produtos/Banners</button>
-              <button onClick={() => setActiveSection('partners')} className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeSection === 'partners' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}>Parceiros (Logos)</button>
-              <button onClick={() => setActiveSection('loans')} className={`px-6 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${activeSection === 'loans' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-400'}`}>Página Empréstimos</button>
+            <div className="flex bg-gray-100 p-1 rounded-xl mt-4 overflow-x-auto no-scrollbar">
+              <button onClick={() => setActiveSection('affiliates')} className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeSection === 'affiliates' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}>Produtos/Banners</button>
+              <button onClick={() => setActiveSection('partners')} className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeSection === 'partners' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}>Parceiros (Logos)</button>
+              <button onClick={() => setActiveSection('loans')} className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeSection === 'loans' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-400'}`}>Página Empréstimos</button>
+              <button onClick={() => setActiveSection('blog')} className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeSection === 'blog' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400'}`}>Blog (Artigos)</button>
             </div>
           </div>
           
           <div className="flex gap-4">
             <button 
-              onClick={activeSection === 'affiliates' ? handleAddAffiliate : activeSection === 'partners' ? handleAddPartner : handleAddLoan}
-              className={`px-8 py-4 rounded-2xl font-black text-sm shadow-lg flex items-center space-x-2 text-white ${activeSection === 'loans' ? 'bg-green-600' : 'bg-blue-600'}`}
+              onClick={() => {
+                if(activeSection === 'affiliates') handleAddAffiliate();
+                else if(activeSection === 'partners') handleAddPartner();
+                else if(activeSection === 'loans') handleAddLoan();
+                else if(activeSection === 'blog') handleAddBlogPost();
+              }}
+              className={`px-8 py-4 rounded-2xl font-black text-sm shadow-lg flex items-center space-x-2 text-white ${activeSection === 'loans' ? 'bg-green-600' : activeSection === 'blog' ? 'bg-indigo-600' : 'bg-blue-600'}`}
             >
               <i className="fas fa-plus"></i> 
-              <span>Novo {activeSection === 'affiliates' ? 'Produto' : activeSection === 'partners' ? 'Parceiro' : 'Serviço'}</span>
+              <span>Novo {activeSection === 'affiliates' ? 'Produto' : activeSection === 'partners' ? 'Parceiro' : activeSection === 'loans' ? 'Serviço' : 'Artigo'}</span>
             </button>
             <button onClick={onClose} className="bg-gray-100 text-gray-400 w-14 h-14 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition">
               <i className="fas fa-times text-xl"></i>
@@ -236,7 +295,40 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
         </div>
 
         <div className="grid grid-cols-1 gap-8">
-          {/* Sessão de Empréstimos - Interface Melhorada */}
+          {/* BLOG SECTION */}
+          {activeSection === 'blog' && blogPosts.map((post) => (
+            <div key={post.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 animate-fadeIn">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-4">
+                    <div className="relative aspect-video bg-gray-200 rounded-3xl overflow-hidden shadow-inner group">
+                        {post.image ? <img src={post.image} className="w-full h-full object-cover" alt={post.title} /> : <div className="flex h-full items-center justify-center text-gray-400"><i className="fas fa-image text-3xl"></i></div>}
+                        <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer">
+                            <input type="file" className="hidden" accept="image/*" onChange={(e) => e.target.files && handleFileUpload(post.id, e.target.files[0], 'blog')} />
+                            <span className="bg-white px-4 py-2 rounded-xl text-xs font-black uppercase">{uploadingId === post.id ? 'Subindo...' : 'Trocar Imagem'}</span>
+                        </label>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                        <button onClick={() => setBlogPosts(prev => prev.map(p => p.id === post.id ? { ...p, isUrgent: !p.isUrgent } : p))} className={`py-2 rounded-xl text-[9px] font-black uppercase border transition ${post.isUrgent ? 'bg-red-600 text-white border-red-600' : 'bg-white text-gray-400 border-gray-100'}`}>Urgente</button>
+                        <button onClick={() => setBlogPosts(prev => prev.map(p => p.id === post.id ? { ...p, isFeatured: !p.isFeatured } : p))} className={`py-2 rounded-xl text-[9px] font-black uppercase border transition ${post.isFeatured ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-gray-400 border-gray-100'}`}>Destaque</button>
+                    </div>
+                </div>
+                <div className="lg:col-span-8 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <input type="text" value={post.title} onChange={(e) => setBlogPosts(prev => prev.map(p => p.id === post.id ? { ...p, title: e.target.value } : p))} className="col-span-2 w-full bg-white px-5 py-3 rounded-xl font-black border text-gray-800" placeholder="Título do Artigo" />
+                        <input type="text" value={post.category} onChange={(e) => setBlogPosts(prev => prev.map(p => p.id === post.id ? { ...p, category: e.target.value } : p))} className="w-full bg-white px-5 py-3 rounded-xl font-bold border text-xs" placeholder="Categoria" />
+                        <input type="text" value={post.author} onChange={(e) => setBlogPosts(prev => prev.map(p => p.id === post.id ? { ...p, author: e.target.value } : p))} className="w-full bg-white px-5 py-3 rounded-xl font-bold border text-xs" placeholder="Autor" />
+                    </div>
+                    <textarea value={post.excerpt} onChange={(e) => setBlogPosts(prev => prev.map(p => p.id === post.id ? { ...p, excerpt: e.target.value } : p))} className="w-full bg-white px-5 py-3 rounded-xl text-sm border min-h-[80px]" placeholder="Breve resumo (Excerpt)"></textarea>
+                    <textarea value={post.content} onChange={(e) => setBlogPosts(prev => prev.map(p => p.id === post.id ? { ...p, content: e.target.value } : p))} className="w-full bg-white px-5 py-3 rounded-xl text-sm border min-h-[200px]" placeholder="Conteúdo completo (Use ### para subtítulos)"></textarea>
+                    <div className="flex justify-end">
+                        <button onClick={() => handleDeleteItem(post.id, 'blog_posts')} className="bg-red-50 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition">Excluir Artigo</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* SESSÕES ANTERIORES - REPLICADAS */}
           {activeSection === 'loans' && loanServices.map((item) => (
             <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group animate-fadeIn">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -257,18 +349,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                       </div>
                     </label>
                   </div>
-                  <button 
-                    onClick={() => {
-                      const input = document.createElement('input');
-                      input.type = 'file';
-                      input.accept = 'image/*';
-                      input.onchange = (e: any) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'loan');
-                      input.click();
-                    }}
-                    className="w-full mt-4 py-3 bg-white text-gray-500 rounded-xl text-[10px] font-black uppercase border border-gray-200 lg:hidden"
-                  >
-                    Mudar Foto (Mobile)
-                  </button>
                 </div>
                 
                 <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,28 +362,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                       <input type="text" value={item.description} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, description: e.target.value } : l))} className="w-full bg-white px-5 py-4 rounded-2xl font-bold border-2 border-transparent focus:border-green-600 outline-none text-gray-600" placeholder="Taxa 1.2%" />
                     </div>
                   </div>
-                  
                   <div className="flex items-center justify-between bg-white p-5 rounded-2xl border">
                     <label className="flex items-center gap-3 cursor-pointer select-none">
                       <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition ${item.active ? 'bg-green-500 border-green-500' : 'bg-gray-100 border-gray-200'}`}>
                         <input type="checkbox" className="hidden" checked={item.active} onChange={(e) => setLoanServices(prev => prev.map(l => l.id === item.id ? { ...l, active: e.target.checked } : l))} />
                         {item.active && <i className="fas fa-check text-white text-[10px]"></i>}
                       </div>
-                      <span className="text-xs font-black uppercase text-gray-700">Ativo no Site</span>
+                      <span className="text-xs font-black uppercase text-gray-700">Ativo</span>
                     </label>
                     <button onClick={() => handleDeleteItem(item.id, 'loan_services')} className="text-red-500 hover:scale-125 transition">
                       <i className="fas fa-trash-alt"></i>
                     </button>
-                  </div>
-                  <div className="bg-gray-100 p-5 rounded-2xl flex items-center justify-center text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                    Página Empréstimos
                   </div>
                 </div>
               </div>
             </div>
           ))}
 
-          {/* Manutenção dos outros filtros (Affiliates/Partners) */}
           {activeSection === 'affiliates' && affiliates.map((item) => (
               <div key={item.id} className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
