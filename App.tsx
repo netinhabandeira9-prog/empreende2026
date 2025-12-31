@@ -16,6 +16,7 @@ import AboutPage from './components/AboutPage';
 import ContactPage from './components/ContactPage';
 import ToolDetailPage from './components/ToolDetailPage';
 import PrivacyPage from './components/PrivacyPage';
+import TermsPage from './components/TermsPage';
 import BlogPage from './components/BlogPage';
 import LoanPage from './components/LoanPage';
 import SonoScorePage from './components/SonoScorePage';
@@ -56,15 +57,16 @@ const App: React.FC = () => {
       'app-detail': "NB Preço Certo | Sua Câmera é seu Precificador",
       about: "Sobre a NB Empreende - Nossa Missão",
       contact: "Fale Conosco - Suporte NB Empreende",
-      privacy: "Política de Privacidade e Proteção de Dados LGPD"
+      privacy: "Política de Privacidade - NB Empreende",
+      terms: "Termos de Uso - NB Empreende"
     };
-    document.title = titles[currentView] || "NB Empreende 2026";
+    document.title = titles[currentView as string] || "NB Empreende 2026";
   }, [currentView]);
 
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as View;
-      const validViews: View[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'loan', 'sono-score', 'apps', 'app-detail'];
+      const validViews: string[] = ['home', 'blog', 'calculators', 'tool-detail', 'about', 'contact', 'privacy', 'terms', 'loan', 'sono-score', 'apps', 'app-detail'];
       if (validViews.includes(hash)) {
         setCurrentView(hash);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -223,6 +225,7 @@ const App: React.FC = () => {
       case 'about': return <AboutPage />;
       case 'contact': return <ContactPage />;
       case 'privacy': return <PrivacyPage />;
+      case 'terms': return <TermsPage />;
       default: return null;
     }
   };
@@ -310,6 +313,7 @@ const App: React.FC = () => {
               <button onClick={() => navigateTo('blog')} className="hover:text-white transition">Blog</button>
               <button onClick={() => navigateTo('calculators')} className="hover:text-white transition">Calculadoras</button>
               <button onClick={() => navigateTo('privacy')} className="hover:text-white transition">Privacidade</button>
+              <button onClick={() => navigateTo('terms')} className="hover:text-white transition">Termos</button>
               <button onClick={() => navigateTo('contact')} className="hover:text-white transition">Contato</button>
             </nav>
             <div className="pt-10 border-t border-gray-800 text-[10px] text-gray-500 max-w-2xl mx-auto">

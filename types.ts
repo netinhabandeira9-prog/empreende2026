@@ -64,4 +64,8 @@ export interface GroundingSource {
   uri?: string;
 }
 
-export type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy' | 'loan' | 'sono-score' | 'apps' | 'app-detail';
+/**
+ * Define as visualizações possíveis do aplicativo.
+ * Fix: Adicionado 'terms' para suportar a página de Termos de Uso.
+ */
+export type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy' | 'terms' | 'loan' | 'sono-score' | 'apps' | 'app-detail';
