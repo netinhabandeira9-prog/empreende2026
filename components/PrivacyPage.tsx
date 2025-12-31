@@ -48,7 +48,6 @@ const PrivacyPage: React.FC = () => {
             <ul className="text-sm space-y-2">
               <li><i className="fas fa-check text-blue-600 mr-2"></i> Solicitar a exclusão de seus dados de contato.</li>
               <li><i className="fas fa-check text-blue-600 mr-2"></i> Saber quais informações processamos sobre suas interações.</li>
-              <li><i className="fas fa-check text-blue-600 mr-2"></i> Receber suporte sobre como seus dados são utilizados na Área de Membros.</li>
             </ul>
           </section>
 

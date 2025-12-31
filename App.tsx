@@ -4,7 +4,6 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import BlogSection from './components/BlogSection';
 import AIConsultant from './components/AIConsultant';
-import MemberArea from './components/MemberArea';
 import AdminPanel from './components/AdminPanel';
 import AdUnit from './components/AdUnit';
 import { BlogPost, CalculatorType, Affiliate, Partner, View } from './types';
@@ -34,7 +33,6 @@ const App: React.FC = () => {
   const [selectedTool, setSelectedTool] = useState<CalculatorType>(CalculatorType.TAX);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedAppId, setSelectedAppId] = useState<string>('preco-certo');
-  const [showMemberArea, setShowMemberArea] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
@@ -42,7 +40,11 @@ const App: React.FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
 
-  // SEO Dinâmico - Atualiza título conforme a navegação
+  // Determina se a página atual tem conteúdo editorial suficiente para o AdSense
+  const hasEditorialContent = useMemo(() => {
+    return ['home', 'blog', 'about', 'app-detail', 'tool-detail'].includes(currentView);
+  }, [currentView]);
+
   useEffect(() => {
     const titles: Record<string, string> = {
       home: "NB Empreende | Início - Guia do MEI 2026",
@@ -149,7 +151,7 @@ const App: React.FC = () => {
             </div>
 
             <div className="max-w-6xl mx-auto px-4 mt-8">
-              <AdUnit slot="ads-home-top" format="rectangle" />
+              {hasEditorialContent && <AdUnit slot="ads-home-top" format="rectangle" />}
             </div>
 
             <section className="py-16 bg-white overflow-hidden">
@@ -205,7 +207,7 @@ const App: React.FC = () => {
             <BlogSection onReadPost={setSelectedPost} posts={blogPosts} />
             
             <div className="max-w-6xl mx-auto px-4 py-8">
-              <AdUnit slot="ads-home-bottom" format="auto" />
+              {hasEditorialContent && <AdUnit slot="ads-home-bottom" format="auto" />}
             </div>
 
             <AIConsultant />
@@ -231,7 +233,6 @@ const App: React.FC = () => {
         onSelectTool={() => {}} 
         onSelectBlog={() => navigateTo('blog')} 
         onSelectConsultant={() => {}} 
-        onOpenMemberArea={() => setShowMemberArea(true)}
         onNavigate={navigateTo}
         onOpenAdmin={() => setShowAdmin(true)}
         currentView={currentView}
@@ -255,7 +256,6 @@ const App: React.FC = () => {
         </aside>
       </div>
 
-      {showMemberArea && <MemberArea onClose={() => setShowMemberArea(false)} />}
       {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchContent(); }} initialAffiliates={affiliates} onRefresh={fetchContent} />}
 
       {selectedPost && (

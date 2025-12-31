@@ -6,13 +6,12 @@ interface HeaderProps {
   onSelectTool: (tool: CalculatorType) => void;
   onSelectBlog: () => void;
   onSelectConsultant: () => void;
-  onOpenMemberArea: () => void;
   onNavigate: (view: any) => void;
   onOpenAdmin: () => void;
   currentView: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectConsultant, onOpenMemberArea, onNavigate, onOpenAdmin, currentView }) => {
+const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectConsultant, onNavigate, onOpenAdmin, currentView }) => {
   const [clickCount, setClickCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -61,14 +60,6 @@ const Header: React.FC<HeaderProps> = ({ onSelectTool, onSelectBlog, onSelectCon
           </nav>
 
           <div className="flex items-center space-x-2 md:space-x-4">
-             <button 
-              onClick={onOpenMemberArea}
-              className="bg-gray-900 text-white px-4 md:px-6 py-2.5 rounded-xl text-[10px] md:text-sm font-black hover:bg-blue-700 transition shadow-lg active:scale-95 flex items-center space-x-2"
-             >
-               <i className="fas fa-user-circle"></i>
-               <span className="hidden sm:inline">Portal do Aluno</span>
-             </button>
-
              <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-900 border border-gray-200"
