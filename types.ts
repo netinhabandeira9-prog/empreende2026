@@ -59,13 +59,18 @@ export interface LoanService {
   order_index?: number;
 }
 
+export interface AppScreen {
+  id?: string;
+  app_id: string;
+  screen_index: number;
+  title: string;
+  description: string;
+  image_url: string;
+}
+
 export interface GroundingSource {
   title?: string;
   uri?: string;
 }
 
-/**
- * Define as visualizações possíveis do aplicativo.
- * Fix: Adicionado 'terms' para suportar a página de Termos de Uso.
- */
 export type View = 'home' | 'blog' | 'calculators' | 'tool-detail' | 'about' | 'contact' | 'privacy' | 'terms' | 'loan' | 'sono-score' | 'apps' | 'app-detail';
