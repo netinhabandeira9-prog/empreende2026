@@ -111,7 +111,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   };
 
   const handleDeleteItem = async (id: any, table: string) => {
-    if (id.toString().startsWith('new-') || (table === 'blog_posts' && !isSupabaseConfigured)) {
+    if (!id || id.toString().startsWith('new-') || (table === 'blog_posts' && !isSupabaseConfigured)) {
       if (table === 'affiliates') setAffiliates(affiliates.filter(a => a.id !== id));
       if (table === 'partners') setPartners(partners.filter(p => p.id !== id));
       if (table === 'loan_services') setLoanServices(loanServices.filter(l => l.id !== id));
@@ -204,7 +204,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
               </div>
             </div>
             <div className="flex gap-4">
-              <button onClick={() => setActiveSection('apps') ? handleAddAppScreen('preco-certo') : null} className="bg-gray-100 text-gray-400 w-14 h-14 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition"><i className="fas fa-times text-xl"></i></button>
+              <button onClick={onClose} className="bg-gray-100 text-gray-400 w-14 h-14 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition shadow-sm border border-gray-200">
+                <i className="fas fa-times text-xl"></i>
+              </button>
             </div>
           </div>
 
@@ -215,21 +217,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                   <div key={appId} className="space-y-6">
                     <div className="flex justify-between items-center border-b pb-4">
                       <h3 className="text-2xl font-black uppercase text-gray-800">App: {appId.replace('-', ' ')}</h3>
-                      <button onClick={() => handleAddAppScreen(appId)} className="bg-orange-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest"><i className="fas fa-plus mr-2"></i> Adicionar Tela</button>
+                      <button onClick={() => handleAddAppScreen(appId)} className="bg-orange-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-orange-700 transition"><i className="fas fa-plus mr-2"></i> Adicionar Tela</button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {appScreens.filter(s => s.app_id === appId).map((screen, idx) => (
-                        <div key={idx} className="bg-gray-50 p-6 rounded-[2.5rem] border border-gray-100 flex flex-col group">
+                        <div key={screen.id || idx} className="bg-gray-50 p-6 rounded-[2.5rem] border border-gray-100 flex flex-col group transition-shadow hover:shadow-lg">
                           <div className="aspect-[3/4] bg-gray-200 rounded-2xl overflow-hidden relative mb-4">
-                            {screen.image_url ? <img src={screen.image_url} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-400"><i className="fas fa-image text-3xl"></i></div>}
+                            {screen.image_url ? <img src={screen.image_url} className="w-full h-full object-cover" alt={screen.title} /> : <div className="flex h-full items-center justify-center text-gray-400"><i className="fas fa-image text-3xl"></i></div>}
                             <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center cursor-pointer">
                               <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(screen.id || idx, e.target.files[0], 'app-screen')} />
-                              <span className="bg-white px-4 py-2 rounded-xl text-[9px] font-black uppercase">Trocar Foto</span>
+                              <span className="bg-white px-4 py-2 rounded-xl text-[9px] font-black uppercase shadow-lg">Trocar Foto</span>
                             </label>
                           </div>
-                          <input type="text" value={screen.title} onChange={(e) => setAppScreens(prev => prev.map((s, i) => (s.id === screen.id || (!s.id && i === idx)) ? { ...s, title: e.target.value } : s))} className="w-full bg-white px-4 py-2 rounded-xl font-black mb-2 text-xs" placeholder="Título da Tela" />
-                          <textarea value={screen.description} onChange={(e) => setAppScreens(prev => prev.map((s, i) => (s.id === screen.id || (!s.id && i === idx)) ? { ...s, description: e.target.value } : s))} className="w-full bg-white px-4 py-2 rounded-xl text-[10px] h-20 border-none outline-none" placeholder="Descrição"></textarea>
-                          <button onClick={() => handleDeleteItem(screen.id, 'app_screens')} className="mt-4 text-red-500 text-[10px] font-black uppercase self-end">Excluir</button>
+                          <input type="text" value={screen.title} onChange={(e) => setAppScreens(prev => prev.map((s, i) => (s.id === screen.id || (!s.id && i === idx)) ? { ...s, title: e.target.value } : s))} className="w-full bg-white px-4 py-3 rounded-xl font-black mb-3 text-xs border border-gray-100 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Título da Tela" />
+                          <textarea value={screen.description} onChange={(e) => setAppScreens(prev => prev.map((s, i) => (s.id === screen.id || (!s.id && i === idx)) ? { ...s, description: e.target.value } : s))} className="w-full bg-white px-4 py-3 rounded-xl text-[10px] h-24 border border-gray-100 focus:ring-2 focus:ring-orange-500 outline-none resize-none" placeholder="Descrição"></textarea>
+                          <button onClick={() => handleDeleteItem(screen.id, 'app_screens')} className="mt-4 text-red-500 text-[10px] font-black uppercase self-end hover:underline">Excluir Tela</button>
                         </div>
                       ))}
                     </div>
@@ -238,14 +240,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
               </div>
             )}
             
-            {/* ... Seções de Affiliates, Loans, Partners e Blog mantidas como no AdminPanel anterior ... */}
-            {activeSection !== 'apps' && <p className="text-gray-400 italic text-center py-10">Use as funções de edição conforme as abas acima.</p>}
+            {/* Seções Adicionais (Affiliates, etc) seriam renderizadas aqui similarmente */}
+            {activeSection !== 'apps' && (
+               <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-[3rem]">
+                  <i className="fas fa-tools text-3xl text-gray-200 mb-4"></i>
+                  <p className="text-gray-400 italic text-sm">Seção {activeSection} em manutenção ou aguardando dados.</p>
+               </div>
+            )}
           </div>
 
           <div className="mt-16 flex justify-end">
-            <button onClick={handleSave} disabled={isSaving} className="bg-gray-900 text-white px-16 py-6 rounded-[2rem] font-black text-xl shadow-2xl disabled:opacity-50 transition active:scale-95 flex items-center gap-4">
+            <button onClick={handleSave} disabled={isSaving} className="bg-gray-900 text-white px-12 py-5 rounded-[2rem] font-black text-lg shadow-2xl disabled:opacity-50 transition active:scale-95 flex items-center gap-4 hover:bg-gray-800">
               {isSaving ? <i className="fas fa-spinner animate-spin"></i> : <i className="fas fa-save"></i>}
-              <span>Salvar Tudo</span>
+              <span>Salvar Alterações</span>
             </button>
           </div>
         </div>
