@@ -10,23 +10,23 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
     const appScreens = [
       {
         title: "Painel de Controle",
-        desc: "Status de conformidade, nível de segurança e DARF do mês com visualização clara de Entradas e Saídas.",
-        img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=600" 
+        desc: "Status de conformidade e resumo de impostos 2026 com interface limpa.",
+        img: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?auto=format&fit=crop&q=80&w=400" 
       },
       {
-        title: "Auditoria de Risco",
-        desc: "Alertas inteligentes sobre falta de documentos e limites de isenção para evitar a malha fina.",
-        img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600" 
+        title: "Auditoria Fiscal",
+        desc: "IA que analisa inconsistências em recibos e notas fiscais de serviços.",
+        img: "https://images.unsplash.com/photo-1554224155-1696413575b9?auto=format&fit=crop&q=80&w=400" 
       },
       {
-        title: "Perfil e Documentação",
-        desc: "Centralize CPF, RG, dados bancários e dependentes para facilitar a declaração anual.",
-        img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600"
+        title: "Documentação",
+        desc: "Organização por pastas inteligentes para facilitar a declaração anual.",
+        img: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&q=80&w=400"
       },
       {
-        title: "Novo Lançamento",
-        desc: "Interface simplificada para registrar ganhos de trabalho autônomo ou outras rendas.",
-        img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=600"
+        title: "Lançamento Rápido",
+        desc: "Registro de rendas e despesas dedutíveis em poucos segundos.",
+        img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=400"
       }
     ];
 
@@ -75,26 +75,26 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
           </div>
         </section>
 
-        {/* Galeria de Interface do App */}
+        {/* Galeria de Interface do App - IMAGENS MENORES E MAIS RELEVANTES */}
         <section className="py-24 bg-white overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-left mb-16">
               <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6">Tour pela Interface</h2>
-              <p className="text-gray-500 max-w-2xl">Design intuitivo e funcional, focado em clareza de dados e facilidade de uso diário.</p>
+              <p className="text-gray-500 max-w-2xl">Visualização otimizada para controle contábil e gestão de impostos 2026.</p>
             </div>
 
-            <div className="flex overflow-x-auto gap-8 pb-12 no-scrollbar snap-x snap-mandatory mask-linear-horizontal">
+            <div className="flex overflow-x-auto gap-6 pb-12 no-scrollbar snap-x snap-mandatory mask-linear-horizontal">
               {appScreens.map((screen, idx) => (
-                <div key={idx} className="min-w-[280px] md:min-w-[320px] snap-center flex flex-col items-center">
-                  <div className="bg-white rounded-[2rem] p-2 shadow-2xl border border-gray-100 mb-8 transform hover:-translate-y-2 transition-transform duration-500">
+                <div key={idx} className="min-w-[240px] md:min-w-[280px] snap-center flex flex-col items-center">
+                  <div className="bg-white rounded-[2rem] p-1.5 shadow-xl border border-gray-100 mb-6 transform hover:-translate-y-2 transition-transform duration-500">
                     <img 
                       src={screen.img} 
                       alt={screen.title} 
-                      className="rounded-[1.5rem] w-full aspect-[9/18] object-cover"
+                      className="rounded-[1.5rem] w-full aspect-[3/4] object-cover"
                     />
                   </div>
-                  <h4 className="font-black text-gray-900 text-lg mb-2">{screen.title}</h4>
-                  <p className="text-gray-500 text-xs text-center leading-relaxed max-w-[240px]">{screen.desc}</p>
+                  <h4 className="font-black text-gray-900 text-sm mb-2">{screen.title}</h4>
+                  <p className="text-gray-500 text-[10px] text-center leading-relaxed max-w-[200px] font-medium uppercase tracking-tighter">{screen.desc}</p>
                 </div>
               ))}
             </div>
