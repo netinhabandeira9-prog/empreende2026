@@ -67,7 +67,7 @@ const AppsPage: React.FC<AppsPageProps> = ({ onSelectApp }) => {
                 <p className="text-gray-500 text-sm leading-relaxed mb-8">{app.desc}</p>
                 <button 
                   onClick={() => onSelectApp(app.id)}
-                  className={`w-full py-4 ${app.id === 'mei-control' ? 'bg-gray-200 cursor-not-allowed' : 'bg-gray-900 hover:bg-blue-700'} text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition active:scale-95`}
+                  className={`w-full py-3.5 ${app.id === 'mei-control' ? 'bg-gray-200 cursor-not-allowed' : 'bg-gray-900 hover:bg-blue-700'} text-white rounded-2xl font-bold text-[10px] uppercase tracking-widest transition active:scale-95 shadow-lg`}
                   disabled={app.id === 'mei-control'}
                 >
                   {app.id === 'mei-control' ? 'Aguarde' : 'Saiba Mais'}

@@ -52,10 +52,10 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
                     href="https://nb-controle-ir.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-blue-700 text-white px-12 py-6 rounded-[2rem] font-black flex items-center justify-center gap-4 hover:bg-blue-800 transition shadow-2xl shadow-blue-700/20 active:scale-95 group"
+                    className="bg-blue-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-800 transition shadow-xl shadow-blue-700/10 active:scale-95 group"
                   >
-                    <span className="text-lg">Acesse NB Meu IR</span>
-                    <i className="fas fa-external-link-alt group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                    <span className="text-base">Acessar NB Meu IR</span>
+                    <i className="fas fa-external-link-alt text-xs group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
                   </a>
                 </div>
                 <p className="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -108,9 +108,9 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
             href="https://nb-controle-ir.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-blue-700 text-white px-12 py-5 rounded-[2rem] font-black text-lg shadow-2xl hover:bg-blue-800 transition transform active:scale-95 flex items-center gap-3 mx-auto w-max"
+            className="bg-blue-700 text-white px-10 py-4 rounded-2xl font-bold text-base shadow-xl hover:bg-blue-800 transition transform active:scale-95 flex items-center gap-3 mx-auto w-max"
            >
-             Acesse NB Meu IR <i className="fas fa-arrow-right"></i>
+             Acessar NB Meu IR <i className="fas fa-arrow-right text-xs"></i>
            </a>
            <p className="mt-6 text-[10px] text-gray-400 font-bold uppercase tracking-widest">Funciona em qualquer navegador</p>
         </section>
@@ -141,10 +141,10 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
                   href="https://nb-pre-o-certo.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-blue-700 text-white px-12 py-6 rounded-[2rem] font-black flex items-center justify-center gap-4 hover:bg-blue-800 transition shadow-2xl shadow-blue-700/20 active:scale-95 group"
+                  className="bg-blue-700 text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-800 transition shadow-xl shadow-blue-700/10 active:scale-95 group"
                 >
-                  <span className="text-lg">Acesse NB Preço Certo</span>
-                  <i className="fas fa-external-link-alt group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                  <span className="text-base">Acessar NB Preço Certo</span>
+                  <i className="fas fa-external-link-alt text-xs group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
                 </a>
               </div>
               <p className="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -207,9 +207,9 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
           href="https://nb-pre-o-certo.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-blue-600 text-white px-16 py-6 rounded-[2rem] font-black text-xl shadow-2xl hover:bg-blue-500 transition active:scale-95 flex items-center gap-4 mx-auto w-max"
+          className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:bg-blue-500 transition active:scale-95 flex items-center gap-3 mx-auto w-max"
          >
-           Acesse NB Preço Certo <i className="fas fa-chevron-right"></i>
+           Acessar NB Preço Certo <i className="fas fa-chevron-right text-sm"></i>
          </a>
       </section>
     </div>
