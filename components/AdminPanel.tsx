@@ -27,6 +27,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   const [error, setError] = useState('');
   const [uploadingId, setUploadingId] = useState<string | number | null>(null);
 
+  const defaultScreens: AppScreen[] = [
+    { app_id: 'preco-certo', screen_index: 0, title: "Scanner de Nota", description: "IA que lê DANFEs em segundos.", image_url: "" },
+    { app_id: 'preco-certo', screen_index: 1, title: "Cálculo de Margem", description: "Defina seu lucro e veja o preço sugerido.", image_url: "" },
+    { app_id: 'meu-ir', screen_index: 0, title: "Painel de Controle", description: "Status de conformidade 2026.", image_url: "" },
+    { app_id: 'meu-ir', screen_index: 1, title: "Auditoria Fiscal", description: "IA que analisa inconsistências.", image_url: "" }
+  ];
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchData();
@@ -51,9 +58,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       else setBlogPosts(BLOG_POSTS);
 
       const { data: apps } = await supabase.from('app_screens').select('*').order('app_id', { ascending: true }).order('screen_index', { ascending: true });
-      if (apps) setAppScreens(apps);
+      if (apps && apps.length > 0) setAppScreens(apps);
+      else setAppScreens(defaultScreens);
     } catch (err) {
       console.error("Erro ao sincronizar com Supabase:", err);
+      if (activeSection === 'apps') setAppScreens(defaultScreens);
     } finally {
       setIsLoading(false);
     }
@@ -82,23 +91,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     }
   };
 
+  const handleAddAppScreen = (appId: string) => {
+    const newScreen: AppScreen = {
+      app_id: appId,
+      screen_index: appScreens.filter(s => s.app_id === appId).length,
+      title: 'Nova Tela',
+      description: 'Descrição da tela.',
+      image_url: ''
+    };
+    setAppScreens([...appScreens, newScreen]);
+  };
+
   const handleDelete = async (id: any, table: string) => {
     if (!confirm("Excluir permanentemente?")) return;
-    if (!id.toString().startsWith('new-')) {
+    if (id && !id.toString().startsWith('new-')) {
       await supabase.from(table).delete().eq('id', id);
     }
     fetchData();
   };
 
-  const handleFileUpload = async (id: any, file: File, type: string) => {
-    setUploadingId(id);
+  const handleFileUpload = async (id: any, file: File, type: string, index?: number) => {
+    setUploadingId(id || `idx-${index}`);
     const url = await uploadBanner(file);
     if (url) {
       if (type === 'affiliate') setAffiliates(prev => prev.map(a => a.id === id ? { ...a, banner_url: url } : a));
       if (type === 'partner') setPartners(prev => prev.map(p => p.id === id ? { ...p, logo_url: url } : p));
       if (type === 'loan') setLoanServices(prev => prev.map(l => l.id === id ? { ...l, image_url: url } : l));
       if (type === 'blog') setBlogPosts(prev => prev.map(b => b.id === id ? { ...b, image: url } : b));
-      if (type === 'app-screen') setAppScreens(prev => prev.map((s, idx) => (s.id === id || (!s.id && idx === id)) ? { ...s, image_url: url } : s));
+      if (type === 'app-screen') {
+        setAppScreens(prev => prev.map((s, idx) => (s.id === id || (index !== undefined && idx === index)) ? { ...s, image_url: url } : s));
+      }
     }
     setUploadingId(null);
   };
@@ -107,13 +129,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
     if (!isSupabaseConfigured) return;
     setIsSaving(true);
     try {
-      const cleanId = (id: any) => id.toString().startsWith('new-') ? undefined : id;
+      const cleanId = (id: any) => (id && id.toString().startsWith('new-')) ? undefined : id;
       
       if (activeSection === 'affiliates') await supabase.from('affiliates').upsert(affiliates.map(a => ({...a, id: cleanId(a.id)})));
       if (activeSection === 'partners') await supabase.from('partners').upsert(partners.map(p => ({...p, id: cleanId(p.id)})));
       if (activeSection === 'loans') await supabase.from('loan_services').upsert(loanServices.map(l => ({...l, id: cleanId(l.id)})));
       if (activeSection === 'blog') await supabase.from('blog_posts').upsert(blogPosts);
-      if (activeSection === 'apps') await supabase.from('app_screens').upsert(appScreens.map(s => ({...s, id: s.id?.includes('new') ? undefined : s.id})));
+      if (activeSection === 'apps') {
+          // Remove IDs temporários antes de salvar
+          const cleanedApps = appScreens.map(s => {
+              const { id, ...rest } = s;
+              return id && id.toString().includes('-') ? rest : s;
+          });
+          await supabase.from('app_screens').upsert(cleanedApps);
+      }
       
       alert("Salvo com sucesso!");
       fetchData();
@@ -171,14 +200,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                         <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'affiliate')} />
                         <span className="bg-white text-[9px] font-black px-3 py-1 rounded-lg">Trocar Imagem</span>
                       </label>
-                      {uploadingId === item.id && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><i className="fas fa-spinner animate-spin text-blue-600"></i></div>}
                     </div>
-                    <input type="text" value={item.name} onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? {...a, name: e.target.value} : a))} className="w-full p-2 mb-2 bg-white rounded-lg text-xs font-bold" placeholder="Nome do Produto" />
-                    <input type="text" value={item.link} onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? {...a, link: e.target.value} : a))} className="w-full p-2 mb-2 bg-white rounded-lg text-[10px]" placeholder="Link de Afiliado" />
-                    <div className="flex justify-between items-center mt-4">
-                      <button onClick={() => setAffiliates(affiliates.map(a => a.id === item.id ? {...a, active: !a.active} : a))} className={`text-[9px] font-black uppercase ${item.active ? 'text-green-600' : 'text-gray-400'}`}>{item.active ? 'Ativo' : 'Inativo'}</button>
-                      <button onClick={() => handleDelete(item.id, 'affiliates')} className="text-red-500 text-[9px] font-black uppercase">Excluir</button>
-                    </div>
+                    <input type="text" value={item.name} onChange={(e) => setAffiliates(affiliates.map(a => a.id === item.id ? {...a, name: e.target.value} : a))} className="w-full p-2 mb-2 bg-white rounded-lg text-xs font-bold" />
+                    <button onClick={() => handleDelete(item.id, 'affiliates')} className="text-red-500 text-[9px] font-black uppercase">Excluir</button>
                   </div>
                 ))}
 
@@ -198,8 +222,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
 
                 {activeSection === 'loans' && loanServices.map(item => (
                   <div key={item.id} className="bg-gray-50 p-4 rounded-3xl border group">
-                    <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative mb-4">
-                      {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-400"><i className={`fas ${item.icon} text-3xl`}></i></div>}
+                    <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative mb-4 flex items-center justify-center">
+                      {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <i className={`fas ${item.icon} text-gray-300 text-3xl`}></i>}
                       <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition">
                         <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'loan')} />
                         <span className="bg-white text-[9px] font-black px-3 py-1 rounded-lg">Trocar Foto</span>
@@ -225,23 +249,32 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                 ))}
 
                 {activeSection === 'apps' && (
-                  <div className="col-span-full space-y-8">
+                  <div className="col-span-full space-y-12">
                      {['preco-certo', 'meu-ir'].map(appId => (
-                       <div key={appId} className="space-y-4">
-                          <h3 className="text-lg font-black uppercase text-blue-600 border-b pb-2">Interface: {appId}</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            {appScreens.filter(s => s.app_id === appId).map((screen, idx) => (
-                              <div key={screen.id || idx} className="bg-white p-3 rounded-2xl border group">
-                                <div className="aspect-[3/4] bg-gray-100 rounded-xl overflow-hidden relative mb-2">
-                                  {screen.image_url ? <img src={screen.image_url} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-300"><i className="fas fa-mobile-screen text-2xl"></i></div>}
-                                  <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer">
-                                    <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(screen.id || idx, e.target.files[0], 'app-screen')} />
-                                    <span className="bg-white text-[8px] font-black px-2 py-1 rounded">Foto</span>
-                                  </label>
+                       <div key={appId} className="space-y-6">
+                          <div className="flex justify-between items-center border-b pb-3">
+                             <h3 className="text-xl font-black uppercase text-blue-600">App: {appId}</h3>
+                             <button onClick={() => handleAddAppScreen(appId)} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest"><i className="fas fa-plus mr-2"></i> Adicionar Tela</button>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {appScreens.filter(s => s.app_id === appId).map((screen, idx) => {
+                              const globalIdx = appScreens.findIndex(s => s === screen);
+                              return (
+                                <div key={screen.id || globalIdx} className="bg-gray-50 p-4 rounded-3xl border group flex flex-col">
+                                  <div className="aspect-[3/4] bg-white rounded-2xl overflow-hidden relative mb-4 border">
+                                    {screen.image_url ? <img src={screen.image_url} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-300"><i className="fas fa-mobile-screen text-3xl"></i></div>}
+                                    <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer">
+                                      <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(screen.id, e.target.files[0], 'app-screen', globalIdx)} />
+                                      <span className="bg-white text-[9px] font-black px-3 py-1 rounded-lg">Trocar Foto</span>
+                                    </label>
+                                    {uploadingId === (screen.id || `idx-${globalIdx}`) && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><i className="fas fa-spinner animate-spin text-blue-600"></i></div>}
+                                  </div>
+                                  <input type="text" value={screen.title} onChange={(e) => setAppScreens(prev => prev.map((s, i) => i === globalIdx ? {...s, title: e.target.value} : s))} className="w-full p-2 bg-white rounded-lg mb-2 text-xs font-bold" placeholder="Título" />
+                                  <textarea value={screen.description} onChange={(e) => setAppScreens(prev => prev.map((s, i) => i === globalIdx ? {...s, description: e.target.value} : s))} className="w-full p-2 bg-white rounded-lg text-[10px] h-16 resize-none" placeholder="Descrição"></textarea>
+                                  <button onClick={() => handleDelete(screen.id, 'app_screens')} className="mt-4 text-red-500 text-[9px] font-black uppercase self-end">Excluir</button>
                                 </div>
-                                <input type="text" value={screen.title} onChange={(e) => setAppScreens(prev => prev.map((s, i) => (s.id === screen.id || (!s.id && i === idx)) ? {...s, title: e.target.value} : s))} className="w-full p-1 text-[10px] border-none outline-none font-bold" />
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                        </div>
                      ))}
