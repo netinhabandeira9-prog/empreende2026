@@ -41,7 +41,6 @@ const App: React.FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
 
-  // Determina se a página atual tem conteúdo editorial suficiente para o AdSense
   const hasEditorialContent = useMemo(() => {
     return ['home', 'blog', 'about', 'app-detail', 'tool-detail'].includes(currentView);
   }, [currentView]);
@@ -87,20 +86,24 @@ const App: React.FC = () => {
       setBlogPosts(STATIC_BLOG_POSTS);
       return;
     }
+    
+    // Fetch Affiliates
     try {
-      const [affs, parts, posts] = await Promise.all([
-        supabase.from('affiliates').select('*'),
-        supabase.from('partners').select('*'),
-        supabase.from('blog_posts').select('*').order('id', { ascending: false })
-      ]);
-      if (affs.data) setAffiliates(affs.data.length > 0 ? affs.data : FALLBACK_AFFILIATES);
-      if (parts.data) setPartners(parts.data.filter((p: any) => p.logo_url && p.active !== false));
-      if (posts.data && posts.data.length > 0) setBlogPosts(posts.data);
-      else setBlogPosts(STATIC_BLOG_POSTS);
-    } catch (err) { 
-        setAffiliates(FALLBACK_AFFILIATES);
-        setBlogPosts(STATIC_BLOG_POSTS);
-    }
+      const { data } = await supabase.from('affiliates').select('*');
+      setAffiliates(data && data.length > 0 ? data : FALLBACK_AFFILIATES);
+    } catch (e) { setAffiliates(FALLBACK_AFFILIATES); }
+
+    // Fetch Partners
+    try {
+      const { data } = await supabase.from('partners').select('*');
+      if (data) setPartners(data.filter((p: any) => p.logo_url && p.active !== false));
+    } catch (e) { console.error("Erro parceiros", e); }
+
+    // Fetch Blog
+    try {
+      const { data } = await supabase.from('blog_posts').select('*').order('id', { ascending: false });
+      setBlogPosts(data && data.length > 0 ? data : STATIC_BLOG_POSTS);
+    } catch (e) { setBlogPosts(STATIC_BLOG_POSTS); }
   };
 
   useEffect(() => { fetchContent(); }, []);
