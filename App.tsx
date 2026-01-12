@@ -55,7 +55,7 @@ const App: React.FC = () => {
       apps: "Nossos Apps & Ferramentas | Ecossistema NB",
       'app-detail': "NB Preço Certo | Sua Câmera é seu Precificador",
       about: "Sobre a NB Empreende - Nossa Missão",
-      contact: "Fale Conosco - Suporte NB Empreende",
+      contact: "Seja nosso Parceiro - NB Empreende 2026",
       privacy: "Política de Privacidade - NB Empreende",
       terms: "Termos de Uso - NB Empreende"
     };
@@ -317,11 +317,11 @@ const App: React.FC = () => {
               <button onClick={() => navigateTo('calculators')} className="hover:text-white transition">Calculadoras</button>
               <button onClick={() => navigateTo('privacy')} className="hover:text-white transition">Privacidade</button>
               <button onClick={() => navigateTo('terms')} className="hover:text-white transition">Termos</button>
-              <button onClick={() => navigateTo('contact')} className="hover:text-white transition">Contato</button>
+              <button onClick={() => navigateTo('contact')} className="hover:text-white transition">Seja Parceiro</button>
             </nav>
             <div className="pt-10 border-t border-gray-800 text-[10px] text-gray-500 max-w-2xl mx-auto">
-              <p>&copy; 2026 NB Empreende - CNPJ 00.000.000/0001-00. Todo o conteúdo possui caráter educativo e informativo sobre a Reforma Tributária 2026.</p>
-              <p className="mt-4 font-bold text-gray-600 uppercase">Brasília - Brasil</p>
+              <p>&copy; 2026 NB Empreende - CNPJ 12.306.779/0001-57. Todo o conteúdo possui caráter educativo e informativo sobre a Reforma Tributária 2026.</p>
+              <p className="mt-4 font-bold text-gray-600 uppercase">Ceará - Brasil</p>
             </div>
         </div>
       </footer>

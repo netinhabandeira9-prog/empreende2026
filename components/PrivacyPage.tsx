@@ -7,7 +7,7 @@ const PrivacyPage: React.FC = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           <h1 className="text-4xl font-black text-gray-900 mb-4">Política de Privacidade</h1>
-          <p className="text-gray-500">Última atualização: Maio de 2026</p>
+          <p className="text-gray-500">Última atualização: Janeiro de 2026</p>
         </div>
 
         <div className="prose prose-blue max-w-none text-gray-600 space-y-8">
@@ -54,7 +54,7 @@ const PrivacyPage: React.FC = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">5. Contato sobre Privacidade</h2>
             <p>
-              Para qualquer dúvida sobre como tratamos suas informações, entre em contato através do e-mail: <span className="font-bold text-blue-600">privacidade@empreende2026.com.br</span>
+              Para qualquer dúvida sobre como tratamos suas informações, entre em contato através do e-mail: <span className="font-bold text-blue-600">netinhabandeira9@gmail.com</span>
             </p>
           </section>
         </div>

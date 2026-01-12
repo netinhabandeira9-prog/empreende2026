@@ -56,9 +56,12 @@ const TermsPage: React.FC = () => {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">6. Links</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">6. Links e Referências Externas</h2>
             <p>
-              O NB Empreende não analisou todos os sites vinculados ao seu site e não é responsável pelo conteúdo de nenhum site vinculado. A inclusão de qualquer link não implica endosso por NB Empreende do site. O uso de qualquer site vinculado é por conta e risco do usuário.
+              O portal NB Empreende preza pela segurança e integridade das informações fornecidas. Todos os links externos presentes em nossas páginas são criteriosamente selecionados e apontam exclusivamente para sites de propriedade da NB Empreende ou para parceiros estratégicos de total confiança, como a Confia Crédito. 
+            </p>
+            <p>
+              Embora mantenhamos um controle rigoroso sobre essas conexões para garantir um ambiente seguro, ressaltamos que a navegação em domínios de parceiros segue os termos de serviço e políticas de privacidade de seus respectivos sites.
             </p>
           </section>
 
