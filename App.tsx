@@ -5,7 +5,6 @@ import Hero from './components/Hero';
 import BlogSection from './components/BlogSection';
 import AIConsultant from './components/AIConsultant';
 import AdminPanel from './components/AdminPanel';
-import AdUnit from './components/AdUnit';
 import { BlogPost, CalculatorType, Affiliate, Partner, View } from './types';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 import { BLOG_POSTS as STATIC_BLOG_POSTS } from './constants';
@@ -40,10 +39,6 @@ const App: React.FC = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [closedBanners, setClosedBanners] = useState<Set<string>>(new Set());
-
-  const hasEditorialContent = useMemo(() => {
-    return ['home', 'blog', 'about', 'app-detail', 'tool-detail'].includes(currentView);
-  }, [currentView]);
 
   useEffect(() => {
     const titles: Record<string, string> = {
@@ -155,10 +150,6 @@ const App: React.FC = () => {
                </div>
             </div>
 
-            <div className="max-w-6xl mx-auto px-4 mt-8">
-              {hasEditorialContent && <AdUnit slot="ads-home-top" format="rectangle" />}
-            </div>
-
             <section className="py-16 bg-white overflow-hidden">
                <div className="max-w-7xl mx-auto px-4 text-center">
                   <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-12">Principais Parceiros Tecnológicos</h2>
@@ -211,10 +202,6 @@ const App: React.FC = () => {
 
             <BlogSection onReadPost={setSelectedPost} posts={blogPosts} />
             
-            <div className="max-w-6xl mx-auto px-4 py-8">
-              {hasEditorialContent && <AdUnit slot="ads-home-bottom" format="auto" />}
-            </div>
-
             <AIConsultant />
           </main>
         );
@@ -285,8 +272,6 @@ const App: React.FC = () => {
                     <h2 className="text-2xl md:text-5xl font-black text-gray-900 mb-8 leading-tight">{selectedPost.title}</h2>
                   </header>
                   
-                  <AdUnit slot="ads-post-internal-1" format="fluid" />
-
                   <div className="text-gray-700 leading-relaxed text-lg mb-10">
                     {selectedPost.content.split('\n').map((paragraph, idx) => {
                       const trimmed = paragraph.trim();
@@ -295,8 +280,6 @@ const App: React.FC = () => {
                       return <p key={idx} className="mb-6">{trimmed}</p>;
                     })}
                   </div>
-
-                  <AdUnit slot="ads-post-internal-2" format="rectangle" />
                 </div>
               </div>
             </article>
@@ -310,6 +293,19 @@ const App: React.FC = () => {
               <div className={`${currentView === 'sono-score' || currentView === 'app-detail' ? 'bg-indigo-600' : 'bg-blue-700'} p-2 rounded-lg`}><i className="fas fa-chart-line text-white"></i></div>
               <span className="text-2xl font-bold text-white tracking-tight">NB Empreende <span className={currentView === 'sono-score' || currentView === 'app-detail' ? 'text-indigo-400' : 'text-blue-700'}>2026</span></span>
             </div>
+            
+            <div className="flex justify-center gap-6 mb-12">
+              <a href="https://www.instagram.com/nbempreende" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-pink-600 transition-colors" title="Instagram">
+                <i className="fab fa-instagram text-xl"></i>
+              </a>
+              <a href="https://www.youtube.com/@nbempreende" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-red-600 transition-colors" title="YouTube">
+                <i className="fab fa-youtube text-xl"></i>
+              </a>
+              <a href="https://www.tiktok.com/@nbempreende" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-black transition-colors" title="TikTok">
+                <i className="fab fa-tiktok text-xl"></i>
+              </a>
+            </div>
+
             <nav className="flex flex-wrap justify-center gap-8 mb-12 text-[10px] font-black uppercase tracking-[0.2em]" aria-label="Navegação do rodapé">
               <button onClick={() => navigateTo('home')} className="hover:text-white transition">Início</button>
               <button onClick={() => navigateTo('apps')} className="hover:text-white transition">Nossos Apps</button>

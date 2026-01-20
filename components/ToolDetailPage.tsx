@@ -1,8 +1,6 @@
-
 import React from 'react';
 import { CalculatorType } from '../types';
 import Calculator from './Calculator';
-import AdUnit from './AdUnit';
 
 interface ToolDetailPageProps {
   toolType: CalculatorType;
@@ -86,16 +84,10 @@ const ToolDetailPage: React.FC<ToolDetailPageProps> = ({ toolType, onToolChange 
           </div>
         </div>
 
-        {/* Anúncio estratégico antes da ferramenta para provar conteúdo ao rastreador */}
-        <div className="mb-12">
-           <AdUnit slot="ads-tool-top" format="fluid" />
-        </div>
-
         <div className="bg-white rounded-[3rem] shadow-2xl shadow-blue-100 border border-gray-100 overflow-hidden mb-16">
           <Calculator activeTool={toolType} onToolChange={onToolChange} />
         </div>
 
-        {/* Seção Extra de Texto para AdSense (Low Value Content Fix) */}
         {info.faq.length > 0 && (
           <div className="bg-gray-50 rounded-[3rem] p-10 md:p-16">
             <h3 className="text-2xl font-black text-gray-900 mb-10 text-center uppercase tracking-widest">Guia Rápido & Perguntas Frequentes</h3>
@@ -114,10 +106,6 @@ const ToolDetailPage: React.FC<ToolDetailPageProps> = ({ toolType, onToolChange 
             </div>
           </div>
         )}
-        
-        <div className="mt-16">
-          <AdUnit slot="ads-tool-bottom" format="rectangle" />
-        </div>
       </div>
     </div>
   );

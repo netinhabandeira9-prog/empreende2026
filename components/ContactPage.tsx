@@ -41,6 +41,27 @@ const ContactPage: React.FC = () => {
                 </div>
               </a>
 
+              <div className="pt-8 grid grid-cols-3 gap-4">
+                <a href="https://www.instagram.com/nbempreende" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 p-4 bg-white rounded-3xl border border-gray-100 hover:shadow-lg transition-all group">
+                   <div className="w-10 h-10 rounded-full bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-pink-600 group-hover:text-white transition-colors">
+                      <i className="fab fa-instagram text-lg"></i>
+                   </div>
+                   <span className="text-[9px] font-black uppercase text-gray-400">Instagram</span>
+                </a>
+                <a href="https://www.youtube.com/@nbempreende" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 p-4 bg-white rounded-3xl border border-gray-100 hover:shadow-lg transition-all group">
+                   <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors">
+                      <i className="fab fa-youtube text-lg"></i>
+                   </div>
+                   <span className="text-[9px] font-black uppercase text-gray-400">YouTube</span>
+                </a>
+                <a href="https://www.tiktok.com/@nbempreende" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 p-4 bg-white rounded-3xl border border-gray-100 hover:shadow-lg transition-all group">
+                   <div className="w-10 h-10 rounded-full bg-gray-100 text-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+                      <i className="fab fa-tiktok text-lg"></i>
+                   </div>
+                   <span className="text-[9px] font-black uppercase text-gray-400">TikTok</span>
+                </a>
+              </div>
+
               <div className="bg-gray-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl"></div>
                 <h4 className="font-black mb-4 flex items-center gap-2">
