@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -75,6 +74,13 @@ const App: React.FC = () => {
     window.location.hash = view;
   };
 
+  const scrollToConsultant = () => {
+    const el = document.getElementById('consultant');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const fetchContent = async () => {
     if (!isSupabaseConfigured) {
       setAffiliates(FALLBACK_AFFILIATES);
@@ -138,7 +144,10 @@ const App: React.FC = () => {
       case 'home':
         return (
           <main>
-            <Hero onSelectTool={(t) => { setSelectedTool(t); navigateTo(t === CalculatorType.LOAN ? 'loan' : 'tool-detail'); }} onSelectConsultant={() => {}} />
+            <Hero 
+              onSelectTool={(t) => { setSelectedTool(t); navigateTo(t === CalculatorType.LOAN ? 'loan' : 'tool-detail'); }} 
+              onSelectConsultant={scrollToConsultant} 
+            />
             
             <div className="lg:hidden w-full overflow-hidden bg-white border-y border-gray-100 py-6 mb-8 mask-linear-horizontal">
                <div className="flex gap-4 animate-scrollRight whitespace-nowrap w-max px-4">
@@ -225,7 +234,7 @@ const App: React.FC = () => {
       <Header 
         onSelectTool={() => {}} 
         onSelectBlog={() => navigateTo('blog')} 
-        onSelectConsultant={() => {}} 
+        onSelectConsultant={scrollToConsultant} 
         onNavigate={navigateTo}
         onOpenAdmin={() => setShowAdmin(true)}
         currentView={currentView}
