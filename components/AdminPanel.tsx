@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, isSupabaseConfigured, uploadBanner } from '../services/supabaseClient';
 import { Affiliate, LoanService, Partner, BlogPost, AppScreen } from '../types';
 import { BLOG_POSTS } from '../constants';
+import { fetchAndGenerateNews } from '../services/geminiService';
 
 interface AdminPanelProps {
   onClose: () => void;
@@ -24,6 +25,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
   
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSyncingAI, setIsSyncingAI] = useState(false);
   const [error, setError] = useState('');
   const [uploadingId, setUploadingId] = useState<string | number | null>(null);
 
@@ -62,9 +64,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       else setAppScreens(defaultScreens);
     } catch (err) {
       console.error("Erro ao sincronizar com Supabase:", err);
-      if (activeSection === 'apps') setAppScreens(defaultScreens);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAISync = async () => {
+    if (!confirm("A IA irá buscar notícias reais da Receita Federal e INSS para criar novos posts. Deseja continuar?")) return;
+    setIsSyncingAI(true);
+    try {
+      const newPosts = await fetchAndGenerateNews();
+      if (newPosts.length > 0) {
+        const postsToInsert = newPosts.map(p => ({
+          ...p,
+          date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }),
+          author: "IA Empreende Editorial"
+        }));
+        
+        const { error: upsertError } = await supabase.from('blog_posts').insert(postsToInsert);
+        if (upsertError) throw upsertError;
+        
+        alert(`${newPosts.length} novas notícias foram publicadas com sucesso!`);
+        fetchData();
+        onRefresh();
+      } else {
+        alert("Nenhuma notícia nova relevante encontrada no momento.");
+      }
+    } catch (err: any) {
+      alert("Erro na sincronização IA: " + err.message);
+    } finally {
+      setIsSyncingAI(false);
     }
   };
 
@@ -136,7 +165,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
       if (activeSection === 'loans') await supabase.from('loan_services').upsert(loanServices.map(l => ({...l, id: cleanId(l.id)})));
       if (activeSection === 'blog') await supabase.from('blog_posts').upsert(blogPosts);
       if (activeSection === 'apps') {
-          // Remove IDs temporários antes de salvar
           const cleanedApps = appScreens.map(s => {
               const { id, ...rest } = s;
               return id && id.toString().includes('-') ? rest : s;
@@ -180,6 +208,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
               ))}
             </div>
             <div className="flex gap-2">
+              {activeSection === 'blog' && (
+                <button 
+                  onClick={handleAISync} 
+                  disabled={isSyncingAI}
+                  className="bg-purple-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center gap-2 hover:bg-purple-700 transition disabled:opacity-50"
+                >
+                  {isSyncingAI ? <i className="fas fa-robot animate-bounce"></i> : <i className="fas fa-sync-alt"></i>}
+                  Sincronizar IA
+                </button>
+              )}
               {activeSection !== 'apps' && (
                 <button onClick={handleAddItem} className="bg-blue-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg"><i className="fas fa-plus mr-2"></i> Adicionar</button>
               )}
@@ -192,6 +230,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
               <div className="flex h-64 items-center justify-center"><i className="fas fa-spinner animate-spin text-4xl text-blue-600"></i></div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activeSection === 'blog' && blogPosts.map(item => (
+                  <div key={item.id} className="bg-gray-50 p-4 rounded-3xl border group">
+                    <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative mb-4">
+                      {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-400"><i className="fas fa-newspaper text-3xl"></i></div>}
+                      <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition">
+                        <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'blog')} />
+                        <span className="bg-white text-[9px] font-black px-3 py-1 rounded-lg">Capa</span>
+                      </label>
+                    </div>
+                    <input type="text" value={item.title} onChange={(e) => setBlogPosts(blogPosts.map(b => b.id === item.id ? {...b, title: e.target.value} : b))} className="w-full p-2 bg-white rounded-lg text-xs font-bold mb-2" />
+                    <button onClick={() => handleDelete(item.id, 'blog_posts')} className="text-red-500 text-[9px] font-black uppercase">Excluir Post</button>
+                  </div>
+                ))}
+                
                 {activeSection === 'affiliates' && affiliates.map(item => (
                   <div key={item.id} className="bg-gray-50 p-4 rounded-3xl border group">
                     <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative mb-4">
@@ -234,20 +286,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                   </div>
                 ))}
 
-                {activeSection === 'blog' && blogPosts.map(item => (
-                  <div key={item.id} className="bg-gray-50 p-4 rounded-3xl border group">
-                    <div className="aspect-video bg-gray-200 rounded-2xl overflow-hidden relative mb-4">
-                      {item.image ? <img src={item.image} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-400"><i className="fas fa-newspaper text-3xl"></i></div>}
-                      <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition">
-                        <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(item.id, e.target.files[0], 'blog')} />
-                        <span className="bg-white text-[9px] font-black px-3 py-1 rounded-lg">Capa</span>
-                      </label>
-                    </div>
-                    <input type="text" value={item.title} onChange={(e) => setBlogPosts(blogPosts.map(b => b.id === item.id ? {...b, title: e.target.value} : b))} className="w-full p-2 bg-white rounded-lg text-xs font-bold mb-2" />
-                    <button onClick={() => handleDelete(item.id, 'blog_posts')} className="text-red-500 text-[9px] font-black uppercase">Excluir Post</button>
-                  </div>
-                ))}
-
                 {activeSection === 'apps' && (
                   <div className="col-span-full space-y-12">
                      {['preco-certo', 'meu-ir'].map(appId => (
@@ -267,7 +305,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose, initialAffiliates, onR
                                       <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileUpload(screen.id, e.target.files[0], 'app-screen', globalIdx)} />
                                       <span className="bg-white text-[9px] font-black px-3 py-1 rounded-lg">Trocar Foto</span>
                                     </label>
-                                    {uploadingId === (screen.id || `idx-${globalIdx}`) && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><i className="fas fa-spinner animate-spin text-blue-600"></i></div>}
                                   </div>
                                   <input type="text" value={screen.title} onChange={(e) => setAppScreens(prev => prev.map((s, i) => i === globalIdx ? {...s, title: e.target.value} : s))} className="w-full p-2 bg-white rounded-lg mb-2 text-xs font-bold" placeholder="Título" />
                                   <textarea value={screen.description} onChange={(e) => setAppScreens(prev => prev.map((s, i) => i === globalIdx ? {...s, description: e.target.value} : s))} className="w-full p-2 bg-white rounded-lg text-[10px] h-16 resize-none" placeholder="Descrição"></textarea>

@@ -229,6 +229,8 @@ const App: React.FC = () => {
     }
   };
 
+  const showWhatsAppSupport = ['home', 'apps', 'app-detail'].includes(currentView);
+
   return (
     <div className="min-h-screen flex flex-col font-['Inter'] selection:bg-blue-100 bg-slate-50 relative">
       <Header 
@@ -257,6 +259,19 @@ const App: React.FC = () => {
           </div>
         </aside>
       </div>
+
+      {showWhatsAppSupport && (
+        <a 
+          href="https://api.whatsapp.com/send?phone=5588994517595&text=Olá! Preciso de suporte."
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-8 right-8 z-[150] bg-green-500 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:bg-green-600 transition-all hover:scale-110 active:scale-95 group animate-bounce"
+          title="Suporte WhatsApp"
+        >
+          <i className="fab fa-whatsapp text-3xl"></i>
+          <span className="absolute right-20 bg-white text-gray-900 text-[10px] font-black uppercase px-4 py-2 rounded-xl shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity border pointer-events-none">Suporte NB Ativo</span>
+        </a>
+      )}
 
       {showAdmin && <AdminPanel onClose={() => { setShowAdmin(false); fetchContent(); }} initialAffiliates={affiliates} onRefresh={fetchContent} />}
 

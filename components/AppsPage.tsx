@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface AppsPageProps {
@@ -47,7 +46,7 @@ const AppsPage: React.FC<AppsPageProps> = ({ onSelectApp }) => {
           <p className="text-xl text-gray-500">Desenvolvemos aplicativos focados na simplicidade e na lucratividade do pequeno empreendedor.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
           {apps.map((app) => (
             <div 
               key={app.id}
@@ -75,6 +74,23 @@ const AppsPage: React.FC<AppsPageProps> = ({ onSelectApp }) => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Support Section */}
+        <div className="bg-white rounded-[3rem] p-10 md:p-16 border border-gray-100 shadow-xl flex flex-col md:flex-row items-center justify-between gap-10">
+          <div className="text-left md:w-2/3">
+            <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tighter">Dificuldade com algum app?</h2>
+            <p className="text-gray-500 leading-relaxed max-w-md">Nosso time de suporte técnico está pronto para ajudar você a configurar e extrair o máximo das nossas ferramentas.</p>
+          </div>
+          <a 
+            href="https://api.whatsapp.com/send?phone=5588994517595&text=Olá! Preciso de suporte técnico nos apps da NB."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full md:w-auto px-10 py-5 bg-green-500 text-white rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-4 hover:bg-green-600 transition shadow-xl shadow-green-500/20 active:scale-95"
+          >
+            <i className="fab fa-whatsapp text-2xl"></i>
+            Suporte via WhatsApp
+          </a>
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 import { AppScreen } from '../types';
@@ -74,6 +73,9 @@ const AppDetailPage: React.FC<AppDetailPageProps> = ({ appId }) => {
                 <a href={isMeuIR ? "https://nb-controle-ir.vercel.app/" : "https://nb-pre-o-certo.vercel.app/"} target="_blank" rel="noopener noreferrer" className="bg-blue-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-blue-800 transition shadow-lg active:scale-95 group text-xs uppercase tracking-widest">
                   <span>Acessar {isMeuIR ? 'NB Meu IR' : 'NB Preço Certo'}</span>
                   <i className="fas fa-external-link-alt text-[9px] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                </a>
+                <a href="https://api.whatsapp.com/send?phone=5588994517595&text=Olá! Preciso de suporte no app NB." target="_blank" rel="noopener noreferrer" className="bg-white border-2 border-green-500 text-green-600 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-green-50 transition shadow-lg active:scale-95 text-xs uppercase tracking-widest">
+                  <i className="fab fa-whatsapp"></i> Suporte Direto
                 </a>
               </div>
             </div>
